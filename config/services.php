@@ -35,4 +35,11 @@ return [
         ],
     ],
 
+    // Bot notifikasi GA Quick Request. Kosongkan/isi via .env — lihat
+    // App\Services\TelegramNotifier untuk perilaku kalau belum diisi.
+    'telegram' => [
+        'bot_token' => env('TELEGRAM_BOT_TOKEN'),
+        'chat_id' => env('TELEGRAM_CHAT_ID'),
+    ],
+
 ];

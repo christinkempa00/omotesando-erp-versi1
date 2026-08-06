@@ -1,13 +1,21 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between">
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Pengajuan GA (GAR)
             </h2>
-            <a href="{{ route('ga.requests.create') }}"
-               class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                + Pengajuan Baru
-            </a>
+            <div class="flex flex-wrap gap-2" x-data="{ quickOpen: false }">
+                <button type="button" @click="quickOpen = true"
+                        class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                    + Minta Aset
+                </button>
+                <a href="{{ route('ga.requests.create') }}"
+                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                    + Pengajuan Baru
+                </a>
+
+                @include('ga.requests._quick-request-modal')
+            </div>
         </div>
     </x-slot>
 
@@ -15,71 +23,76 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             @if (session('success'))
-                <div class="bg-green-50 border border-green-200 text-green-800 text-sm rounded-md px-4 py-3">
+                <div class="rounded-md bg-green-50 border border-green-200 p-4 text-sm text-green-700">
                     {{ session('success') }}
                 </div>
             @endif
 
-            {{-- Filter status --}}
-            <form method="GET" class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('ga.requests.index') }}"
-                   class="px-3 py-1.5 rounded-full text-sm {{ !$selectedStatus ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                    Semua
-                </a>
-                @foreach ($statusLabels as $value => $label)
-                    <a href="{{ route('ga.requests.index', ['status' => $value]) }}"
-                       class="px-3 py-1.5 rounded-full text-sm {{ $selectedStatus === $value ? 'bg-gray-800 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">
-                        {{ $label }}
-                    </a>
-                @endforeach
-            </form>
+            {{-- Filter --}}
+            <x-filter-bar :action="route('ga.requests.index')" :search-value="$search" search-placeholder="Cari nomor/pemohon/deskripsi..." :reset-url="route('ga.requests.index')">
+                <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
+            </x-filter-bar>
 
-            <div class="bg-white overflow-hidden shadow-sm rounded-lg">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
-                        <tr>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">No. Request</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pemohon</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Cabang</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal</th>
-                            <th class="px-6 py-3"></th>
-                        </tr>
-                    </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
-                        @forelse ($requests as $req)
-                            <tr class="hover:bg-gray-50">
-                                <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $req->request_number }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">{{ $req->requestedBy->name }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">{{ $req->branch->name }}</td>
-                                <td class="px-6 py-4 text-sm text-gray-600">Rp {{ number_format($req->total_amount, 0, ',', '.') }}</td>
-                                <td class="px-6 py-4">
-                                    <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ \App\Models\GA\GaRequest::statusBadgeColor($req->status) }}">
-                                        {{ $statusLabels[$req->status] }}
-                                    </span>
-                                </td>
-                                <td class="px-6 py-4 text-sm text-gray-500">{{ $req->created_at->format('d M Y') }}</td>
-                                <td class="px-6 py-4 text-right">
-                                    <a href="{{ route('ga.requests.show', $req) }}" class="text-indigo-600 hover:text-indigo-900 text-sm font-medium">
-                                        Detail
-                                    </a>
-                                </td>
-                            </tr>
-                        @empty
+            {{-- Tabel --}}
+            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200 text-sm">
+                        <thead class="bg-gray-50">
                             <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">
-                                    Belum ada pengajuan.
-                                </td>
+                                <th class="px-4 py-3 text-left font-medium text-gray-500">Nomor</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-500">Kategori</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-500">Outlet</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-500">Pemohon</th>
+                                <th class="px-4 py-3 text-right font-medium text-gray-500">Total</th>
+                                <th class="px-4 py-3 text-left font-medium text-gray-500">Status</th>
+                                <th class="px-4 py-3"></th>
                             </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            @forelse ($requests as $req)
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.requests.show', $req) }}'">
+                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ $req->request_number }}</td>
+                                    <td class="px-4 py-3 text-gray-700">
+                                        {{ \App\Models\GA\GaRequest::categoryLabels()[$req->category] ?? $req->category }}
+                                    </td>
+                                    <td class="px-4 py-3 text-gray-600">{{ $req->branch?->name ?? '—' }}</td>
+                                    <td class="px-4 py-3 text-gray-600">{{ $req->requester_name ?: ($req->requestedBy?->name ?? '—') }}</td>
+                                    <td class="px-4 py-3 text-right text-gray-700">
+                                        Rp {{ number_format((float) $req->total_amount, 0, ',', '.') }}
+                                    </td>
+                                    <td class="px-4 py-3">
+                                        <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ \App\Models\GA\GaRequest::statusBadgeColor($req->status) }}">
+                                            {{ $statusLabels[$req->status] ?? $req->status }}
+                                        </span>
+                                    </td>
+                                    <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
+                                        <form method="POST" action="{{ route('ga.requests.destroy', $req) }}"
+                                              onsubmit="return confirm('Hapus pengajuan {{ $req->request_number }}?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" title="Hapus" class="text-red-600 hover:text-red-800">
+                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                                    <path d="M10 11v6M14 11v6"/>
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-400">
+                                        Belum ada pengajuan.
+                                    </td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
-            <div>
-                {{ $requests->links() }}
-            </div>
+            <div>{{ $requests->links() }}</div>
         </div>
     </div>
 </x-app-layout>

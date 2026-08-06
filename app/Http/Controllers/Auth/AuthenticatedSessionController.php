@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Concerns\RedirectsToRoleHome;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
@@ -11,6 +12,8 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
+    use RedirectsToRoleHome;
+
     /**
      * Display the login view.
      */
@@ -28,7 +31,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // Akun baru/reset dari IT wajib ganti password dulu — langsung ke
+        // situ (bukan ke role home dulu baru di-redirect lagi oleh
+        // EnsurePasswordChanged, yang juga akan menangkap ini di request
+        // berikutnya kalau sampai lolos dari sini).
+        if ($request->user()->password_must_change) {
+            return redirect()->route('password.force-change');
+        }
+
+        // Role Head & IT punya dashboard/halaman sendiri (terpisah dari GA);
+        // role lain (GA, Admin, Finance, dst.) tetap ke dashboard seperti
+        // sebelumnya — lihat RedirectsToRoleHome utk alasan tidak pakai
+        // ->intended().
+        return $this->redirectToRoleHome($request->user());
     }
 
     /**
@@ -42,6 +57,9 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Redirect langsung ke halaman login (bukan '/' / welcome page Laravel
+        // default) supaya gampang login lagi pakai akun lain (mis. GA setelah
+        // sebelumnya login sebagai Head) tanpa harus cari link login dulu.
+        return redirect()->route('login');
     }
 }

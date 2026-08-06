@@ -1,0 +1,153 @@
+<?php
+
+namespace App\Http\Controllers\GA;
+
+use App\Http\Controllers\Controller;
+use App\Http\Requests\GA\StoreWorkLogRequest;
+use App\Models\Branch;
+use App\Models\GA\WorkLog;
+use App\Models\GA\WorkLogAttachment;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\View\View;
+
+class WorkLogController extends Controller
+{
+    public function index(Request $request): View
+    {
+        $query = WorkLog::with(['branch', 'attachments']);
+
+        if ($branchId = $request->query('branch_id')) {
+            $query->where('branch_id', $branchId);
+        }
+
+        if ($category = $request->query('category')) {
+            $query->where('category', $category);
+        }
+
+        if ($search = $request->query('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('technician_in_charge', 'like', "%{$search}%")
+                    ->orWhere('technician_assist', 'like', "%{$search}%");
+            });
+        }
+
+        if ($dateFrom = $request->query('date_from')) {
+            $query->whereDate('work_date', '>=', $dateFrom);
+        }
+
+        if ($dateTo = $request->query('date_to')) {
+            $query->whereDate('work_date', '<=', $dateTo);
+        }
+
+        $workLogs = $query->latest('work_date')->latest('work_time')->paginate(15)->withQueryString();
+
+        return view('ga.worklogs.index', [
+            'workLogs' => $workLogs,
+            'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
+            'categoryLabels' => WorkLog::categoryLabels(),
+            'selectedBranch' => $request->query('branch_id'),
+            'selectedCategory' => $request->query('category'),
+            'search' => $request->query('search'),
+            'dateFrom' => $request->query('date_from'),
+            'dateTo' => $request->query('date_to'),
+        ]);
+    }
+
+    public function create(): View
+    {
+        return view('ga.worklogs.create', [
+            'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
+            'categoryLabels' => WorkLog::categoryLabels(),
+        ]);
+    }
+
+    public function store(StoreWorkLogRequest $request): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $workLog = new WorkLog($validated);
+        $workLog->created_by = $request->user()->id;
+        $workLog->save();
+
+        $this->storeAttachments($request, $workLog);
+
+        return redirect()
+            ->route('ga.worklogs.show', $workLog)
+            ->with('success', 'Work Log berhasil ditambahkan.');
+    }
+
+    public function show(WorkLog $worklog): View
+    {
+        $worklog->load(['branch', 'createdBy', 'attachments']);
+
+        return view('ga.worklogs.show', [
+            'workLog' => $worklog,
+            'categoryLabels' => WorkLog::categoryLabels(),
+        ]);
+    }
+
+    public function edit(WorkLog $worklog): View
+    {
+        $worklog->load('attachments');
+
+        return view('ga.worklogs.edit', [
+            'workLog' => $worklog,
+            'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
+            'categoryLabels' => WorkLog::categoryLabels(),
+        ]);
+    }
+
+    public function update(StoreWorkLogRequest $request, WorkLog $worklog): RedirectResponse
+    {
+        $validated = $request->validated();
+
+        $worklog->fill($validated);
+        $worklog->save();
+
+        // Foto baru MENAMBAH lampiran yang sudah ada (bukan mengganti) —
+        // hapus satuan lewat destroyAttachment(), bukan lewat form edit ini.
+        $this->storeAttachments($request, $worklog);
+
+        return redirect()
+            ->route('ga.worklogs.show', $worklog)
+            ->with('success', 'Work Log berhasil diperbarui.');
+    }
+
+    public function destroy(WorkLog $worklog): RedirectResponse
+    {
+        foreach ($worklog->attachments as $attachment) {
+            Storage::disk('public')->delete($attachment->photo_path);
+        }
+
+        $worklog->delete();
+
+        return redirect()
+            ->route('ga.worklogs.index')
+            ->with('success', 'Work Log berhasil dihapus.');
+    }
+
+    public function destroyAttachment(WorkLog $worklog, WorkLogAttachment $attachment): RedirectResponse
+    {
+        abort_unless($attachment->work_log_id === $worklog->id, 404);
+
+        Storage::disk('public')->delete($attachment->photo_path);
+        $attachment->delete();
+
+        return back()->with('success', 'Lampiran berhasil dihapus.');
+    }
+
+    private function storeAttachments(Request $request, WorkLog $workLog): void
+    {
+        if (! $request->hasFile('attachments')) {
+            return;
+        }
+
+        foreach ($request->file('attachments') as $photo) {
+            $workLog->attachments()->create([
+                'photo_path' => $photo->store('work-logs/attachments', 'public'),
+            ]);
+        }
+    }
+}

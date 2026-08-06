@@ -1,0 +1,12 @@
+Tambahkan di resources/views/layouts/navigation.blade.php, PERSIS SETELAH
+link "Pengajuan GA" yang sudah ditambahkan di Tahap 2:
+
+    <x-nav-link :href="route('ga.assets.index')" :active="request()->routeIs('ga.assets.*')">
+        {{ __('Inventaris Aset') }}
+    </x-nav-link>
+
+Dan versi responsive-nya (di blok <x-responsive-nav-link> bagian bawah file):
+
+    <x-responsive-nav-link :href="route('ga.assets.index')" :active="request()->routeIs('ga.assets.*')">
+        {{ __('Inventaris Aset') }}
+    </x-responsive-nav-link>

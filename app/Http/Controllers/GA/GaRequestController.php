@@ -4,14 +4,19 @@ namespace App\Http\Controllers\GA;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreGaRequestRequest;
+use App\Models\Approval;
 use App\Models\Branch;
+use App\Models\Division;
 use App\Models\GA\GaRequest;
 use App\Models\Role;
+use App\Models\User;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
+use Symfony\Component\HttpFoundation\Response;
 
 class GaRequestController extends Controller
 {
@@ -35,20 +40,32 @@ class GaRequestController extends Controller
             $query->where('status', $status);
         }
 
+        if ($search = $request->query('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('request_number', 'like', "%{$search}%")
+                    ->orWhere('requester_name', 'like', "%{$search}%")
+                    ->orWhere('description', 'like', "%{$search}%");
+            });
+        }
+
         $requests = $query->paginate(15)->withQueryString();
 
         return view('ga.requests.index', [
             'requests' => $requests,
             'statusLabels' => GaRequest::statusLabels(),
             'selectedStatus' => $status,
+            'search' => $search,
+            'branches' => Branch::orderedOutlets(),
         ]);
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
         return view('ga.requests.create', [
             'categoryLabels' => GaRequest::categoryLabels(),
-            'branches' => Branch::where('is_active', true)->get(),
+            'priorityLabels' => GaRequest::priorityLabels(),
+            'branches' => Branch::orderedOutlets(),
+            'savedSignatureUrl' => $this->savedSignatureUrl($request->user()),
         ]);
     }
 
@@ -56,35 +73,170 @@ class GaRequestController extends Controller
     {
         $user = $request->user();
         $validated = $request->validated();
+        $intent = $validated['intent'];
+        $requesterSignaturePath = $this->resolveRequesterSignaturePath($request, $validated);
 
-        $gaRequest = DB::transaction(function () use ($validated, $user) {
+        $gaRequest = DB::transaction(function () use ($validated, $user, $requesterSignaturePath, $intent) {
             $gaRequest = GaRequest::create([
                 'request_number' => GaRequest::generateRequestNumber(),
-                'division_id' => $user->division_id,
+                // Staf GA/Admin/Finance yang mengajukan sering tidak py
+                // division_id sendiri (cuma Produksi yg diberi division di
+                // seeder) — default ke divisi GA supaya insert tidak gagal
+                // (division_id NOT NULL), bukan bug di modul ini seharusnya
+                // memblokir submit sama sekali.
+                'division_id' => $user->division_id ?? Division::where('code', Division::GA)->value('id'),
                 'branch_id' => $validated['branch_id'],
                 'category' => $validated['category'],
+                'priority' => $validated['priority'],
                 'description' => $validated['description'],
                 'requested_by' => $user->id,
-                'status' => GaRequest::STATUS_SUBMITTED,
+                'requester_name' => $validated['requester_name'],
+                'requester_signature_path' => $requesterSignaturePath,
+                'status' => $intent === 'submit' ? GaRequest::STATUS_SUBMITTED : GaRequest::STATUS_DRAFT,
             ]);
 
-            foreach ($validated['items'] as $item) {
-                $gaRequest->items()->create([
-                    'item_name' => $item['item_name'],
-                    'qty' => $item['qty'],
-                    'price_per_unit' => $item['price_per_unit'],
-                    'vendor_name' => $item['vendor_name'] ?? null,
-                ]);
-            }
+            $this->syncItems($gaRequest, $validated['items']);
 
-            $gaRequest->generateApprovalSteps();
+            if ($intent === 'submit') {
+                $gaRequest->generateApprovalSteps();
+            }
 
             return $gaRequest;
         });
 
+        $this->storeAttachments($request, $gaRequest);
+
         return redirect()
             ->route('ga.requests.show', $gaRequest)
-            ->with('success', "Pengajuan {$gaRequest->request_number} berhasil dibuat.");
+            ->with('success', $this->statusMessage($gaRequest, $intent));
+    }
+
+    /**
+     * Hanya draft milik sendiri yang boleh dibuka utk dilanjutkan — begitu
+     * status berubah jadi submitted (alur approval sudah mulai), tidak ada
+     * lagi jalur edit lewat sini (integritas alur approval).
+     */
+    public function edit(Request $request, GaRequest $gaRequest): View
+    {
+        $user = $request->user();
+
+        abort_unless(
+            $gaRequest->status === GaRequest::STATUS_DRAFT && $gaRequest->requested_by === $user->id,
+            403
+        );
+
+        $gaRequest->load(['items', 'attachments']);
+
+        return view('ga.requests.edit', [
+            'gaRequest' => $gaRequest,
+            'categoryLabels' => GaRequest::categoryLabels(),
+            'priorityLabels' => GaRequest::priorityLabels(),
+            'branches' => Branch::orderedOutlets(),
+            'savedSignatureUrl' => $this->savedSignatureUrl($user),
+        ]);
+    }
+
+    public function update(StoreGaRequestRequest $request, GaRequest $gaRequest): RedirectResponse
+    {
+        $user = $request->user();
+
+        abort_unless(
+            $gaRequest->status === GaRequest::STATUS_DRAFT && $gaRequest->requested_by === $user->id,
+            403
+        );
+
+        $validated = $request->validated();
+        $intent = $validated['intent'];
+        $requesterSignaturePath = $this->resolveRequesterSignaturePath($request, $validated);
+
+        DB::transaction(function () use ($gaRequest, $validated, $intent, $requesterSignaturePath) {
+            $gaRequest->update([
+                'branch_id' => $validated['branch_id'],
+                'category' => $validated['category'],
+                'priority' => $validated['priority'],
+                'description' => $validated['description'],
+                'requester_name' => $validated['requester_name'],
+                'requester_signature_path' => $requesterSignaturePath ?? $gaRequest->requester_signature_path,
+                'status' => $intent === 'submit' ? GaRequest::STATUS_SUBMITTED : GaRequest::STATUS_DRAFT,
+            ]);
+
+            $gaRequest->items()->delete();
+            $this->syncItems($gaRequest, $validated['items']);
+
+            if ($intent === 'submit') {
+                $gaRequest->generateApprovalSteps();
+            }
+        });
+
+        $this->storeAttachments($request, $gaRequest);
+
+        return redirect()
+            ->route('ga.requests.show', $gaRequest)
+            ->with('success', $this->statusMessage($gaRequest, $intent));
+    }
+
+    private function statusMessage(GaRequest $gaRequest, string $intent): string
+    {
+        return $intent === 'submit'
+            ? "Pengajuan {$gaRequest->request_number} berhasil dikirim."
+            : "Draft pengajuan {$gaRequest->request_number} berhasil disimpan.";
+    }
+
+    private function savedSignatureUrl(User $user): ?string
+    {
+        return $user->signature_path ? Storage::url($user->signature_path) : null;
+    }
+
+    private function syncItems(GaRequest $gaRequest, array $items): void
+    {
+        foreach ($items as $item) {
+            $gaRequest->items()->create([
+                'item_name' => $item['item_name'],
+                'type' => $item['type'] ?? null,
+                'unit' => $item['unit'] ?? 'Pcs',
+                'qty' => $item['qty'],
+                'price_per_unit' => $item['price_per_unit'] ?? 0,
+                'vendor_name' => $item['vendor_name'] ?? null,
+            ]);
+        }
+    }
+
+    private function storeAttachments(Request $request, GaRequest $gaRequest): void
+    {
+        if ($request->hasFile('attachments')) {
+            foreach ($request->file('attachments') as $photo) {
+                $gaRequest->attachments()->create([
+                    'photo_path' => $photo->store('ga-requests/attachments', 'public'),
+                ]);
+            }
+        }
+    }
+
+    /**
+     * FormRequest::withValidator() sudah memastikan salah satu dari 2
+     * sumber ini valid (gambar baru ATAU tersimpan+ada) KALAU intent=submit
+     * — kalau intent=draft tidak ada jaminan itu, jadi bisa saja tidak ada
+     * tanda tangan sama sekali (return null, bukan error).
+     */
+    private function resolveRequesterSignaturePath(Request $request, array $validated): ?string
+    {
+        $user = $request->user();
+
+        if (($validated['signature_use_saved'] ?? false) && $user->signature_path) {
+            return $user->signature_path;
+        }
+
+        if (empty($validated['signature_data'])) {
+            return null;
+        }
+
+        $path = Approval::storeSignatureImage($validated['signature_data']);
+
+        if ($path && ($validated['signature_save_as_default'] ?? false)) {
+            $user->update(['signature_path' => $path]);
+        }
+
+        return $path;
     }
 
     public function show(Request $request, GaRequest $gaRequest): View
@@ -96,11 +248,61 @@ class GaRequestController extends Controller
             403
         );
 
-        $gaRequest->load(['items', 'branch', 'division', 'requestedBy', 'approvals.approver']);
+        $gaRequest->load(['items', 'branch', 'division', 'requestedBy', 'approvals.approver', 'attachments']);
 
         return view('ga.requests.show', [
             'gaRequest' => $gaRequest,
             'categoryLabels' => GaRequest::categoryLabels(),
+            'priorityLabels' => GaRequest::priorityLabels(),
         ]);
+    }
+
+    /**
+     * Dokumen GAR resmi (PDF) — dibangun dari data pengajuan + alur approval
+     * yang sudah ada, mengikuti format dokumen GAR fisik yang lama.
+     */
+    public function document(Request $request, GaRequest $gaRequest): Response
+    {
+        $user = $request->user();
+
+        abort_unless(
+            $user->hasRole(Role::HEAD, Role::ADMIN, Role::FINANCE) || $gaRequest->requested_by === $user->id,
+            403
+        );
+
+        $gaRequest->load(['items', 'branch', 'requestedBy', 'approvals.approver']);
+
+        $pdf = Pdf::loadView('ga.requests.document-pdf', [
+            'gaRequest' => $gaRequest,
+            'categoryLabels' => GaRequest::categoryLabels(),
+        ])->setPaper('a4', 'portrait');
+
+        $filename = 'GAR-'.str_replace('/', '-', $gaRequest->request_number).'.pdf';
+
+        // stream(), bukan download() — tampil preview inline di tab
+        // browser dulu (Content-Disposition: inline), user cetak/unduh
+        // sendiri dari situ kalau memang sudah cek isinya.
+        return $pdf->stream($filename);
+    }
+
+    public function destroy(Request $request, GaRequest $gaRequest): RedirectResponse
+    {
+        $user = $request->user();
+
+        abort_unless(
+            $user->hasRole(Role::ADMIN) || $gaRequest->requested_by === $user->id,
+            403
+        );
+
+        foreach ($gaRequest->attachments as $attachment) {
+            Storage::disk('public')->delete($attachment->photo_path);
+        }
+
+        $gaRequest->approvals()->delete();
+        $gaRequest->delete();
+
+        return redirect()
+            ->route('ga.requests.index')
+            ->with('success', "Pengajuan {$gaRequest->request_number} berhasil dihapus.");
     }
 }

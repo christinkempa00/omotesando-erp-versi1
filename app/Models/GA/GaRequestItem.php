@@ -10,6 +10,8 @@ class GaRequestItem extends Model
     protected $fillable = [
         'ga_request_id',
         'item_name',
+        'type',
+        'unit',
         'qty',
         'price_per_unit',
         'total',

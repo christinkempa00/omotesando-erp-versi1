@@ -50,6 +50,18 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Akun dinonaktifkan IT (lihat UserManagementController) — tolak
+        // SETELAH attempt berhasil (bukan sebelum) supaya pesannya jelas
+        // beda dari "email/password salah", tanpa membocorkan ke penyerang
+        // kalau kredensialnya sendiri sebenarnya valid.
+        if (! Auth::user()->is_active) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda telah dinonaktifkan. Hubungi IT.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

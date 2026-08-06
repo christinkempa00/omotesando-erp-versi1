@@ -123,4 +123,19 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Deploy Bootstrap Token
+    |--------------------------------------------------------------------------
+    |
+    | Token darurat utk route /deploy-tasks/{token} (lihat routes/deploy.php
+    | & DeployTaskController) — dipakai SEKALI saat deploy pertama kali ke
+    | hosting yang mungkin tidak punya akses SSH/terminal. Kosong/tidak
+    | diset di .env = route itu 404 total. WAJIB dikosongkan lagi (atau
+    | route-nya dihapus) setelah dipakai — lihat DEPLOY.md.
+    |
+    */
+
+    'deploy_token' => env('DEPLOY_TOKEN'),
+
 ];
