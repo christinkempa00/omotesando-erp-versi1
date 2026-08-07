@@ -3,6 +3,7 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -102,5 +103,25 @@ class UniformStock extends Model
         return collect(['UNI', $branch->code, $slug($type), $slug($size), $slug($color)])
             ->filter()
             ->join('-');
+    }
+
+    /**
+     * Teks notifikasi Telegram GA (add/edit/delete varian Manajemen Stok
+     * Seragam) — lihat TelegramNotifier & pemanggilnya di
+     * UniformStockController.
+     */
+    public function telegramText(string $action, User $actor): string
+    {
+        $label = [
+            'created' => 'Varian Seragam Baru',
+            'updated' => 'Varian Seragam Diperbarui',
+            'deleted' => 'Varian Seragam Dihapus',
+        ][$action];
+
+        return "*{$label}*\n"
+            ."Kode: {$this->stock_code}\n"
+            ."Tipe: {$this->uniform_type} (Size {$this->size})\n"
+            .'Outlet: '.($this->branch?->name ?: '-')."\n"
+            .'Oleh: '.$actor->name;
     }
 }

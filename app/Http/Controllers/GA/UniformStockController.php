@@ -10,6 +10,7 @@ use App\Models\Branch;
 use App\Models\GA\UniformMovement;
 use App\Models\GA\UniformRecord;
 use App\Models\GA\UniformStock;
+use App\Services\TelegramNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -227,6 +228,14 @@ class UniformStockController extends Controller
 
         $sizesAdded = collect($created)->pluck('size')->join(', ');
 
+        app(TelegramNotifier::class)->sendMessage(
+            "*Varian Seragam Baru*\n"
+            ."Tipe: {$validated['uniform_type']}\n"
+            ."Outlet: {$branch->name}\n"
+            ."Ukuran: {$sizesAdded}\n"
+            .'Oleh: '.$request->user()->name
+        );
+
         return redirect()
             ->route('ga.uniforms.stocks.index')
             ->with('success', count($created)." varian '{$validated['uniform_type']}' berhasil disimpan (ukuran: {$sizesAdded}).");
@@ -280,13 +289,17 @@ class UniformStockController extends Controller
 
         $stock->save();
 
+        app(TelegramNotifier::class)->sendMessage($stock->telegramText('updated', $request->user()));
+
         return redirect()
             ->route('ga.uniforms.stocks.show', $stock)
             ->with('success', "Varian seragam {$stock->stock_code} berhasil diperbarui.");
     }
 
-    public function destroy(UniformStock $stock): RedirectResponse
+    public function destroy(Request $request, UniformStock $stock): RedirectResponse
     {
+        app(TelegramNotifier::class)->sendMessage($stock->telegramText('deleted', $request->user()));
+
         if ($stock->stock_photo_path) {
             Storage::disk('public')->delete($stock->stock_photo_path);
         }
@@ -310,10 +323,13 @@ class UniformStockController extends Controller
             'color' => ['nullable', 'string'],
         ]);
 
-        $stocks = UniformStock::where('uniform_type', $validated['uniform_type'])
+        $stocks = UniformStock::with('branch')->where('uniform_type', $validated['uniform_type'])
             ->where('branch_id', $validated['branch_id'])
             ->where('color', $validated['color'] ?? null)
             ->get();
+
+        $branchName = $stocks->first()?->branch?->name ?: '-';
+        $sizesRemoved = $stocks->pluck('size')->join(', ');
 
         foreach ($stocks as $stock) {
             if ($stock->stock_photo_path) {
@@ -321,6 +337,14 @@ class UniformStockController extends Controller
             }
             $stock->delete();
         }
+
+        app(TelegramNotifier::class)->sendMessage(
+            "*Grup Varian Seragam Dihapus*\n"
+            ."Tipe: {$validated['uniform_type']}\n"
+            ."Outlet: {$branchName}\n"
+            ."Ukuran: {$sizesRemoved}\n"
+            .'Oleh: '.$request->user()->name
+        );
 
         return redirect()
             ->route('ga.uniforms.stocks.index')

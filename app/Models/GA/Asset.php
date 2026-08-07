@@ -107,4 +107,23 @@ class Asset extends Model
             return 'AST-'.str_pad((string) $next, 4, '0', STR_PAD_LEFT);
         });
     }
+
+    /**
+     * Teks notifikasi Telegram GA (add/edit/delete Aset) — lihat
+     * TelegramNotifier & pemanggilnya di AssetController.
+     */
+    public function telegramText(string $action, User $actor): string
+    {
+        $label = [
+            'created' => 'Aset Baru',
+            'updated' => 'Aset Diperbarui',
+            'deleted' => 'Aset Dihapus',
+        ][$action];
+
+        return "*{$label}*\n"
+            ."Kode: {$this->asset_code}\n"
+            ."Nama: {$this->name}\n"
+            .'Outlet: '.($this->branch?->name ?: '-')."\n"
+            .'Oleh: '.$actor->name;
+    }
 }

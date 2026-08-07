@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreAssetRequest;
 use App\Models\Branch;
 use App\Models\GA\Asset;
+use App\Services\TelegramNotifier;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -61,6 +62,8 @@ class AssetController extends Controller
 
         $asset->save();
 
+        app(TelegramNotifier::class)->sendMessage($asset->telegramText('created', $request->user()));
+
         return redirect()
             ->route('ga.assets.show', $asset)
             ->with('success', "Aset {$asset->asset_code} berhasil ditambahkan.");
@@ -107,13 +110,17 @@ class AssetController extends Controller
 
         $asset->save();
 
+        app(TelegramNotifier::class)->sendMessage($asset->telegramText('updated', $request->user()));
+
         return redirect()
             ->route('ga.assets.show', $asset)
             ->with('success', "Aset {$asset->asset_code} berhasil diperbarui.");
     }
 
-    public function destroy(Asset $asset): RedirectResponse
+    public function destroy(Request $request, Asset $asset): RedirectResponse
     {
+        app(TelegramNotifier::class)->sendMessage($asset->telegramText('deleted', $request->user()));
+
         if ($asset->image_path) {
             Storage::disk('public')->delete($asset->image_path);
         }

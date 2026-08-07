@@ -10,6 +10,14 @@ Catatan perubahan per tanggal — detail lengkap tiap fitur tetap ada di
 "Daftar Modul" & "Alur Kerja per Modul" di bawah, bagian ini cuma ringkasan
 kapan sesuatu berubah.
 
+- **08/08/2026** — Notifikasi Telegram ditambah ke 3 area GA (pakai bot
+  Telegram khusus modul GA — `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` di
+  `.env`): **Asset Inventory** (tambah/ubah/hapus aset), **Asset
+  Maintenance Schedule** (tambah/ubah/hapus jadwal pemeliharaan), dan
+  **Uniform Stock Management** (tambah/ubah/hapus varian, termasuk hapus
+  1 grup ukuran sekaligus). Asset Request (persetujuan) & Work Log
+  sengaja tidak disentuh — Asset Request sudah punya notifikasi sendiri
+  sejak fitur tanda tangan digital, Work Log belum perlu.
 - **08/08/2026** — Asset Request (GaRequest): tombol submit dipecah jadi 2
   — "Simpan sebagai Draft" (validasi longgar, item boleh belum lengkap,
   tanda tangan belum wajib) dan "Kirim Pengajuan" (dulu "Simpan

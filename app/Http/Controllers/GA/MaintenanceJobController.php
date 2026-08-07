@@ -7,6 +7,7 @@ use App\Http\Requests\GA\StoreMaintenanceJobRequest;
 use App\Models\Branch;
 use App\Models\GA\Asset;
 use App\Models\GA\MaintenanceJob;
+use App\Services\TelegramNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -126,6 +127,8 @@ class MaintenanceJobController extends Controller
 
         $job->save();
 
+        app(TelegramNotifier::class)->sendMessage($job->telegramText('created', $request->user()));
+
         return redirect()
             ->route('ga.maintenance.show', $job)
             ->with('success', "Pekerjaan {$job->job_code} berhasil dijadwalkan.");
@@ -174,13 +177,17 @@ class MaintenanceJobController extends Controller
 
         $maintenance->save();
 
+        app(TelegramNotifier::class)->sendMessage($maintenance->telegramText('updated', $request->user()));
+
         return redirect()
             ->route('ga.maintenance.show', $maintenance)
             ->with('success', "Pekerjaan {$maintenance->job_code} berhasil diperbarui.");
     }
 
-    public function destroy(MaintenanceJob $maintenance): RedirectResponse
+    public function destroy(Request $request, MaintenanceJob $maintenance): RedirectResponse
     {
+        app(TelegramNotifier::class)->sendMessage($maintenance->telegramText('deleted', $request->user()));
+
         $maintenance->delete();
 
         return redirect()

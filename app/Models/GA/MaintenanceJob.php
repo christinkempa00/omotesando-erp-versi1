@@ -163,4 +163,23 @@ class MaintenanceJob extends Model
 
         return (int) round($done / count($items) * 100);
     }
+
+    /**
+     * Teks notifikasi Telegram GA (add/edit/delete Jadwal Pemeliharaan) —
+     * lihat TelegramNotifier & pemanggilnya di MaintenanceJobController.
+     */
+    public function telegramText(string $action, User $actor): string
+    {
+        $label = [
+            'created' => 'Jadwal Pemeliharaan Baru',
+            'updated' => 'Jadwal Pemeliharaan Diperbarui',
+            'deleted' => 'Jadwal Pemeliharaan Dihapus',
+        ][$action];
+
+        return "*{$label}*\n"
+            ."Kode: {$this->job_code}\n"
+            ."Pekerjaan: {$this->title}\n"
+            .'Aset: '.($this->asset?->name ?: '-')."\n"
+            .'Oleh: '.$actor->name;
+    }
 }
