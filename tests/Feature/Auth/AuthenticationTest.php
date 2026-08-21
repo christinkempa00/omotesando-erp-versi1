@@ -17,6 +17,13 @@ class AuthenticationTest extends TestCase
         $response->assertStatus(200);
     }
 
+    /**
+     * User factory polos tidak punya role apa pun — RoleHomeResolver
+     * mengarahkannya ke profile.edit (satu2nya halaman yg pasti bisa
+     * diakses tanpa role/modul tertentu), BUKAN ke dashboard seperti
+     * dulu (dashboard dibatasi role:GA,Admin,Finance — user tanpa role
+     * akan 403 begitu sampai, lihat docblock RoleHomeResolver).
+     */
     public function test_users_can_authenticate_using_the_login_screen(): void
     {
         $user = User::factory()->create();
@@ -27,7 +34,7 @@ class AuthenticationTest extends TestCase
         ]);
 
         $this->assertAuthenticated();
-        $response->assertRedirect(route('dashboard', absolute: false));
+        $response->assertRedirect(route('profile.edit', absolute: false));
     }
 
     public function test_users_can_not_authenticate_with_invalid_password(): void

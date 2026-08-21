@@ -70,7 +70,7 @@
 
                 <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @forelse ($stockGroups as $group)
-                        <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-gray-300 hover:shadow-sm transition"
+                        <div class="border rounded-lg p-3 cursor-pointer hover:shadow-sm transition {{ $group->is_low ? 'border-red-300 bg-red-50 hover:border-red-400' : 'border-gray-200 hover:border-gray-300' }}"
                              onclick="window.location='{{ route('ga.uniforms.stocks.show-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}'">
                             <div class="flex items-start justify-between mb-1">
                                 <div class="flex items-start gap-2 min-w-0">
@@ -93,11 +93,6 @@
                                     </div>
                                 </div>
                                 <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
-                                    @if ($group->is_low)
-                                        <span class="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-orange-100 text-orange-700">
-                                            Menipis
-                                        </span>
-                                    @endif
                                     <a href="{{ route('ga.uniforms.stocks.create', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
                                        title="Tambah ukuran baru untuk grup ini"
                                        class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">

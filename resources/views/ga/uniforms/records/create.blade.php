@@ -89,10 +89,10 @@
                                         <button type="button" @click="removeItem(index)" x-show="items.length > 1"
                                                 class="absolute top-2 right-2 px-1.5 py-1 text-sm text-red-600 hover:bg-red-50 rounded-md">✕</button>
 
-                                        <div class="col-span-12 sm:col-span-3">
-                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Jenis Seragam</label>
+                                        <div class="col-span-6 sm:col-span-4">
+                                            <label class="block text-xs font-medium text-gray-500 mb-1">Jenis Seragam</label>
                                             <select x-model="item.type" @change="item.color = ''; item.uniform_stock_id = ''" :disabled="! branchId" required
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
                                                 <option value="">-- Pilih --</option>
                                                 <template x-for="t in types" :key="t">
                                                     <option :value="t" x-text="t"></option>
@@ -101,9 +101,9 @@
                                         </div>
 
                                         <div class="col-span-6 sm:col-span-3">
-                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Warna</label>
+                                            <label class="block text-xs font-medium text-gray-500 mb-1">Warna</label>
                                             <select x-model="item.color" @change="item.uniform_stock_id = ''" :disabled="! item.type" required
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
                                                 <option value="">-- Pilih --</option>
                                                 <template x-for="c in colorsFor(item)" :key="c">
                                                     <option :value="c" x-text="c"></option>
@@ -111,10 +111,10 @@
                                             </select>
                                         </div>
 
-                                        <div class="col-span-6 sm:col-span-3">
-                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Ukuran</label>
+                                        <div class="col-span-8 sm:col-span-3">
+                                            <label class="block text-xs font-medium text-gray-500 mb-1">Ukuran</label>
                                             <select :name="`items[${index}][uniform_stock_id]`" x-model="item.uniform_stock_id" :disabled="! item.color" required
-                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
                                                 <option value="">-- Pilih --</option>
                                                 <template x-for="s in sizesFor(item)" :key="s.id">
                                                     <option :value="s.id" x-text="'Size ' + s.size + ' (' + s.available + ' tersedia)'"></option>
@@ -122,16 +122,16 @@
                                             </select>
                                         </div>
 
-                                        <div class="col-span-3 sm:col-span-1">
-                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Qty</label>
+                                        <div class="col-span-4 sm:col-span-2">
+                                            <label class="block text-xs font-medium text-gray-500 mb-1">Qty</label>
                                             <input type="number" min="1" :name="`items[${index}][qty]`" x-model="item.qty" required
-                                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                   class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500">
                                         </div>
 
-                                        <div class="col-span-12 sm:col-span-6">
-                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Keterangan</label>
+                                        <div class="col-span-12">
+                                            <label class="block text-xs font-medium text-gray-500 mb-1">Keterangan</label>
                                             <input type="text" :name="`items[${index}][item_notes]`" x-model="item.item_notes"
-                                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                                   class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500">
                                         </div>
                                     </div>
                                 </template>
@@ -151,8 +151,8 @@
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                            <x-signature-pad name="issued_by_signature" label="Tanda Tangan Penyerah (GA)" :required="false" />
-                            <x-signature-pad name="signature" label="Tanda Tangan Penerima (Karyawan)" :required="false" />
+                            <x-signature-pad name="issued_by_signature" label="Tanda Tangan Penyerah" :required="false" />
+                            <x-signature-pad name="signature" label="Tanda Tangan Penerima" :required="false" />
                         </div>
 
                         <div>

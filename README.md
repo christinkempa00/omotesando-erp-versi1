@@ -10,6 +10,23 @@ Catatan perubahan per tanggal — detail lengkap tiap fitur tetap ada di
 "Daftar Modul" & "Alur Kerja per Modul" di bawah, bagian ini cuma ringkasan
 kapan sesuatu berubah.
 
+- **21/08/2026** — **Fix bug: landing page setelah login/kunjungi '/' bisa
+  403 kalau modul default role tidak diberikan ke user** — `/` (root)
+  dulu menampilkan halaman welcome bawaan Laravel yg tidak dibranding
+  (link logo di halaman login mengarah ke situ); diperbaiki jadi
+  redirect ke /login (guest) atau halaman "rumah" sesuai role user
+  (login). Ditemukan while itu: `RoleHomeResolver` (dipakai jalur login
+  & redirect '/') memilih halaman rumah HANYA dari role, tanpa cek apa
+  user itu betulan diberi akses ke modul-nya (mis. akun Outlet yg sengaja
+  cuma dikasih akses modul Monitoring Outlet, bukan modul default role
+  Outlet yaitu SCM Deliveries) — user begini 403 begitu landing, baik
+  lewat '/' MAUPUN langsung setelah login (bug lama, cuma baru kelihatan
+  lewat perubahan '/' di atas). Diperbaiki: tiap kandidat halaman rumah
+  yg digerbang modul (SCM Materials/Deliveries, Purchasing Requisitions)
+  dicek dulu akses modulnya sebelum dipakai; kalau gagal / role tidak
+  cocok sama sekali (mis. role HR/Cost Control yg memang belum py
+  halaman rumah sendiri), jatuh ke /profile (satu2nya halaman yg pasti
+  bisa diakses siapa pun yang berhasil login).
 - **21/08/2026** — **Asset Request: kategori baru, Sub Total/PPH/Diskon/
   Total, field Total per item** — (1) 5 pilihan Kategori/Tujuan direvisi
   jadi Perbaikan & Pemeliharaan Fasilitas / Infrastruktur & Sistem

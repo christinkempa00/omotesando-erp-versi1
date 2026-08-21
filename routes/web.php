@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MaintenanceNoticeController;
 use App\Models\Module;
 use App\Models\SystemModule;
+use App\Support\RoleHomeResolver;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\GA\GaRequestController;
 use App\Http\Controllers\GA\GaQuickRequestController;
@@ -46,8 +47,16 @@ use App\Http\Controllers\Finance\ChartOfAccountController;
 use App\Http\Controllers\Finance\TransactionAccountMappingController;
 use App\Http\Controllers\Finance\FinanceReportController;
 
+// Dulu langsung view('welcome') bawaan Laravel (halaman dev "Let's get
+// started" tidak dibranding) — sekarang diarahkan spt /login yg sudah
+// authenticated (lihat RedirectIfAuthenticated override di
+// AppServiceProvider & RedirectsToRoleHome), supaya link apa pun yg
+// mengarah ke '/' (mis. logo di layouts/guest.blade.php) selalu mendarat
+// di halaman yang benar, bukan halaman default framework.
 Route::get('/', function () {
-    return view('welcome');
+    return auth()->check()
+        ? redirect()->route(RoleHomeResolver::routeNameFor(auth()->user()))
+        : redirect()->route('login');
 });
 
 // Halaman publik read-only untuk QR fisik yang ditempel di aset — tidak butuh
