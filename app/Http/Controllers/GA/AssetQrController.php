@@ -4,7 +4,9 @@ namespace App\Http\Controllers\GA;
 
 use App\Http\Controllers\Controller;
 use App\Models\GA\Asset;
+use App\Models\GA\MaintenanceJob;
 use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Writer\PngWriter;
 use Endroid\QrCode\Writer\SvgWriter;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -16,9 +18,12 @@ class AssetQrController extends Controller
      */
     public function show(Asset $asset): View
     {
+        $asset->load('branch');
+
         return view('ga.assets.qr-label', [
             'asset' => $asset,
             'qrSvg' => $this->qrSvgFor($asset),
+            'qrPngDataUri' => $this->qrPngDataUriFor($asset),
         ]);
     }
 
@@ -30,9 +35,25 @@ class AssetQrController extends Controller
     {
         $asset->load('branch');
 
+        $maintenanceJobs = $asset->maintenanceJobs()
+            ->orderByDesc('scheduled_date')
+            ->orderByDesc('id')
+            ->get();
+
+        $ongoingMaintenance = $maintenanceJobs
+            ->whereIn('status', [MaintenanceJob::STATUS_SCHEDULED, MaintenanceJob::STATUS_IN_PROGRESS]);
+
+        $maintenanceHistory = $maintenanceJobs
+            ->whereIn('status', [MaintenanceJob::STATUS_COMPLETED, MaintenanceJob::STATUS_CANCELLED])
+            ->take(5);
+
         return view('ga.assets.public', [
             'asset' => $asset,
             'statusLabels' => Asset::statusLabels(),
+            'ongoingMaintenance' => $ongoingMaintenance,
+            'maintenanceHistory' => $maintenanceHistory,
+            'maintenanceStatusLabels' => MaintenanceJob::statusLabels(),
+            'maintenanceTypeLabels' => MaintenanceJob::typeLabels(),
         ]);
     }
 
@@ -44,11 +65,12 @@ class AssetQrController extends Controller
     public function bulk(Request $request): View
     {
         if ($request->filled('ids')) {
-            $assets = Asset::whereIn('id', $request->input('ids'))
+            $assets = Asset::with('branch')
+                ->whereIn('id', $request->input('ids'))
                 ->orderBy('asset_code')
                 ->get();
         } else {
-            $query = Asset::query();
+            $query = Asset::with('branch');
 
             if ($status = $request->query('status')) {
                 $query->where('status', $status);
@@ -72,6 +94,7 @@ class AssetQrController extends Controller
         return view('ga.assets.qr-labels', [
             'assets' => $assets,
             'qrSvgs' => $assets->mapWithKeys(fn (Asset $asset) => [$asset->id => $this->qrSvgFor($asset)]),
+            'qrPngDataUris' => $assets->mapWithKeys(fn (Asset $asset) => [$asset->id => $this->qrPngDataUriFor($asset)]),
         ]);
     }
 
@@ -84,5 +107,21 @@ class AssetQrController extends Controller
         );
 
         return $result->getString();
+    }
+
+    /**
+     * QR sebagai PNG data URI — dipakai JS di sisi klien (Canvas) untuk
+     * menyusun gambar label sesuai ukuran fisik yang dipilih user, lalu
+     * diunduh sebagai file .png (bukan cetak/PDF).
+     */
+    private function qrPngDataUriFor(Asset $asset): string
+    {
+        $result = (new Builder(writer: new PngWriter()))->build(
+            data: route('assets.public', $asset),
+            size: 600,
+            margin: 12,
+        );
+
+        return $result->getDataUri();
     }
 }

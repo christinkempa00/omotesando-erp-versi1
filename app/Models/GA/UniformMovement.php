@@ -72,19 +72,31 @@ class UniformMovement extends Model
 
     /**
      * Generate kode movement: MOV-2026-0001, reset per tahun.
+     *
+     * Dihitung dari NOMOR TERBESAR yang sudah dipakai (bukan COUNT baris) —
+     * COUNT rentan macet permanen kalau ada gap di penomoran (mis. satu baris
+     * gagal/dibatalkan di tengah, atau baris lama terhapus): begitu
+     * count()+1 sudah pernah dipakai, count() tidak akan pernah berubah
+     * sendiri, jadi setiap percobaan berikutnya akan terus tabrakan dengan
+     * kode yang sama selamanya. Ambil nomor tertinggi yang benar-benar ada
+     * lalu +1 supaya otomatis lompat dari gap semacam ini.
      */
     public static function generateMovementCode(): string
     {
         return DB::transaction(function () {
             $year = now()->year;
+            $prefix = "MOV-{$year}-";
 
-            $count = static::lockForUpdate()
+            $maxSeq = static::lockForUpdate()
                 ->whereYear('created_at', $year)
-                ->count();
+                ->where('movement_code', 'like', $prefix.'%')
+                ->get(['movement_code'])
+                ->map(fn (self $m) => (int) substr($m->movement_code, strlen($prefix)))
+                ->max() ?? 0;
 
-            $next = $count + 1;
+            $next = $maxSeq + 1;
 
-            return 'MOV-'.$year.'-'.str_pad((string) $next, 4, '0', STR_PAD_LEFT);
+            return $prefix.str_pad((string) $next, 4, '0', STR_PAD_LEFT);
         });
     }
 

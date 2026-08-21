@@ -61,6 +61,6 @@ class DiscrepancyReportController extends Controller
             'report' => $discrepancyReport,
         ])->setPaper('a4', 'portrait');
 
-        return $pdf->download('laporan-selisih-'.$discrepancyReport->id.'.pdf');
+        return $pdf->stream('laporan-selisih-'.$discrepancyReport->id.'.pdf');
     }
 }

@@ -27,6 +27,7 @@ class Module extends Model
     public const UNIFORMS = 'uniforms';
     public const MAINTENANCE = 'maintenance';
     public const WORK_LOG = 'work_log';
+        public const OUTLET_MONITORING = 'outlet_monitoring';
     public const SCM_MATERIALS = 'scm_materials';
     public const SCM_DELIVERIES = 'scm_deliveries';
     public const SCM_REPORTS = 'scm_reports';

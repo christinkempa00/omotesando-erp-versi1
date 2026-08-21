@@ -23,14 +23,20 @@ class StoreUniformStockRequest extends FormRequest
         return [
             'branch_id' => ['required', 'exists:branches,id'],
             'uniform_type' => ['required', 'string', 'max:255'],
-            'color' => ['nullable', 'string', 'max:100'],
-            'status' => ['required', 'in:'.implode(',', array_keys(UniformStock::statusLabels()))],
-            'low_stock_threshold' => ['required', 'integer', 'min:0'],
+            'color' => ['required', 'string', 'max:100'],
+            'low_stock_threshold' => ['nullable', 'integer', 'min:0'],
             'stock_photo' => ['nullable', 'image', 'max:4096'], // max 4MB
 
             'sizes' => ['required', 'array', 'min:1'],
             'sizes.*.name' => ['nullable', 'string', 'max:50'],
             'sizes.*.qty' => ['nullable', 'integer', 'min:0'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'color.required' => 'Warna wajib diisi.',
         ];
     }
 
@@ -40,7 +46,22 @@ class StoreUniformStockRequest extends FormRequest
             $hasStock = collect($this->input('sizes', []))
                 ->contains(fn ($row) => trim((string) ($row['name'] ?? '')) !== '' && (int) ($row['qty'] ?? 0) > 0);
 
-            if (! $hasStock) {
+            if ($hasStock) {
+                return;
+            }
+
+            // Boleh kosongkan semua baris ukuran KALAU varian (kombinasi
+            // tipe+outlet+warna) ini sudah ada — berarti user cuma mau
+            // mengedit metadata (Ambang Low Stock / Foto Varian) lewat form
+            // ini, bukan menambah stok baru. Grup yang benar-benar baru
+            // tetap wajib diisi minimal satu ukuran, tidak ada gunanya
+            // membuat grup kosong tanpa stok sama sekali.
+            $groupExists = UniformStock::where('branch_id', $this->input('branch_id'))
+                ->where('uniform_type', $this->input('uniform_type'))
+                ->where('color', $this->input('color') ?: null)
+                ->exists();
+
+            if (! $groupExists) {
                 $validator->errors()->add('sizes', 'Isi ukuran & jumlah stok untuk minimal satu baris.');
             }
         });

@@ -3,7 +3,6 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
-use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,16 +36,17 @@ class UniformStock extends Model
         'low_stock_threshold' => 'integer',
     ];
 
-    // --- Konstanta kondisi/status (sama kosakata dengan Asset) ---
+    // --- Konstanta kondisi/status. Seragam TIDAK punya status "Dalam
+    // Pemeliharaan" seperti Asset — seragam yang rusak/tidak layak pakai
+    // langsung ditandai Rusak & dipindah ke unusable_stock, bukan "dalam
+    // perbaikan" seperti aset fisik yang butuh servis vendor.
     public const STATUS_BAGUS = 'bagus';
     public const STATUS_RUSAK = 'rusak';
-    public const STATUS_MAINTENANCE = 'dalam_pemeliharaan';
 
     public static function statusLabels(): array
     {
         return [
             self::STATUS_BAGUS => 'Bagus',
-            self::STATUS_MAINTENANCE => 'Dalam Pemeliharaan',
             self::STATUS_RUSAK => 'Rusak',
         ];
     }
@@ -55,7 +55,6 @@ class UniformStock extends Model
     {
         return match ($status) {
             self::STATUS_BAGUS => 'bg-green-100 text-green-700',
-            self::STATUS_MAINTENANCE => 'bg-yellow-100 text-yellow-700',
             self::STATUS_RUSAK => 'bg-red-100 text-red-700',
             default => 'bg-gray-100 text-gray-700',
         };
@@ -93,35 +92,37 @@ class UniformStock extends Model
 
     /**
      * Kode stok: UNI-{OUTLET}-{TIPE}-{UKURAN}-{WARNA}, mis. UNI-CENKIT-VEST-L-HITAM.
+     *
+     * Slug tipe/ukuran/warna membuang semua karakter non-alfanumerik (spasi,
+     * "#", tanda baca, dst) — jadi dua nama yang beda di layar (mis. "Kemeja
+     * Polos #2" vs "Kemeja Polos 2") bisa menghasilkan kode IDENTIK. Supaya
+     * itu tidak pernah bentrok sama kode yang sudah dipakai varian lain
+     * (unique constraint di kolom stock_code), tambahkan suffix -2, -3, dst
+     * sampai kode-nya benar-benar unik. $ignoreId dipakai saat update()
+     * supaya varian tidak dianggap "bentrok" sama dirinya sendiri.
      */
-    public static function generateStockCode(Branch $branch, string $type, ?string $size, ?string $color): string
+    public static function generateStockCode(Branch $branch, string $type, ?string $size, ?string $color, ?int $ignoreId = null): string
     {
         $slug = fn (?string $value) => $value
             ? Str::of($value)->upper()->replaceMatches('/[^A-Z0-9]+/', '')->substr(0, 12)->toString()
             : 'NA';
 
-        return collect(['UNI', $branch->code, $slug($type), $slug($size), $slug($color)])
+        $base = collect(['UNI', $branch->code, $slug($type), $slug($size), $slug($color)])
             ->filter()
             ->join('-');
-    }
 
-    /**
-     * Teks notifikasi Telegram GA (add/edit/delete varian Manajemen Stok
-     * Seragam) — lihat TelegramNotifier & pemanggilnya di
-     * UniformStockController.
-     */
-    public function telegramText(string $action, User $actor): string
-    {
-        $label = [
-            'created' => 'Varian Seragam Baru',
-            'updated' => 'Varian Seragam Diperbarui',
-            'deleted' => 'Varian Seragam Dihapus',
-        ][$action];
+        $code = $base;
+        $suffix = 2;
 
-        return "*{$label}*\n"
-            ."Kode: {$this->stock_code}\n"
-            ."Tipe: {$this->uniform_type} (Size {$this->size})\n"
-            .'Outlet: '.($this->branch?->name ?: '-')."\n"
-            .'Oleh: '.$actor->name;
+        while (
+            static::where('stock_code', $code)
+                ->when($ignoreId, fn (Builder $q) => $q->where('id', '!=', $ignoreId))
+                ->exists()
+        ) {
+            $code = "{$base}-{$suffix}";
+            $suffix++;
+        }
+
+        return $code;
     }
 }

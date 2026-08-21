@@ -89,5 +89,38 @@
                 </main>
             </div>
         </div>
+
+        {{-- Popup "Dalam Pemeliharaan" — muncul di halaman tujuan redirect
+             CheckModuleMaintenance (lihat MaintenanceNoticeController), bukan
+             halaman penuh terpisah lagi. --}}
+        @if (session('maintenanceNotice'))
+            @php $maintenanceNotice = session('maintenanceNotice'); @endphp
+            <div x-data="{ open: true }" x-show="open"
+                 class="fixed inset-0 z-50 flex items-center justify-center bg-ink/50 p-4">
+                <div @click.outside="open = false" class="bg-white rounded-lg shadow-lg max-w-md w-full p-6 text-center">
+                    <div class="mx-auto mb-4 w-16 h-16 rounded-full bg-amber-100 flex items-center justify-center">
+                        <svg class="w-8 h-8 text-amber-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 6.5a4 4 0 0 0-5.6 4.9L4 16.3V20h3.7l4.9-4.9a4 4 0 0 0 4.9-5.6l-2.6 2.6-2-2 2.6-2.6Z" />
+                        </svg>
+                    </div>
+
+                    <h2 class="text-lg font-semibold text-gray-800">Modul Sedang Dalam Pemeliharaan</h2>
+                    <p class="mt-2 text-sm text-gray-500">
+                        Halaman <strong>{{ $maintenanceNotice['name'] }}</strong> sedang tidak dapat diakses karena sedang dalam mode pemeliharaan.
+                    </p>
+
+                    @if ($maintenanceNotice['note'])
+                        <div class="mt-4 rounded-md bg-amber-50 border border-amber-200 p-3 text-sm text-amber-800 text-left">
+                            {{ $maintenanceNotice['note'] }}
+                        </div>
+                    @endif
+
+                    <button @click="open = false" type="button"
+                            class="mt-6 px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">
+                        Tutup
+                    </button>
+                </div>
+            </div>
+        @endif
     </body>
 </html>

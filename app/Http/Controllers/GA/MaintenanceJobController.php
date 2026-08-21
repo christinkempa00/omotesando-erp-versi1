@@ -53,26 +53,25 @@ class MaintenanceJobController extends Controller
             ])->whereDate('scheduled_date', '<', now()->toDateString())->count(),
         ];
 
-        // --- Kalender minggu berjalan (section jadwal visual) ---
-        $weekStart = $request->filled('week')
-            ? Carbon::parse($request->query('week'))->startOfWeek(Carbon::MONDAY)
-            : now()->startOfWeek(Carbon::MONDAY);
-        $weekEnd = $weekStart->copy()->endOfWeek(Carbon::SUNDAY);
+        // --- Kalender mini bulan berjalan (untuk navigasi, indikator hari ada
+        //     jadwal, & klik tanggal utk lihat tiket jadwal hari itu) ---
+        $calendarMonth = $request->filled('month')
+            ? Carbon::parse($request->query('month').'-01')
+            : now()->startOfMonth();
 
-        $weekJobs = MaintenanceJob::with('asset')
-            ->whereBetween('scheduled_date', [$weekStart->toDateString(), $weekEnd->toDateString()])
+        // Rentang grid mini calendar melebar sedikit ke bulan sebelum/sesudah
+        // supaya baris pertama/terakhir tetap 7 kolom penuh (lihat _mini-calendar).
+        $gridStart = $calendarMonth->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY);
+        $gridEnd = $calendarMonth->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY);
+
+        $calendarJobs = MaintenanceJob::with('asset')
+            ->whereBetween('scheduled_date', [$gridStart->toDateString(), $gridEnd->toDateString()])
             ->orderBy('scheduled_time')
             ->get();
 
-        // --- Kalender mini bulan berjalan (untuk navigasi & indikator hari ada jadwal) ---
-        $calendarMonth = $request->filled('month')
-            ? Carbon::parse($request->query('month').'-01')
-            : $weekStart->copy()->startOfMonth();
-
-        $jobDatesInMonth = MaintenanceJob::whereBetween('scheduled_date', [
-            $calendarMonth->copy()->startOfMonth()->toDateString(),
-            $calendarMonth->copy()->endOfMonth()->toDateString(),
-        ])->pluck('scheduled_date')->map(fn ($d) => $d->toDateString())->unique();
+        $jobIdsByDate = $calendarJobs
+            ->groupBy(fn (MaintenanceJob $job) => $job->scheduled_date->toDateString())
+            ->map(fn ($jobs) => $jobs->pluck('id')->values());
 
         // --- Jadwal mendatang (list ringkas, mirip "upcoming appointment") ---
         $upcomingJobs = MaintenanceJob::with('asset')
@@ -91,11 +90,9 @@ class MaintenanceJobController extends Controller
             'selectedStatus' => $status,
             'selectedType' => $type,
             'search' => $search,
-            'weekStart' => $weekStart,
-            'weekEnd' => $weekEnd,
-            'weekJobs' => $weekJobs,
             'calendarMonth' => $calendarMonth,
-            'jobDatesInMonth' => $jobDatesInMonth,
+            'calendarJobs' => $calendarJobs,
+            'jobIdsByDate' => $jobIdsByDate,
             'upcomingJobs' => $upcomingJobs,
         ]);
     }
@@ -104,7 +101,7 @@ class MaintenanceJobController extends Controller
     {
         return view('ga.maintenance.create', [
             'assets' => Asset::orderBy('name')->get(),
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'statusLabels' => MaintenanceJob::statusLabels(),
             'typeLabels' => MaintenanceJob::typeLabels(),
             'priorityLabels' => MaintenanceJob::priorityLabels(),
@@ -151,7 +148,7 @@ class MaintenanceJobController extends Controller
         return view('ga.maintenance.edit', [
             'job' => $maintenance,
             'assets' => Asset::orderBy('name')->get(),
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS, $maintenance->branch?->name),
             'statusLabels' => MaintenanceJob::statusLabels(),
             'typeLabels' => MaintenanceJob::typeLabels(),
             'priorityLabels' => MaintenanceJob::priorityLabels(),

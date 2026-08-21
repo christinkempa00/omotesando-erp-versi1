@@ -41,7 +41,17 @@ class WorkLogController extends Controller
             $query->whereDate('work_date', '<=', $dateTo);
         }
 
-        $workLogs = $query->latest('work_date')->latest('work_time')->paginate(15)->withQueryString();
+        // Diambil sebelum paginate() supaya diagram mengikuti filter yang
+        // sama dengan tabel di bawahnya, tapi tidak ikut ke-paginate.
+        $technicianCounts = (clone $query)
+            ->selectRaw('technician_in_charge, count(*) as total')
+            ->groupBy('technician_in_charge')
+            ->pluck('total', 'technician_in_charge');
+
+        $technicianLabels = collect(WorkLog::technicianOptions())->mapWithKeys(fn ($t) => [$t => $t]);
+        $technicianByCount = $technicianLabels->keys()->mapWithKeys(fn ($t) => [$t => (int) ($technicianCounts[$t] ?? 0)]);
+
+        $workLogs = $query->latest('work_date')->latest('start_time')->paginate(15)->withQueryString();
 
         return view('ga.worklogs.index', [
             'workLogs' => $workLogs,
@@ -52,6 +62,9 @@ class WorkLogController extends Controller
             'search' => $request->query('search'),
             'dateFrom' => $request->query('date_from'),
             'dateTo' => $request->query('date_to'),
+            'technicianLabels' => $technicianLabels,
+            'technicianByCount' => $technicianByCount,
+            'technicianTotal' => $technicianByCount->sum(),
         ]);
     }
 
@@ -60,6 +73,7 @@ class WorkLogController extends Controller
         return view('ga.worklogs.create', [
             'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
             'categoryLabels' => WorkLog::categoryLabels(),
+            'technicianOptions' => WorkLog::technicianOptions(),
         ]);
     }
 
@@ -96,6 +110,7 @@ class WorkLogController extends Controller
             'workLog' => $worklog,
             'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
             'categoryLabels' => WorkLog::categoryLabels(),
+            'technicianOptions' => WorkLog::technicianOptions(),
         ]);
     }
 

@@ -196,17 +196,4 @@ class PurchaseOrder extends Model
         $this->save();
     }
 
-    public function approvalNotificationText(string $decision, ?string $note): string
-    {
-        $text = "*Purchase Order {$decision}*\n";
-        $text .= "No: {$this->po_number}\n";
-        $text .= 'Supplier: '.($this->supplier?->name ?? '-')."\n";
-        $text .= 'Tujuan: '.($this->branch?->name ?? '-');
-
-        if ($note) {
-            $text .= "\nCatatan: {$note}";
-        }
-
-        return $text;
-    }
 }

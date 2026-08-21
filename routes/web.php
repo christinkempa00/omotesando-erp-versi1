@@ -103,19 +103,23 @@ Route::middleware(['auth', 'role:GA,Admin,Finance'])
         // Tahap 5 — Inventaris Seragam
         Route::middleware(['module:'.Module::UNIFORMS, 'module.maintenance:'.SystemModule::GA_UNIFORMS])->group(function () {
             Route::get('uniforms/stocks/export/xlsx', [UniformStockController::class, 'exportExcel'])->name('uniforms.stocks.export.xlsx');
+            Route::get('uniforms/stocks/export/pdf', [UniformStockController::class, 'exportPdf'])->name('uniforms.stocks.export.pdf');
             Route::delete('uniforms/stocks/group', [UniformStockController::class, 'destroyGroup'])->name('uniforms.stocks.destroy-group');
+            Route::get('uniforms/stocks/group', [UniformStockController::class, 'showGroup'])->name('uniforms.stocks.show-group');
+            Route::get('uniforms/stocks/group/edit', [UniformStockController::class, 'editGroup'])->name('uniforms.stocks.edit-group');
+            Route::put('uniforms/stocks/group', [UniformStockController::class, 'updateGroup'])->name('uniforms.stocks.update-group');
             Route::post('uniforms/stocks/{stock}/restock', [UniformStockController::class, 'restock'])->name('uniforms.stocks.restock');
-            Route::post('uniforms/stocks/{stock}/issue', [UniformStockController::class, 'issue'])->name('uniforms.stocks.issue');
-            Route::post('uniforms/stocks/{stock}/adjustment', [UniformStockController::class, 'adjustment'])->name('uniforms.stocks.adjustment');
-            Route::post('uniforms/stocks/{stock}/disposal', [UniformStockController::class, 'disposal'])->name('uniforms.stocks.disposal');
             Route::resource('uniforms/stocks', UniformStockController::class)
                 ->parameters(['stocks' => 'stock'])
                 ->names('uniforms.stocks');
 
             Route::get('uniforms/movements', [UniformMovementController::class, 'index'])->name('uniforms.movements.index');
 
+            Route::get('uniforms/records/export/xlsx', [UniformRecordController::class, 'exportExcel'])->name('uniforms.records.export.xlsx');
+            Route::get('uniforms/records/export/pdf', [UniformRecordController::class, 'exportPdf'])->name('uniforms.records.export.pdf');
             Route::post('uniforms/records/{record}/return', [UniformRecordController::class, 'markReturned'])->name('uniforms.records.return');
             Route::get('uniforms/records/{record}/document', [UniformRecordController::class, 'document'])->name('uniforms.records.document');
+            Route::get('uniforms/records/{record}/return-document', [UniformRecordController::class, 'returnDocument'])->name('uniforms.records.return-document');
             Route::resource('uniforms/records', UniformRecordController::class)
                 ->parameters(['records' => 'record'])
                 ->names('uniforms.records');
@@ -216,6 +220,8 @@ Route::middleware(['auth', 'role:Produksi,Gudang,Outlet,Admin'])
         });
 
         Route::middleware(['module:'.Module::SCM_MATERIALS, 'module.maintenance:'.SystemModule::SCM_BATCHES])->group(function () {
+            Route::get('batches/export/xlsx', [ProductionBatchController::class, 'exportExcel'])->name('batches.export.xlsx');
+            Route::get('batches/export/pdf', [ProductionBatchController::class, 'exportPdf'])->name('batches.export.pdf');
             Route::get('batches', [ProductionBatchController::class, 'index'])->name('batches.index');
             Route::get('batches/create', [ProductionBatchController::class, 'create'])->name('batches.create');
             Route::post('batches', [ProductionBatchController::class, 'store'])->name('batches.store');
@@ -261,10 +267,14 @@ Route::middleware(['auth', 'role:Produksi,Gudang,Outlet,Admin'])
         // discrepancies/stock-value yang Admin-only.
         Route::middleware(['module:'.Module::SCM_NEAR_EXPIRY, 'module.maintenance:'.SystemModule::SCM_NEAR_EXPIRY])->group(function () {
             Route::get('reports/near-expiry', [ScmReportController::class, 'nearExpiry'])->name('reports.near-expiry');
+            Route::get('reports/near-expiry/export/xlsx', [ScmReportController::class, 'nearExpiryExportExcel'])->name('reports.near-expiry.export.xlsx');
+            Route::get('reports/near-expiry/export/pdf', [ScmReportController::class, 'nearExpiryExportPdf'])->name('reports.near-expiry.export.pdf');
         });
 
         Route::middleware(['module:'.Module::SCM_REPORTS, 'module.maintenance:'.SystemModule::SCM_STOCK_VALUE])->group(function () {
             Route::get('reports/stock-value', [ScmReportController::class, 'stockValue'])->name('reports.stock-value');
+            Route::get('reports/stock-value/export/xlsx', [ScmReportController::class, 'stockValueExportExcel'])->name('reports.stock-value.export.xlsx');
+            Route::get('reports/stock-value/export/pdf', [ScmReportController::class, 'stockValueExportPdf'])->name('reports.stock-value.export.pdf');
         });
     });
 

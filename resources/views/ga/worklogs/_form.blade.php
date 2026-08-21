@@ -13,11 +13,33 @@
                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Pengerjaan *</label>
-                <input type="time" name="work_time" required
-                       value="{{ old('work_time', $workLog?->work_time ? substr($workLog->work_time, 0, 5) : '') }}"
-                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <div x-data="{
+                    start: '{{ old('start_time', $workLog?->start_time ? substr($workLog->start_time, 0, 5) : '') }}',
+                    end: '{{ old('end_time', $workLog?->end_time ? substr($workLog->end_time, 0, 5) : '') }}',
+                    get duration() {
+                        if (! this.start || ! this.end) return '';
+                        const [sh, sm] = this.start.split(':').map(Number);
+                        const [eh, em] = this.end.split(':').map(Number);
+                        const mins = (eh * 60 + em) - (sh * 60 + sm);
+                        if (mins <= 0) return '';
+                        const h = Math.floor(mins / 60), m = mins % 60;
+                        if (h > 0 && m > 0) return h + ' jam ' + m + ' menit';
+                        if (h > 0) return h + ' jam';
+                        return m + ' menit';
+                    }
+                 }" class="contents">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Mulai *</label>
+                    <input type="time" name="start_time" required x-model="start"
+                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                </div>
+
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Berakhir *</label>
+                    <input type="time" name="end_time" required x-model="end"
+                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <p class="text-xs text-gray-500 mt-1" x-show="duration" x-text="'Durasi: ' + duration"></p>
+                </div>
             </div>
 
             <div>
@@ -44,9 +66,15 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Teknisi in Charge *</label>
-                <input type="text" name="technician_in_charge" required placeholder="Nama teknisi penanggung jawab"
-                       value="{{ old('technician_in_charge', $workLog->technician_in_charge ?? '') }}"
-                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <select name="technician_in_charge" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">-- Pilih Teknisi --</option>
+                    @foreach ($technicianOptions as $option)
+                        <option value="{{ $option }}" @selected(old('technician_in_charge', $workLog->technician_in_charge ?? '') === $option)>{{ $option }}</option>
+                    @endforeach
+                    @if ($workLog?->technician_in_charge && ! in_array($workLog->technician_in_charge, $technicianOptions, true))
+                        <option value="{{ $workLog->technician_in_charge }}" @selected(old('technician_in_charge') === null)>{{ $workLog->technician_in_charge }} (data lama)</option>
+                    @endif
+                </select>
             </div>
 
             <div>

@@ -102,6 +102,25 @@
                 </tr>
             @endforeach
             <tr>
+                <td colspan="6" class="text-right">Sub Total</td>
+                <td class="text-right">Rp {{ number_format((float) $gaRequest->subtotal_amount, 0, ',', '.') }}</td>
+                <td></td>
+            </tr>
+            @if ($gaRequest->discount_percent)
+                <tr>
+                    <td colspan="6" class="text-right">Diskon ({{ \App\Models\GA\GaRequest::formatPercent($gaRequest->discount_percent) }}%)</td>
+                    <td class="text-right">- Rp {{ number_format($gaRequest->discountAmount(), 0, ',', '.') }}</td>
+                    <td></td>
+                </tr>
+            @endif
+            @if ($gaRequest->pph_percent)
+                <tr>
+                    <td colspan="6" class="text-right">PPH ({{ \App\Models\GA\GaRequest::formatPercent($gaRequest->pph_percent) }}%)</td>
+                    <td class="text-right">- Rp {{ number_format($gaRequest->pphAmount(), 0, ',', '.') }}</td>
+                    <td></td>
+                </tr>
+            @endif
+            <tr>
                 <td colspan="6" class="text-right"><strong>TOTAL</strong></td>
                 <td class="text-right"><strong>Rp {{ number_format((float) $gaRequest->total_amount, 0, ',', '.') }}</strong></td>
                 <td></td>
@@ -133,7 +152,7 @@
 
     <div class="signatures">
         <div class="col">
-            <div class="label" @if ($requesterSignatureSrc) style="margin-bottom: 4px;" @endif>Diajukan oleh</div>
+            <div class="label" @if ($requesterSignatureSrc) style="margin-bottom: 4px;" @endif>Pemohon</div>
             @if ($requesterSignatureSrc)
                 <img src="{{ $requesterSignatureSrc }}" class="signature-img">
             @endif

@@ -7,10 +7,15 @@ use App\Http\Requests\SCM\StoreProductionBatchRequest;
 use App\Models\Role;
 use App\Models\SCM\MaterialRequest;
 use App\Models\SCM\ProductionBatch;
+use Barryvdh\DomPDF\Facade\Pdf;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Batch Produksi — dibuat Produksi dari MaterialRequest yang sudah approved,
@@ -25,6 +30,78 @@ class ProductionBatchController extends Controller
 
         abort_unless($user->hasRole(Role::PRODUKSI, Role::GUDANG, Role::ADMIN), 403);
 
+        $batches = $this->filteredQuery($request)->latest()->paginate(15)->withQueryString();
+
+        return view('scm.batches.index', [
+            'batches' => $batches,
+            'statusLabels' => ProductionBatch::statusLabels(),
+            'selectedStatus' => $request->query('status'),
+        ]);
+    }
+
+    public function exportExcel(Request $request): StreamedResponse
+    {
+        abort_unless($request->user()->hasRole(Role::PRODUKSI, Role::GUDANG, Role::ADMIN), 403);
+
+        $batches = $this->filteredQuery($request)->latest()->get();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Batch Produksi');
+
+        $header = ['Nomor Batch', 'Dari Pengajuan', 'Dibuat Oleh', 'Status', 'Tanggal'];
+        $sheet->fromArray($header, null, 'A1');
+        $sheet->getStyle('A1:E1')->getFont()->setBold(true);
+
+        $statusLabels = ProductionBatch::statusLabels();
+        $row = 2;
+        foreach ($batches as $batch) {
+            $sheet->fromArray([
+                $batch->batch_number,
+                $batch->materialRequest?->request_number ?? '-',
+                $batch->producedBy?->name ?? '-',
+                $statusLabels[$batch->status] ?? $batch->status,
+                $batch->created_at->format('d/m/Y'),
+            ], null, "A{$row}");
+            $row++;
+        }
+
+        foreach (range('A', 'E') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'batch-produksi-'.now()->format('Ymd-His').'.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    public function exportPdf(Request $request)
+    {
+        abort_unless($request->user()->hasRole(Role::PRODUKSI, Role::GUDANG, Role::ADMIN), 403);
+
+        $batches = $this->filteredQuery($request)->latest()->get();
+
+        $pdf = Pdf::loadView('scm.batches.export-pdf', [
+            'batches' => $batches,
+            'statusLabels' => ProductionBatch::statusLabels(),
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream('batch-produksi-'.now()->format('Ymd-His').'.pdf');
+    }
+
+    /**
+     * Query dasar yang dipakai bersama oleh index() dan kedua export — supaya
+     * hasil export selalu konsisten dengan scope akses & filter yang aktif.
+     */
+    private function filteredQuery(Request $request): Builder
+    {
+        $user = $request->user();
+
         $query = ProductionBatch::with(['materialRequest', 'producedBy', 'items.labels']);
 
         // Gudang butuh lihat SEMUA batch yang sudah approved (utk cetak
@@ -38,13 +115,7 @@ class ProductionBatchController extends Controller
             $query->where('status', $status);
         }
 
-        $batches = $query->latest()->paginate(15)->withQueryString();
-
-        return view('scm.batches.index', [
-            'batches' => $batches,
-            'statusLabels' => ProductionBatch::statusLabels(),
-            'selectedStatus' => $status,
-        ]);
+        return $query;
     }
 
     public function create(Request $request): View

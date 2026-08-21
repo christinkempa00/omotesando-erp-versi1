@@ -6,19 +6,19 @@
             </h2>
             <a href="{{ route('ga.maintenance.create') }}"
                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                + Jadwalkan
+                + Pemeliharaan
             </a>
         </div>
     </x-slot>
 
     @php
-        $jobsData = $weekJobs->mapWithKeys(function ($job) use ($statusLabels) {
+        $jobsData = $calendarJobs->mapWithKeys(function ($job) use ($statusLabels) {
             return [$job->id => [
                 'code' => $job->job_code,
                 'title' => $job->title,
                 'type' => \App\Models\GA\MaintenanceJob::typeLabels()[$job->type] ?? $job->type,
                 'asset' => $job->asset?->name,
-                'date' => optional($job->scheduled_date)->translatedFormat('d M Y'),
+                'date' => $job->scheduled_date?->translatedFormat('d M Y'),
                 'time' => $job->scheduled_time ? \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5)->toString() : null,
                 'priority' => \App\Models\GA\MaintenanceJob::priorityLabels()[$job->priority] ?? $job->priority,
                 'priorityColor' => \App\Models\GA\MaintenanceJob::priorityBadgeColor($job->priority),
@@ -37,7 +37,26 @@
         });
     @endphp
 
-    <div class="py-8" x-data="{ selectedJob: null, jobsData: {{ Illuminate\Support\Js::from($jobsData) }} }">
+    <div class="py-8"
+         x-data="{
+            selectedJob: null,
+            pickingDate: null,
+            pickingJobs: [],
+            jobsData: {{ Illuminate\Support\Js::from($jobsData) }},
+            onDateClick(dateStr, jobIds) {
+                if (jobIds.length === 0) return;
+                if (jobIds.length === 1) {
+                    this.selectedJob = this.jobsData[jobIds[0]];
+                    return;
+                }
+                this.pickingDate = dateStr;
+                this.pickingJobs = jobIds.map(id => this.jobsData[id]);
+            },
+            pickJob(job) {
+                this.pickingDate = null;
+                this.selectedJob = job;
+            }
+         }">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
@@ -158,41 +177,64 @@
                 </div>
             </div>
 
-            {{-- Section kalender: kalender mini + jadwal mendatang di kiri, kalender minggu di kanan --}}
-            <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                <div class="lg:col-span-1 space-y-6">
-                    @include('ga.maintenance._mini-calendar')
+            {{-- Preview daftar jadwal: muncul saat tanggal dgn >1 jadwal diklik di kalender mini --}}
+            <div x-show="pickingDate" x-cloak style="display:none;"
+                 class="fixed inset-0 z-50 flex items-center justify-center p-4">
+                <div class="fixed inset-0 bg-gray-900/50" @click="pickingDate = null"></div>
 
-                    <div class="bg-white shadow-sm rounded-lg p-4">
-                        <h3 class="text-sm font-semibold text-gray-700 mb-3">Jadwal Mendatang</h3>
-                        <div class="space-y-3">
-                            @forelse ($upcomingJobs as $job)
-                                <a href="{{ route('ga.maintenance.show', $job) }}" class="flex items-start gap-3 group">
-                                    <div class="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xs font-semibold shrink-0">
-                                        {{ optional($job->scheduled_date)->format('d') }}
-                                    </div>
-                                    <div class="min-w-0">
-                                        <p class="text-sm font-medium text-gray-800 truncate group-hover:text-indigo-600">{{ $job->title }}</p>
-                                        <p class="text-xs text-gray-500">
-                                            {{ optional($job->scheduled_date)->translatedFormat('d M') }}
-                                            @if ($job->scheduled_time)
-                                                · {{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}
-                                            @endif
-                                        </p>
-                                    </div>
-                                </a>
-                            @empty
-                                <p class="text-sm text-gray-400">Tidak ada jadwal mendatang.</p>
-                            @endforelse
-                        </div>
-                        <a href="#daftar-pemeliharaan" class="mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-800">
-                            Lihat semua &rarr;
-                        </a>
+                <div class="relative bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
+                    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
+                        <h3 class="text-sm font-semibold text-gray-800" x-text="pickingDate"></h3>
+                        <button type="button" @click="pickingDate = null" class="text-gray-400 hover:text-gray-600">
+                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M6 6l12 12M18 6 6 18" />
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                        <template x-for="job in pickingJobs" :key="job.code">
+                            <button type="button" @click="pickJob(job)" class="w-full text-left px-5 py-3 hover:bg-gray-50">
+                                <div class="flex items-center justify-between gap-2">
+                                    <p class="text-sm font-medium text-gray-800 truncate" x-text="job.title"></p>
+                                    <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium shrink-0" :class="job.statusColor" x-text="job.status"></span>
+                                </div>
+                                <p class="text-xs text-gray-400 mt-0.5" x-text="(job.asset || '-') + (job.time ? ' · ' + job.time : '')"></p>
+                            </button>
+                        </template>
                     </div>
                 </div>
+            </div>
 
-                <div class="lg:col-span-3">
-                    @include('ga.maintenance._week-calendar')
+            {{-- Kalender mini + jadwal mendatang — sengaja dijaga ringkas, tanpa
+                 kalender minggu bergrid jam supaya tidak over-design. --}}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @include('ga.maintenance._mini-calendar')
+
+                <div class="bg-white shadow-sm rounded-lg p-4">
+                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Jadwal Mendatang</h3>
+                    <div class="space-y-3">
+                        @forelse ($upcomingJobs as $job)
+                            <a href="{{ route('ga.maintenance.show', $job) }}" class="flex items-start gap-3 group">
+                                <div class="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xs font-semibold shrink-0">
+                                    {{ optional($job->scheduled_date)->format('d') }}
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-sm font-medium text-gray-800 truncate group-hover:text-indigo-600">{{ $job->title }}</p>
+                                    <p class="text-xs text-gray-500">
+                                        {{ $job->scheduled_date?->translatedFormat('d M') }}
+                                        @if ($job->scheduled_time)
+                                            · {{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}
+                                        @endif
+                                    </p>
+                                </div>
+                            </a>
+                        @empty
+                            <p class="text-sm text-gray-400">Tidak ada jadwal mendatang.</p>
+                        @endforelse
+                    </div>
+                    <a href="#daftar-pemeliharaan" class="mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-800">
+                        Lihat Semua &rarr;
+                    </a>
                 </div>
             </div>
 
@@ -219,7 +261,7 @@
                         </thead>
                         <tbody class="divide-y divide-gray-100">
                             @forelse ($jobs as $job)
-                                <tr class="hover:bg-gray-50">
+                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.maintenance.show', $job) }}'">
                                     <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ $job->job_code }}</td>
                                     <td class="px-4 py-3">
                                         <div class="font-medium text-gray-800">{{ $job->title }}</div>
@@ -247,9 +289,8 @@
                                             {{ $statusLabels[$job->status] ?? $job->status }}
                                         </span>
                                     </td>
-                                    <td class="px-4 py-3 text-right">
+                                    <td class="px-4 py-3 text-right" onclick="event.stopPropagation()">
                                         <div class="flex items-center justify-end gap-3">
-                                            <a href="{{ route('ga.maintenance.show', $job) }}" class="text-indigo-600 hover:text-indigo-800">Detail</a>
                                             <form method="POST" action="{{ route('ga.maintenance.destroy', $job) }}"
                                                   onsubmit="return confirm('Hapus pekerjaan {{ $job->job_code }}?')">
                                                 @csrf

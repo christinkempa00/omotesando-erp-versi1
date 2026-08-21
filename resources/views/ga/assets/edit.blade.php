@@ -22,12 +22,7 @@
             <form method="POST" action="{{ route('ga.assets.update', $asset) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
-                @include('ga.assets._form')
-
-                <div class="flex justify-end gap-3 mt-6">
-                    <a href="{{ route('ga.assets.show', $asset) }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan Perubahan</button>
-                </div>
+                @include('ga.assets._form', ['submitLabel' => 'Simpan Perubahan', 'cancelUrl' => route('ga.assets.show', $asset)])
             </form>
         </div>
     </div>

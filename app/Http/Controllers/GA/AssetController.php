@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreAssetRequest;
 use App\Models\Branch;
 use App\Models\GA\Asset;
-use App\Services\TelegramNotifier;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,7 +26,7 @@ class AssetController extends Controller
         return view('ga.assets.index', [
             'assets' => $assets,
             'statusLabels' => Asset::statusLabels(),
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'selectedStatus' => $request->query('status'),
             'selectedBranch' => $request->query('branch_id'),
             'search' => $request->query('search'),
@@ -40,7 +39,7 @@ class AssetController extends Controller
     {
         return view('ga.assets.create', [
             'statusLabels' => Asset::statusLabels(),
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
         ]);
     }
 
@@ -62,8 +61,6 @@ class AssetController extends Controller
 
         $asset->save();
 
-        app(TelegramNotifier::class)->sendMessage($asset->telegramText('created', $request->user()));
-
         return redirect()
             ->route('ga.assets.show', $asset)
             ->with('success', "Aset {$asset->asset_code} berhasil ditambahkan.");
@@ -84,7 +81,7 @@ class AssetController extends Controller
         return view('ga.assets.edit', [
             'asset' => $asset,
             'statusLabels' => Asset::statusLabels(),
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS, $asset->branch?->name),
         ]);
     }
 
@@ -110,8 +107,6 @@ class AssetController extends Controller
 
         $asset->save();
 
-        app(TelegramNotifier::class)->sendMessage($asset->telegramText('updated', $request->user()));
-
         return redirect()
             ->route('ga.assets.show', $asset)
             ->with('success', "Aset {$asset->asset_code} berhasil diperbarui.");
@@ -119,8 +114,6 @@ class AssetController extends Controller
 
     public function destroy(Request $request, Asset $asset): RedirectResponse
     {
-        app(TelegramNotifier::class)->sendMessage($asset->telegramText('deleted', $request->user()));
-
         if ($asset->image_path) {
             Storage::disk('public')->delete($asset->image_path);
         }
@@ -143,7 +136,7 @@ class AssetController extends Controller
         $sheet = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Inventaris Aset');
 
-        $header = ['ID Aset', 'Nama Aset', 'Merk', 'Outlet', 'Lokasi', 'Tanggal Beli', 'Kondisi', 'Penanggung Jawab', 'Jumlah'];
+        $header = ['ID Aset', 'Nama Aset', 'Merk', 'Outlet', 'Lokasi', 'Tanggal Beli', 'Status', 'Penanggung Jawab', 'Jumlah'];
         $sheet->fromArray($header, null, 'A1');
         $sheet->getStyle('A1:I1')->getFont()->setBold(true);
 
@@ -189,7 +182,7 @@ class AssetController extends Controller
             'dateTo' => $request->query('date_to'),
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download('inventaris-aset-'.now()->format('Ymd-His').'.pdf');
+        return $pdf->stream('inventaris-aset-'.now()->format('Ymd-His').'.pdf');
     }
 
     /**

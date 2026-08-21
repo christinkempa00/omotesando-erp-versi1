@@ -23,41 +23,62 @@
             @endif
 
             {{-- Filter --}}
-            <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index')">
-                <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <option value="">Semua Outlet</option>
-                        @foreach ($branches as $branch)
-                            <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
-                        @endforeach
-                    </select>
+            <div class="flex items-center gap-2">
+                <div class="flex-1 min-w-0">
+                    <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index')">
+                        <div>
+                            <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
+                            <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">Semua Outlet</option>
+                                @foreach ($branches as $branch)
+                                    <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+
+                        <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
+
+                        <div>
+                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Tanggal Beli</p>
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="date" name="date_from" value="{{ $dateFrom }}" placeholder="Dari"
+                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <input type="date" name="date_to" value="{{ $dateTo }}" placeholder="Sampai"
+                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                        </div>
+                    </x-filter-bar>
                 </div>
 
-                <x-filter-pills name="status" label="Kondisi" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Kondisi" />
+                <button type="button" id="qr-select-toggle" class="shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                    Pilih Aset
+                </button>
+            </div>
 
-                <div>
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Tanggal Beli</p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <input type="date" name="date_from" value="{{ $dateFrom }}" placeholder="Dari"
-                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <input type="date" name="date_to" value="{{ $dateTo }}" placeholder="Sampai"
-                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                    </div>
-                </div>
-            </x-filter-bar>
-
+            {{-- Catatan: sengaja BUKAN <form>, supaya tidak nested dengan <form> hapus
+                 per-baris di dalam tabel (nested <form> invalid di HTML dan akan merusak
+                 submit). Checkbox terpilih dikumpulkan lalu di-navigate via JS. --}}
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+                <div id="qr-select-bar" style="display:none" class="items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
+                    <span id="qr-select-count" class="text-xs text-gray-500">Belum ada aset dipilih</span>
+                    <button type="button" id="qr-select-submit" disabled
+                            class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                        Unduh QR Terpilih
+                    </button>
+                </div>
                 <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
                         <tr>
+                            <th class="qr-select-col px-4 py-3" style="display:none">
+                                <input type="checkbox" id="qr-select-all" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                            </th>
                             <th class="px-4 py-3"></th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Aset</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Aset &amp; Merk</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Outlet &amp; Lokasi</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Beli</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kondisi</th>
+                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penanggung Jawab</th>
                             <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
                         </tr>
@@ -65,6 +86,9 @@
                     <tbody class="bg-white divide-y divide-gray-200">
                         @forelse ($assets as $asset)
                             <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.assets.show', $asset) }}'">
+                                <td class="qr-select-col px-4 py-3" style="display:none" onclick="event.stopPropagation()">
+                                    <input type="checkbox" value="{{ $asset->id }}" class="qr-select-row rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                </td>
                                 <td class="px-4 py-3">
                                     @if ($asset->image_path)
                                         <img src="{{ Storage::url($asset->image_path) }}" class="w-10 h-10 rounded object-cover">
@@ -119,7 +143,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada aset.</td>
+                                <td colspan="9" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada aset.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -142,4 +166,58 @@
             </div>
         </div>
     </div>
+
+    <script>
+        (function () {
+            const rowCheckboxes = Array.from(document.querySelectorAll('.qr-select-row'));
+            const selectAll = document.getElementById('qr-select-all');
+            const countLabel = document.getElementById('qr-select-count');
+            const submitBtn = document.getElementById('qr-select-submit');
+            const selectBar = document.getElementById('qr-select-bar');
+            const selectCols = Array.from(document.querySelectorAll('.qr-select-col'));
+            const toggleBtn = document.getElementById('qr-select-toggle');
+            const bulkQrUrl = {!! json_encode(route('ga.assets.qr-labels')) !!};
+
+            let selectMode = false;
+
+            function setSelectMode(on) {
+                selectMode = on;
+                selectBar.style.display = on ? 'flex' : 'none';
+                selectCols.forEach(el => { el.style.display = on ? 'table-cell' : 'none'; });
+                toggleBtn.textContent = on ? 'Batal Pilih' : 'Pilih Aset';
+                if (!on) {
+                    rowCheckboxes.forEach(cb => { cb.checked = false; });
+                    updateState();
+                }
+            }
+
+            toggleBtn.addEventListener('click', () => setSelectMode(!selectMode));
+
+            function updateState() {
+                const checked = rowCheckboxes.filter(cb => cb.checked);
+                countLabel.textContent = checked.length > 0
+                    ? checked.length + ' aset dipilih'
+                    : 'Belum ada aset dipilih';
+                submitBtn.disabled = checked.length === 0;
+                selectAll.checked = checked.length > 0 && checked.length === rowCheckboxes.length;
+                selectAll.indeterminate = checked.length > 0 && checked.length < rowCheckboxes.length;
+            }
+
+            selectAll.addEventListener('change', () => {
+                rowCheckboxes.forEach(cb => { cb.checked = selectAll.checked; });
+                updateState();
+            });
+
+            rowCheckboxes.forEach(cb => cb.addEventListener('change', updateState));
+
+            submitBtn.addEventListener('click', () => {
+                const ids = rowCheckboxes.filter(cb => cb.checked).map(cb => cb.value);
+                if (ids.length === 0) return;
+                const params = ids.map(id => 'ids[]=' + encodeURIComponent(id)).join('&');
+                window.location = bulkQrUrl + '?' + params;
+            });
+
+            updateState();
+        })();
+    </script>
 </x-app-layout>

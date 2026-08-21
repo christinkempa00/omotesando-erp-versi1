@@ -13,7 +13,7 @@
 >
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-            <h3 class="text-sm font-semibold text-gray-700 mb-1">Role *</h3>
+            <h3 class="text-sm font-semibold text-gray-700 mb-1">Role <span class="text-red-500">*</span></h3>
             <p class="text-xs text-gray-400 mb-3">
                 Dipakai untuk approval (tidak berubah). Memilih role akan menyarankan modul default di sebelah kanan.
             </p>
@@ -23,7 +23,7 @@
                         <input type="checkbox" name="roles[]" value="{{ $role->id }}"
                                :checked="roles.includes('{{ $role->id }}')"
                                @change="toggleRole('{{ $role->id }}')"
-                               class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                               class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                         {{ $role->name }}
                     </label>
                 @endforeach
@@ -31,7 +31,7 @@
         </div>
 
         <div>
-            <h3 class="text-sm font-semibold text-gray-700 mb-1">Akses Modul *</h3>
+            <h3 class="text-sm font-semibold text-gray-700 mb-1">Akses Modul <span class="text-red-500">*</span></h3>
             <p class="text-xs text-gray-400 mb-3">
                 Ini yang menentukan menu/halaman yang muncul untuk user ini — bebas diubah, tidak harus ikut role.
             </p>
@@ -41,7 +41,7 @@
                         <input type="checkbox" name="modules[]" value="{{ $module->id }}"
                                :checked="modules.includes('{{ $module->id }}')"
                                @change="toggleModule('{{ $module->id }}')"
-                               class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                               class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                         {{ $module->label }}
                     </label>
                 @endforeach

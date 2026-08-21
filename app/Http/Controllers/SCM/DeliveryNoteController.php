@@ -251,7 +251,7 @@ class DeliveryNoteController extends Controller
 
         $filename = 'SJ-'.str_replace('/', '-', $deliveryNote->delivery_code).'.pdf';
 
-        return $pdf->download($filename);
+        return $pdf->stream($filename);
     }
 
     private function qrSvgFor(string $deliveryCode): string

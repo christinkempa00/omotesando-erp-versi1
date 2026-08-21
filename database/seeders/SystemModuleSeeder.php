@@ -20,6 +20,7 @@ class SystemModuleSeeder extends Seeder
             ['key' => SystemModule::GA_UNIFORMS, 'name' => 'Inventaris Seragam'],
             ['key' => SystemModule::GA_MAINTENANCE, 'name' => 'Jadwal Pemeliharaan'],
             ['key' => SystemModule::GA_WORKLOG, 'name' => 'Work Log'],
+            ['key' => SystemModule::GA_OUTLET_MONITORING, 'name' => 'Monitoring Outlet'],
             ['key' => SystemModule::HEAD_DASHBOARD, 'name' => 'Dashboard Head'],
             ['key' => SystemModule::HEAD_REQUESTS, 'name' => 'Semua Pengajuan (Head)'],
             ['key' => SystemModule::HEAD_APPROVALS, 'name' => 'Approval Inbox (Head)'],

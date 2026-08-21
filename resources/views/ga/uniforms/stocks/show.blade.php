@@ -66,7 +66,7 @@
             </div>
 
             {{-- Aksi cepat --}}
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="max-w-sm">
                 <div class="bg-white shadow-sm rounded-lg p-5">
                     <h3 class="text-sm font-semibold text-gray-700 mb-3">Restock (+)</h3>
                     <form method="POST" action="{{ route('ga.uniforms.stocks.restock', $stock) }}" class="space-y-2">
@@ -77,48 +77,6 @@
                                class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
                         <button type="submit" class="w-full px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                             Tambah Stok
-                        </button>
-                    </form>
-                </div>
-
-                <div class="bg-white shadow-sm rounded-lg p-5">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Issue (−)</h3>
-                    <form method="POST" action="{{ route('ga.uniforms.stocks.issue', $stock) }}" class="space-y-2">
-                        @csrf
-                        <input type="number" name="quantity" min="1" max="{{ $stock->available_stock }}" required placeholder="Jumlah"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <input type="text" name="notes" placeholder="Catatan (opsional)"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <button type="submit" class="w-full px-3 py-2 bg-orange-600 text-white text-sm font-medium rounded-md hover:bg-orange-700">
-                            Keluarkan Stok
-                        </button>
-                    </form>
-                </div>
-
-                <div class="bg-white shadow-sm rounded-lg p-5">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Adjustment</h3>
-                    <form method="POST" action="{{ route('ga.uniforms.stocks.adjustment', $stock) }}" class="space-y-2">
-                        @csrf
-                        <input type="number" name="quantity" required placeholder="mis. 5 atau -3"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <input type="text" name="notes" placeholder="Alasan penyesuaian"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <button type="submit" class="w-full px-3 py-2 bg-slate-600 text-white text-sm font-medium rounded-md hover:bg-slate-700">
-                            Sesuaikan Stok Tersedia
-                        </button>
-                    </form>
-                </div>
-
-                <div class="bg-white shadow-sm rounded-lg p-5">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Disposal</h3>
-                    <form method="POST" action="{{ route('ga.uniforms.stocks.disposal', $stock) }}" class="space-y-2">
-                        @csrf
-                        <input type="number" name="quantity" min="1" max="{{ $stock->unusable_stock }}" required placeholder="Jumlah dari stok rusak"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <input type="text" name="notes" placeholder="Catatan (opsional)"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <button type="submit" class="w-full px-3 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700">
-                            Buang dari Stok Rusak
                         </button>
                     </form>
                 </div>

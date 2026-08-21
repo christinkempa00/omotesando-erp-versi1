@@ -134,16 +134,4 @@ class PurchaseRequisition extends Model
         $this->save();
     }
 
-    public function approvalNotificationText(string $decision, ?string $note): string
-    {
-        $text = "*Purchase Requisition {$decision}*\n";
-        $text .= "No: {$this->requisition_number}\n";
-        $text .= 'Outlet: '.($this->branch?->name ?? '-');
-
-        if ($note) {
-            $text .= "\nCatatan: {$note}";
-        }
-
-        return $text;
-    }
 }

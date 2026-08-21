@@ -19,20 +19,31 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('ga.uniforms.stocks.store') }}" enctype="multipart/form-data">
+                <form method="POST" action="{{ route('ga.uniforms.stocks.store') }}" enctype="multipart/form-data"
+                      x-data="{
+                          uniformType: {{ Illuminate\Support\Js::from(old('uniform_type', $prefill['uniform_type'] ?? '')) }},
+                          branchId: {{ Illuminate\Support\Js::from((string) old('branch_id', $prefill['branch_id'] ?? '')) }},
+                          typesByBranch: {{ Illuminate\Support\Js::from($typesByBranch) }},
+                          get isDuplicateType() {
+                              if (! this.uniformType || ! this.branchId) return false;
+                              const typed = this.uniformType.trim().toLowerCase();
+                              const list = this.typesByBranch[this.branchId] || [];
+                              return list.some(t => t.trim().toLowerCase() === typed);
+                          }
+                      }">
                     @csrf
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Seragam *</label>
-                            <input type="text" name="uniform_type" required value="{{ old('uniform_type', $prefill['uniform_type']) }}"
+                            <input type="text" name="uniform_type" required x-model="uniformType"
                                    placeholder="mis. Vest, Kemeja, Celana"
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-                            <select name="branch_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select name="branch_id" required @change="branchId = $event.target.value" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">-- Pilih Outlet --</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}" @selected(old('branch_id', $prefill['branch_id']) == $branch->id)>{{ $branch->name }}</option>
@@ -41,18 +52,9 @@
                         </div>
 
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Warna</label>
-                            <input type="text" name="color" value="{{ old('color', $prefill['color']) }}"
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Warna *</label>
+                            <input type="text" name="color" required value="{{ old('color', $prefill['color']) }}"
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
-
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Kondisi *</label>
-                            <select name="status" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                @foreach ($statusLabels as $value => $label)
-                                    <option value="{{ $value }}" @selected(old('status', 'bagus') === $value)>{{ $label }}</option>
-                                @endforeach
-                            </select>
                         </div>
 
                         <div>
@@ -64,10 +66,38 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Foto Varian</label>
+                            @if ($currentPhotoPath)
+                                <div class="flex items-center gap-3 mb-2">
+                                    <img src="{{ Storage::url($currentPhotoPath) }}" class="w-14 h-14 rounded-md object-cover border border-gray-200">
+                                    <p class="text-xs text-gray-400">Foto saat ini. Pilih file baru di bawah untuk menggantinya.</p>
+                                </div>
+                            @endif
                             <input type="file" name="stock_photo" accept="image/*"
                                    class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                         </div>
                     </div>
+
+                    @if ($existingStock->isEmpty())
+                        <div class="mt-3 flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700"
+                             x-show="isDuplicateType" x-cloak>
+                            <span><strong>Info (bukan error, form tetap bisa disimpan):</strong> nama "<span x-text="uniformType" class="font-semibold"></span>" sudah dipakai di outlet ini. Kalau memang mau menambah varian baru, cek dulu apakah maksudnya menambah ukuran ke varian yang sudah ada (pakai ikon + pada kartu varian tersebut di halaman daftar) — kalau bukan, ganti nama Tipe Seragam supaya tidak tertukar dengan varian lain.</span>
+                        </div>
+                    @endif
+
+                    @if ($existingStock->isNotEmpty())
+                        <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <p class="text-sm font-medium text-gray-700 mb-1">Sisa Stok Saat Ini</p>
+                            <p class="text-xs text-gray-400 mb-3">Tampilan saja, tidak bisa diedit di sini — jumlah yang diisi di bawah akan DITAMBAHKAN ke stok yang sudah ada.</p>
+                            <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                                @foreach ($existingStock as $s)
+                                    <div class="flex items-center justify-between bg-white border border-gray-200 rounded-md px-3 py-2">
+                                        <span class="text-xs text-gray-500">Size {{ $s->size ?: '-' }}</span>
+                                        <span class="text-sm font-semibold text-gray-800">{{ $s->available_stock }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
 
                     <div class="mt-6 border border-gray-200 rounded-lg p-4"
                          x-data="{

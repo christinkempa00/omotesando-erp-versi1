@@ -145,17 +145,4 @@ class MaterialRequest extends Model
         $this->save();
     }
 
-    public function approvalNotificationText(string $decision, ?string $note): string
-    {
-        $text = "*Pengajuan Bahan {$decision}*\n";
-        $text .= "No: {$this->request_number}\n";
-        $text .= 'Pemohon: '.($this->requestedBy?->name ?? '-')."\n";
-        $text .= 'Outlet: '.($this->branch?->name ?? '-');
-
-        if ($note) {
-            $text .= "\nCatatan: {$note}";
-        }
-
-        return $text;
-    }
 }

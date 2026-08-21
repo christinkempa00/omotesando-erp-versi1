@@ -1,3 +1,42 @@
+@php
+    // Base64-embed (bukan path/URL) supaya tampil konsisten baik lokal
+    // maupun di hosting split-public (Storage::disk('public')->path() bisa
+    // lempar "Cannot resolve public path" di setup seperti itu) — pola sama
+    // persis dgn signature GA Request di document-pdf.blade.php GA Request.
+    $signatureSrc = null;
+    if ($record->signature_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($record->signature_path)) {
+        $binary = \Illuminate\Support\Facades\Storage::disk('public')->get($record->signature_path);
+        $signatureSrc = 'data:image/png;base64,'.base64_encode($binary);
+    }
+
+    $issuedBySignatureSrc = null;
+    if ($record->issued_by_signature_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($record->issued_by_signature_path)) {
+        $binary = \Illuminate\Support\Facades\Storage::disk('public')->get($record->issued_by_signature_path);
+        $issuedBySignatureSrc = 'data:image/png;base64,'.base64_encode($binary);
+    }
+
+    // Record lama (sebelum fitur multi-item) tidak punya baris di items —
+    // sintesis satu baris dari field lama supaya tabel tetap tampil normal.
+    $rows = $record->items->isNotEmpty()
+        ? $record->items
+        : collect([(object) [
+            'uniform_type' => $record->uniform_type,
+            'size' => $record->size,
+            'color' => $record->color,
+            'qty' => 1,
+            'item_condition' => null,
+            'item_notes' => $record->issue_notes,
+        ]]);
+
+    // Template cetak (mengikuti format Berita Acara Serah Terima manual)
+    // selalu punya minimal 5 baris bernomor, baris kosong tetap ditampilkan
+    // kalau itemnya kurang dari 5 — kalau lebih dari 5 item, semuanya tetap
+    // ditampilkan (tidak dipotong).
+    $minRows = 5;
+    if ($rows->count() < $minRows) {
+        $rows = $rows->concat(array_fill(0, $minRows - $rows->count(), null));
+    }
+@endphp
 <!DOCTYPE html>
 <html>
 <head>
@@ -12,17 +51,21 @@
         .title h1 { font-size: 14px; margin: 0; }
         .title .no { font-size: 11px; margin-top: 2px; }
         .title .outlet { font-size: 11px; font-weight: bold; margin-top: 2px; }
-        .title .date { text-align: right; font-size: 10px; margin-top: 4px; }
+
+        table.info { width: 100%; border-collapse: collapse; margin-bottom: 14px; }
+        table.info td { padding: 3px 0; vertical-align: top; font-size: 11px; }
+        table.info td.label { width: 22%; }
+        table.info td.colon { width: 2%; }
 
         table.main { width: 100%; border-collapse: collapse; margin-bottom: 16px; }
         table.main th, table.main td { border: 1px solid #9ca3af; padding: 6px 8px; text-align: left; vertical-align: top; }
-        table.main th { background: #f3f4f6; font-size: 10px; width: 30%; }
+        table.main th { background: #f3f4f6; font-size: 10px; }
+        .text-right { text-align: right; }
 
         .signatures { display: table; width: 100%; margin-top: 40px; }
-        .signatures .col { display: table-cell; width: 50%; vertical-align: top; padding-right: 10px; text-align: center; }
-        .signatures .label { font-size: 10px; color: #4b5563; margin-bottom: 6px; }
-        .signatures .sig-box { height: 60px; display: flex; align-items: flex-end; justify-content: center; }
-        .signatures .sig-box img { max-height: 55px; max-width: 160px; }
+        .signatures .col { display: table-cell; width: 50%; vertical-align: top; padding-right: 10px; }
+        .signatures .label { font-size: 10px; color: #4b5563; margin-bottom: 34px; }
+        .signatures .signature-img { display: block; max-height: 60px; margin-bottom: 12px; }
         .signatures .name { font-size: 11px; font-weight: bold; border-top: 1px solid #9ca3af; padding-top: 3px; margin-top: 4px; }
         .signatures .role { font-size: 10px; color: #4b5563; }
     </style>
@@ -38,72 +81,79 @@
     <hr>
 
     <div class="title">
-        <h1>Berita Acara Serah Terima Seragam</h1>
+        <h1>Serah Terima Barang</h1>
         <div class="no">No : {{ $record->record_code }}</div>
         <div class="outlet">{{ $record->branch?->name }}</div>
-        <div class="date">{{ $record->issue_date->translatedFormat('l, d F Y') }}</div>
     </div>
 
+    <table class="info">
+        <tr>
+            <td class="label">Tanggal Penyerahan</td>
+            <td class="colon">:</td>
+            <td>{{ $record->issue_date->translatedFormat('l, d F Y') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Nama Penyerah</td>
+            <td class="colon">:</td>
+            <td>{{ $record->issued_by_name ?: ($record->createdBy?->name ?: '-') }}</td>
+        </tr>
+        <tr>
+            <td class="label">Nama Penerima</td>
+            <td class="colon">:</td>
+            <td>{{ $record->employee_name }}</td>
+        </tr>
+    </table>
+
     <table class="main">
+        <thead>
+            <tr>
+                <th style="width: 4%;">No</th>
+                <th>Nama Barang</th>
+                <th style="width: 18%;">Spesifikasi</th>
+                <th style="width: 8%;">Qty</th>
+                <th style="width: 12%;">Kondisi</th>
+                <th style="width: 20%;">Keterangan</th>
+            </tr>
+        </thead>
         <tbody>
-            <tr>
-                <th>Nama Karyawan</th>
-                <td>{{ $record->employee_name }}</td>
-            </tr>
-            <tr>
-                <th>Outlet</th>
-                <td>{{ $record->branch?->name }}</td>
-            </tr>
-            <tr>
-                <th>Jenis Seragam</th>
-                <td>
-                    {{ $record->uniform_type }}
-                    @if ($record->size) &middot; Ukuran {{ $record->size }} @endif
-                    @if ($record->color) &middot; {{ $record->color }} @endif
-                </td>
-            </tr>
-            <tr>
-                <th>Tanggal Serah</th>
-                <td>{{ $record->issue_date->translatedFormat('d F Y') }}</td>
-            </tr>
-            @if ($record->status === \App\Models\GA\UniformRecord::STATUS_RETURNED)
+            @foreach ($rows as $i => $row)
                 <tr>
-                    <th>Tanggal Kembali</th>
-                    <td>
-                        {{ optional($record->return_date)->translatedFormat('d F Y') }}
-                        &middot; Kondisi: {{ $conditionLabels[$record->return_condition] ?? $record->return_condition }}
-                    </td>
+                    <td>{{ $i + 1 }}</td>
+                    @if ($row)
+                        @php
+                            $spec = collect([$row->size, $row->color])->filter()->implode(' / ') ?: '-';
+                        @endphp
+                        <td>{{ $row->uniform_type }}</td>
+                        <td>{{ $spec }}</td>
+                        <td class="text-right">{{ $row->qty }}</td>
+                        <td>{{ $row->item_condition ?: '-' }}</td>
+                        <td>{{ $row->item_notes ?: '-' }}</td>
+                    @else
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                        <td>&nbsp;</td>
+                    @endif
                 </tr>
-            @endif
-            @if ($record->issue_notes)
-                <tr>
-                    <th>Catatan</th>
-                    <td>{{ $record->issue_notes }}</td>
-                </tr>
-            @endif
+            @endforeach
         </tbody>
     </table>
 
-    <p>
-        Dengan ini menyatakan bahwa seragam kerja dengan rincian di atas telah diserahkan oleh pihak
-        General Affairs kepada karyawan yang bersangkutan dalam kondisi baik, dan diterima sesuai
-        dengan ketentuan yang berlaku.
-    </p>
-
     <div class="signatures">
         <div class="col">
-            <div class="label">Diserahkan oleh (General Affairs)</div>
-            <div class="sig-box"></div>
-            <div class="name">{{ $record->createdBy?->name ?: '-' }}</div>
+            <div class="label" @if ($issuedBySignatureSrc) style="margin-bottom: 4px;" @endif>Diserahkan Oleh</div>
+            @if ($issuedBySignatureSrc)
+                <img src="{{ $issuedBySignatureSrc }}" class="signature-img">
+            @endif
+            <div class="name">{{ $record->issued_by_name ?: ($record->createdBy?->name ?: '-') }}</div>
             <div class="role">General Affairs</div>
         </div>
         <div class="col">
-            <div class="label">Diterima oleh (Karyawan)</div>
-            <div class="sig-box">
-                @if ($record->signature_path && \Illuminate\Support\Facades\Storage::disk('public')->exists($record->signature_path))
-                    <img src="{{ \Illuminate\Support\Facades\Storage::disk('public')->path($record->signature_path) }}">
-                @endif
-            </div>
+            <div class="label" @if ($signatureSrc) style="margin-bottom: 4px;" @endif>Diterima Oleh</div>
+            @if ($signatureSrc)
+                <img src="{{ $signatureSrc }}" class="signature-img">
+            @endif
             <div class="name">{{ $record->employee_name }}</div>
             <div class="role">Karyawan</div>
         </div>

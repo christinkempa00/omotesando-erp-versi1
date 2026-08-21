@@ -3,36 +3,52 @@
 namespace App\Http\Controllers;
 
 use App\Models\SystemModule;
-use Illuminate\View\View;
+use App\Support\RoleHomeResolver;
+use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 
 /**
- * Tujuan redirect CheckModuleMaintenance middleware — ditampilkan ke user
- * (selain IT/Admin) yang mencoba akses halaman yang sedang ditandai IT
- * "Dalam Pemeliharaan".
+ * Tujuan redirect CheckModuleMaintenance middleware — user (selain IT/Admin)
+ * yang mencoba akses halaman yang sedang ditandai IT "Dalam Pemeliharaan"
+ * diarahkan ke halaman "rumah" role-nya sendiri (lihat RoleHomeResolver —
+ * BUKAN selalu '/dashboard', itu 403 utk role selain GA/Admin/Finance) dengan
+ * notice di-flash ke session, lalu ditampilkan sebagai popup (lihat blok
+ * "maintenanceNotice" di layouts/app.blade.php) — bukan halaman penuh
+ * terpisah lagi (Revisi V1 10/08/2026).
  */
 class MaintenanceNoticeController extends Controller
 {
-    public function show(string $key): View
+    /**
+     * Peta "route rumah role" -> SystemModule key yang menggerbanginya —
+     * dipakai utk hindari redirect-loop kalau modul yang sedang dalam
+     * pemeliharaan justru halaman rumah role user itu sendiri. '/dashboard'
+     * (GA/Admin/Finance) & 'it.modules.index' (IT selalu bypass middleware
+     * ini) sengaja tidak masuk sini krn tidak digerbangi module.maintenance.
+     */
+    private const ROLE_HOME_MODULE_KEYS = [
+        'head.dashboard' => SystemModule::HEAD_DASHBOARD,
+        'scm.materials.index' => SystemModule::SCM_MATERIALS,
+        'scm.deliveries.index' => SystemModule::SCM_DELIVERIES,
+        'purchasing.purchase-requisitions.index' => SystemModule::PURCHASING_REQUISITIONS,
+    ];
+
+    public function show(string $key, Request $request): RedirectResponse
     {
         $module = SystemModule::where('key', $key)->firstOrFail();
 
-        // Halaman head.* hanya bisa diakses role Head (lihat middleware role
-        // di routes/web.php), jadi aman menentukan sidebar & tombol kembali
-        // dari prefix key tanpa perlu cek role user lagi di sini.
-        $isHeadModule = str_starts_with($key, 'head.');
-        $backRoute = $isHeadModule ? 'head.dashboard' : 'dashboard';
+        $backRoute = RoleHomeResolver::routeNameFor($request->user());
 
-        // Hindari redirect-loop: kalau yang lagi dalam pemeliharaan justru
-        // Dashboard Head itu sendiri, tombol "kembali" jangan mengarah ke
-        // situ lagi — arahkan ke profile (selalu bisa diakses semua role).
-        if ($key === SystemModule::HEAD_DASHBOARD) {
+        // Hindari redirect-loop: kalau modul yang lagi dalam pemeliharaan
+        // justru halaman rumah role user itu sendiri, jangan diarahkan ke
+        // situ lagi (bakal ke-gate lagi oleh middleware yang sama) — arahkan
+        // ke profile (selalu bisa diakses semua role).
+        if ((self::ROLE_HOME_MODULE_KEYS[$backRoute] ?? null) === $key) {
             $backRoute = 'profile.edit';
         }
 
-        return view('maintenance-notice', [
-            'module' => $module,
-            'sidebar' => $isHeadModule ? 'head' : 'ga',
-            'backRoute' => $backRoute,
+        return redirect()->route($backRoute)->with('maintenanceNotice', [
+            'name' => $module->name,
+            'note' => $module->maintenance_note,
         ]);
     }
 }

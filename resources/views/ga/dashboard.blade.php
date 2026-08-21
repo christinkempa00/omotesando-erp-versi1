@@ -17,7 +17,7 @@
                     <p class="text-2xl font-extrabold font-mono text-ink mt-auto">{{ $assetTotal }}</p>
                 </div>
                 <div class="bg-white border border-hairline rounded-xl p-4 flex flex-col">
-                    <p class="text-xs font-semibold text-ink-muted">Total Jumlah Pengajuan</p>
+                    <p class="text-xs font-semibold text-ink-muted">Total Pengajuan</p>
                     <p class="text-2xl font-extrabold font-mono text-ink mt-auto">{{ $gaRequestTotal }}</p>
                 </div>
                 <div class="bg-white border border-hairline rounded-xl p-4 flex flex-col">
@@ -77,7 +77,7 @@
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700">Jadwal Pemeliharaan Mendatang</h3>
-                    <a href="{{ route('ga.maintenance.create') }}" class="text-sm text-indigo-600 hover:text-indigo-800">+ Jadwalkan</a>
+                    <a href="{{ route('ga.maintenance.create') }}" class="text-sm text-indigo-600 hover:text-indigo-800">+ Pemeliharaan</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -126,7 +126,7 @@
                             @empty
                                 <tr>
                                     <td colspan="7" class="px-4 py-8 text-center text-gray-400">
-                                        Tidak ada pemeliharaan jatuh tempo dalam 7 hari ke depan.
+                                        Tidak ada pemeliharaan dalam 7 hari ke depan.
                                     </td>
                                 </tr>
                             @endforelse
@@ -150,7 +150,7 @@
                                 <th class="px-4 py-3 text-right font-medium text-gray-500">Stok Seragam</th>
                                 <th class="px-4 py-3 text-right font-medium text-gray-500">Terjadwal</th>
                                 <th class="px-4 py-3 text-right font-medium text-gray-500">Selesai</th>
-                                <th class="px-4 py-3 text-right font-medium text-gray-500">Biaya Maintenance</th>
+                                <th class="px-4 py-3 text-right font-medium text-gray-500">Biaya Pemeliharaan</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-gray-100">

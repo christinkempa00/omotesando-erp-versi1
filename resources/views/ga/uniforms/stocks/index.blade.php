@@ -4,14 +4,10 @@
             <div>
                 <x-back-link :href="route('ga.uniforms.records.index')" />
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Stock Management
+                    Manajemen Stok
                 </h2>
             </div>
             <div class="flex flex-wrap gap-2">
-                <a href="{{ route('ga.uniforms.records.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-                    Serah-terima
-                </a>
                 <a href="{{ route('ga.uniforms.stocks.create') }}"
                    class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
                     + Varian Baru
@@ -44,7 +40,7 @@
                     <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Belum Dikembalikan</p>
                     <p class="text-2xl font-bold text-blue-600 mt-auto pt-1">{{ $summary['pending_return'] }}</p>
                     <a href="{{ route('ga.uniforms.records.index', ['status' => \App\Models\GA\UniformRecord::STATUS_ISSUED]) }}" class="text-xs text-indigo-600 hover:underline mt-1">
-                        Lihat di Uniform Inventory &rarr;
+                        Lihat di Inventaris Seragam &rarr;
                     </a>
                 </div>
                 <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
@@ -74,15 +70,29 @@
 
                 <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     @forelse ($stockGroups as $group)
-                        <div class="border border-gray-200 rounded-lg p-3">
+                        <div class="border border-gray-200 rounded-lg p-3 cursor-pointer hover:border-gray-300 hover:shadow-sm transition"
+                             onclick="window.location='{{ route('ga.uniforms.stocks.show-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}'">
                             <div class="flex items-start justify-between mb-1">
-                                <div class="min-w-0">
-                                    <p class="text-sm font-semibold text-gray-800 truncate">{{ $group->type }}</p>
-                                    <p class="text-xs text-gray-400 truncate">
-                                        {{ $group->branch->name }}{{ $group->color ? ' / '.$group->color : '' }}
-                                    </p>
+                                <div class="flex items-start gap-2 min-w-0">
+                                    @if ($group->photo_path)
+                                        <img src="{{ Storage::url($group->photo_path) }}"
+                                             class="w-10 h-10 rounded object-cover shrink-0 border border-gray-200">
+                                    @else
+                                        <div class="w-10 h-10 rounded shrink-0 border border-gray-200 bg-gray-50 flex items-center justify-center text-gray-300">
+                                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 7a2 2 0 0 1 2-2h1.5l1-1.5h5l1 1.5H19a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />
+                                                <circle cx="12" cy="13" r="3.5" />
+                                            </svg>
+                                        </div>
+                                    @endif
+                                    <div class="min-w-0">
+                                        <p class="text-sm font-semibold text-gray-800 truncate">{{ $group->type }}</p>
+                                        <p class="text-xs text-gray-400 truncate">
+                                            {{ $group->branch->name }}{{ $group->color ? ' / '.$group->color : '' }}
+                                        </p>
+                                    </div>
                                 </div>
-                                <div class="flex items-center gap-1 shrink-0">
+                                <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
                                     @if ($group->is_low)
                                         <span class="px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-orange-100 text-orange-700">
                                             Menipis
@@ -93,6 +103,14 @@
                                        class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">
                                         <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M12 5v14M5 12h14" />
+                                        </svg>
+                                    </a>
+                                    <a href="{{ route('ga.uniforms.stocks.edit-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
+                                       title="Edit grup ini (Tipe Seragam/Outlet/Warna, dll — semua ukuran sekaligus)"
+                                       class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">
+                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" />
                                         </svg>
                                     </a>
                                     <form method="POST" action="{{ route('ga.uniforms.stocks.destroy-group') }}"
@@ -127,27 +145,18 @@
                                 @foreach ($group->items as $item)
                                     <div class="flex items-center justify-between py-1.5">
                                         <div class="flex items-baseline gap-1.5 min-w-0">
-                                            <span class="text-xs font-medium text-gray-800 whitespace-nowrap">Size {{ $item->size ?: '-' }}</span>
-                                            <span class="text-[10px] text-gray-400 whitespace-nowrap">batas {{ $item->low_stock_threshold }}</span>
+                                            <span class="text-xs font-medium text-gray-800 whitespace-nowrap">Ukuran {{ $item->size ?: '-' }}</span>
                                         </div>
-                                        <div class="flex items-center gap-2 shrink-0">
-                                            <span class="text-xs font-semibold {{ $item->isLowStock() ? 'text-orange-600' : 'text-gray-800' }}">
-                                                {{ $item->available_stock }}
-                                            </span>
-                                            <form method="POST" action="{{ route('ga.uniforms.stocks.destroy', $item) }}"
-                                                  onsubmit="return confirm('Hapus varian ukuran {{ $item->size ?: '-' }} ini?');">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-gray-400 hover:text-red-600">
-                                                    <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                                                        <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14M4 6h16M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
-                                                    </svg>
-                                                </button>
-                                            </form>
-                                        </div>
+                                        <span class="text-xs font-semibold shrink-0 {{ $item->isLowStock() ? 'text-orange-600' : 'text-gray-800' }}">
+                                            {{ $item->available_stock }}
+                                        </span>
                                     </div>
                                 @endforeach
                             </div>
+
+                            <p class="text-[10px] text-gray-400 text-right pt-2 mt-1 border-t border-gray-100">
+                                batas low stock {{ $group->items->first()?->low_stock_threshold ?? 0 }}
+                            </p>
                         </div>
                     @empty
                         <p class="col-span-full text-center text-sm text-gray-500 py-8">Belum ada varian seragam.</p>
@@ -163,11 +172,22 @@
                 </div>
             </div>
 
+            <div class="flex justify-end gap-2">
+                <a href="{{ route('ga.uniforms.stocks.export.xlsx', request()->query()) }}"
+                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                    Export .xlsx
+                </a>
+                <a href="{{ route('ga.uniforms.stocks.export.pdf', request()->query()) }}"
+                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                    Export .pdf
+                </a>
+            </div>
+
             {{-- Audit trail stok (embedded, tanpa halaman terpisah) --}}
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-gray-700">History</h3>
-                    <a href="{{ route('ga.uniforms.movements.index') }}" class="text-xs text-indigo-600 hover:underline">Lihat semua &rarr;</a>
+                    <h3 class="text-sm font-semibold text-gray-700">Riwayat</h3>
+                    <a href="{{ route('ga.uniforms.movements.index') }}" class="text-xs text-indigo-600 hover:underline">Lihat Semua &rarr;</a>
                 </div>
                 <div class="divide-y divide-gray-100">
                     @forelse ($recentMovements as $movement)

@@ -128,16 +128,4 @@ class ProductionBatch extends Model
         $this->save();
     }
 
-    public function approvalNotificationText(string $decision, ?string $note): string
-    {
-        $text = "*Batch Produksi {$decision}*\n";
-        $text .= "No: {$this->batch_number}\n";
-        $text .= 'Dibuat oleh: '.($this->producedBy?->name ?? '-');
-
-        if ($note) {
-            $text .= "\nCatatan: {$note}";
-        }
-
-        return $text;
-    }
 }

@@ -12,14 +12,30 @@
             'vendor_name' => $item->vendor_name,
         ])->values()->all()
         : $defaultItems;
+
+    $initialDiscountPercent = old('discount_percent', $gaRequest?->discount_percent);
+    $initialPphPercent = old('pph_percent', $gaRequest?->pph_percent);
 @endphp
 
 <form method="POST" action="{{ $formAction }}" enctype="multipart/form-data"
       x-data="{
         items: {{ Illuminate\Support\Js::from(old('items', $initialItems)) }},
         attachmentPreviews: [],
-        get grandTotal() {
+        discountEnabled: {{ Illuminate\Support\Js::from($initialDiscountPercent !== null) }},
+        discountPercent: {{ Illuminate\Support\Js::from($initialDiscountPercent !== null ? (float) $initialDiscountPercent : 0) }},
+        pphEnabled: {{ Illuminate\Support\Js::from($initialPphPercent !== null) }},
+        pphPercent: {{ Illuminate\Support\Js::from($initialPphPercent !== null ? (float) $initialPphPercent : 0) }},
+        get subtotal() {
             return this.items.reduce((sum, i) => sum + (Number(i.qty || 0) * Number(i.price_per_unit || 0)), 0);
+        },
+        get discountAmount() {
+            return this.discountEnabled ? this.subtotal * (Number(this.discountPercent || 0) / 100) : 0;
+        },
+        get pphAmount() {
+            return this.pphEnabled ? this.subtotal * (Number(this.pphPercent || 0) / 100) : 0;
+        },
+        get grandTotal() {
+            return this.subtotal - this.discountAmount - this.pphAmount;
         },
         rupiah(n) { return 'Rp ' + (Number(n) || 0).toLocaleString('id-ID'); },
         formatThousands(n) { return (Number(n) || 0).toLocaleString('id-ID'); },
@@ -35,8 +51,8 @@
 
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
         <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Pemohon (GA) *</label>
-            <input type="text" name="requester_name" required value="{{ old('requester_name', $gaRequest?->requester_name) }}" placeholder="Nama staf GA yang mengajukan"
+            <label class="block text-sm font-medium text-gray-700 mb-1">Pemohon *</label>
+            <input type="text" name="requester_name" required value="{{ old('requester_name', $gaRequest?->requester_name) }}" placeholder="Nama Pemohon"
                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
         </div>
 
@@ -113,15 +129,20 @@
                                    class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm pl-10">
                         </div>
                         <input type="hidden" :name="`items[${index}][price_per_unit]`" :value="item.price_per_unit">
-                        <p class="text-xs text-gray-400 mt-1">Wajib diisi saat "Kirim Pengajuan" (boleh 0 dulu utk draft).</p>
                     </div>
                     <div class="col-span-12 sm:col-span-2">
                         <input type="text" :name="`items[${index}][vendor_name]`" x-model="item.vendor_name"
                                placeholder="Vendor"
                                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
                     </div>
-                    <div class="col-span-12 text-right text-xs text-gray-500">
-                        Subtotal: <span x-text="rupiah((item.qty || 0) * (item.price_per_unit || 0))"></span>
+                    <div class="col-span-6 sm:col-span-3">
+                        <label class="block text-xs text-gray-400 mb-1">Total</label>
+                        <div class="relative">
+                            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">Rp</span>
+                            <input type="text" readonly tabindex="-1"
+                                   :value="formatThousands((item.qty || 0) * (item.price_per_unit || 0))"
+                                   class="w-full rounded-md border-gray-200 bg-gray-50 text-gray-600 shadow-sm text-sm pl-10 cursor-default">
+                        </div>
                     </div>
                 </div>
             </template>
@@ -131,10 +152,59 @@
                 class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
             + Tambah item
         </button>
+        <p class="text-xs text-gray-400 mt-1">Harga Satuan tiap item wajib diisi saat "Kirim Pengajuan" (boleh 0 dulu utk semua item selama masih disimpan sbg draft).</p>
 
-        <div class="mt-4 text-right">
-            <span class="text-sm text-gray-500">Total Pengajuan:</span>
-            <span class="text-lg font-bold text-gray-800 ml-2" x-text="rupiah(grandTotal)"></span>
+        {{-- PPH & Diskon (opsional, persentase dari Sub Total) --}}
+        <div class="mt-4 flex flex-wrap gap-2">
+            <button type="button" @click="discountEnabled = true" x-show="!discountEnabled"
+                    class="inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                + Tambah Diskon
+            </button>
+            <button type="button" @click="pphEnabled = true" x-show="!pphEnabled"
+                    class="inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                + Tambah PPH
+            </button>
+        </div>
+
+        <div class="mt-2 space-y-2">
+            <template x-if="discountEnabled">
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-gray-600 w-24 shrink-0">Diskon (%)</label>
+                    <input type="number" min="0" max="100" step="0.01" name="discount_percent" x-model="discountPercent"
+                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                    <span class="text-xs text-gray-500">&minus; <span x-text="rupiah(discountAmount)"></span></span>
+                    <button type="button" @click="discountEnabled = false; discountPercent = 0" class="text-xs text-red-500 hover:text-red-700">Hapus</button>
+                </div>
+            </template>
+            <template x-if="pphEnabled">
+                <div class="flex items-center gap-2">
+                    <label class="text-sm text-gray-600 w-24 shrink-0">PPH (%)</label>
+                    <input type="number" min="0" max="100" step="0.01" name="pph_percent" x-model="pphPercent"
+                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                    <span class="text-xs text-gray-500">&minus; <span x-text="rupiah(pphAmount)"></span></span>
+                    <button type="button" @click="pphEnabled = false; pphPercent = 0" class="text-xs text-red-500 hover:text-red-700">Hapus</button>
+                </div>
+            </template>
+        </div>
+
+        <div class="mt-4 space-y-1 text-right">
+            <div class="text-sm text-gray-500">
+                Sub Total: <span class="text-gray-700 font-medium" x-text="rupiah(subtotal)"></span>
+            </div>
+            <template x-if="discountEnabled">
+                <div class="text-sm text-gray-500">
+                    Diskon (<span x-text="discountPercent"></span>%): <span class="text-gray-700 font-medium">&minus; <span x-text="rupiah(discountAmount)"></span></span>
+                </div>
+            </template>
+            <template x-if="pphEnabled">
+                <div class="text-sm text-gray-500">
+                    PPH (<span x-text="pphPercent"></span>%): <span class="text-gray-700 font-medium">&minus; <span x-text="rupiah(pphAmount)"></span></span>
+                </div>
+            </template>
+            <div class="pt-1 border-t border-gray-100">
+                <span class="text-sm text-gray-500">Total:</span>
+                <span class="text-lg font-bold text-gray-800 ml-2" x-text="rupiah(grandTotal)"></span>
+            </div>
         </div>
     </div>
 
@@ -170,7 +240,7 @@
            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
         <button type="submit" name="intent" value="draft"
                 class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-            Simpan sebagai Draft
+            Simpan Draft
         </button>
         <button type="submit" name="intent" value="submit"
                 class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">

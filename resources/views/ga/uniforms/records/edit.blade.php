@@ -31,13 +31,15 @@
                     </div>
 
                     <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
+                        <input type="text" name="issued_by_name" required value="{{ old('issued_by_name', $record->issued_by_name) }}"
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    </div>
+
+                    <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Seragam</label>
-                        <p class="text-sm text-gray-600">
-                            {{ $record->uniform_type }}
-                            @if ($record->size) &middot; {{ $record->size }} @endif
-                            @if ($record->color) &middot; {{ $record->color }} @endif
-                        </p>
-                        <p class="text-xs text-gray-400 mt-1">Varian tidak bisa diganti setelah dibuat — hapus &amp; buat ulang kalau salah pilih.</p>
+                        <p class="text-sm text-gray-600">{{ $record->summaryLabel() }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Item tidak bisa diganti setelah dibuat — hapus &amp; buat ulang kalau salah pilih.</p>
                     </div>
 
                     <div>

@@ -153,6 +153,6 @@ class MaterialRequestController extends Controller
 
         $filename = 'PB-'.str_replace('/', '-', $materialRequest->request_number).'.pdf';
 
-        return $pdf->download($filename);
+        return $pdf->stream($filename);
     }
 }

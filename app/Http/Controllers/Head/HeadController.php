@@ -97,7 +97,7 @@ class HeadController extends Controller
             'uniforms' => [
                 'data' => $uniformByStatus,
                 'labels' => UniformStock::statusLabels(),
-                'colors' => ['bagus' => '#22c55e', 'dalam_pemeliharaan' => '#eab308', 'rusak' => '#ef4444'],
+                'colors' => ['bagus' => '#22c55e', 'rusak' => '#ef4444'],
                 'total' => UniformStock::count(),
             ],
             'maintenance' => [

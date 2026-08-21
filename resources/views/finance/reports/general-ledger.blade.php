@@ -58,9 +58,9 @@
                                         <td class="px-4 py-3 font-mono text-gray-800">{{ $line['entry_number'] }}</td>
                                         <td class="px-4 py-3 text-gray-600">{{ \Illuminate\Support\Carbon::parse($line['entry_date'])->format('d M Y') }}</td>
                                         <td class="px-4 py-3 text-gray-600">{{ $line['description'] }}</td>
-                                        <td class="px-4 py-3 text-right text-gray-600">{{ $line['debit'] > 0 ? number_format($line['debit'], 0, ',', '.') : '—' }}</td>
-                                        <td class="px-4 py-3 text-right text-gray-600">{{ $line['credit'] > 0 ? number_format($line['credit'], 0, ',', '.') : '—' }}</td>
-                                        <td class="px-4 py-3 text-right font-semibold text-gray-800">{{ number_format($line['balance'], 0, ',', '.') }}</td>
+                                        <td class="px-4 py-3 text-right text-gray-600">{{ $line['debit'] > 0 ? 'Rp '.number_format($line['debit'], 0, ',', '.') : '—' }}</td>
+                                        <td class="px-4 py-3 text-right text-gray-600">{{ $line['credit'] > 0 ? 'Rp '.number_format($line['credit'], 0, ',', '.') : '—' }}</td>
+                                        <td class="px-4 py-3 text-right font-semibold text-gray-800">Rp {{ number_format($line['balance'], 0, ',', '.') }}</td>
                                     </tr>
                                 @empty
                                     <tr>

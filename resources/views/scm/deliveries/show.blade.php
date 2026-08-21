@@ -119,30 +119,20 @@
             {{-- Kirim — Gudang/Admin, hanya saat draft --}}
             @if ($deliveryNote->status === \App\Models\SCM\DeliveryNote::STATUS_DRAFT && auth()->user()->hasRole(\App\Models\Role::GUDANG, \App\Models\Role::ADMIN))
                 <div class="bg-white shadow-sm rounded-lg p-6"
-                     x-data="{ photoDataUrl: null, onPhotoChange(e) { const f = e.target.files[0]; this.photoDataUrl = f ? URL.createObjectURL(f) : null; } }">
+                     x-data="{ hasPhoto: false, onPhotoChange(e) { this.hasPhoto = e.target.files.length > 0; } }">
                     <h3 class="font-bold text-ink mb-1">Konfirmasi Kirim</h3>
                     <p class="text-xs text-ink-muted mb-4">Wajib diisi sebelum surat jalan bisa dikirim</p>
                     <form method="POST" action="{{ route('scm.deliveries.send', $deliveryNote) }}" enctype="multipart/form-data" class="space-y-4"
                           onsubmit="return confirm('Kirim surat jalan ini?')">
                         @csrf
-                        <input type="file" name="sent_photo" accept="image/*" capture="environment" required
-                               x-ref="photoInput" @change="onPhotoChange" class="hidden">
-
-                        <div x-show="!photoDataUrl" @click="$refs.photoInput.click()"
-                             class="h-52 rounded-2xl border-2 border-dashed border-accent/40 bg-accent-tint flex flex-col items-center justify-center gap-2.5 cursor-pointer max-w-xs">
-                            <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl">📷</div>
-                            <div class="text-sm font-bold text-accent">Ketuk untuk buka kamera</div>
-                            <div class="text-[10.5px] font-bold text-white bg-status-rejected-fg px-2.5 py-1 rounded-full">WAJIB</div>
-                        </div>
-                        <div x-show="photoDataUrl" x-cloak class="rounded-2xl overflow-hidden border border-hairline max-w-xs">
-                            <img :src="photoDataUrl" class="w-full h-44 object-cover">
-                            <div class="px-3.5 py-2.5 bg-white flex items-center gap-2">
-                                <div class="text-xs font-bold text-status-approved-fg flex-1">✓ Foto tersimpan</div>
-                                <button type="button" @click="$refs.photoInput.click()" class="text-xs font-bold text-accent">Ambil ulang</button>
-                            </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Foto Bukti Kirim *</label>
+                            <input type="file" name="sent_photo" accept="image/*" capture="environment" required
+                                   @change="onPhotoChange"
+                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
                         </div>
 
-                        <button type="submit" :disabled="!photoDataUrl"
+                        <button type="submit" :disabled="!hasPhoto"
                                 class="w-full sm:w-auto sm:px-8 h-[52px] rounded-2xl bg-accent text-white font-bold text-[15px] disabled:opacity-40">
                             Kirim Surat Jalan
                         </button>

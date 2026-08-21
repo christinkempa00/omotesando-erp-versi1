@@ -20,6 +20,7 @@ class MaintenanceJob extends Model
         'status',
         'scheduled_date',
         'scheduled_time',
+        'scheduled_end_time',
         'pic_name',
         'vendor_name',
         'location',
@@ -30,6 +31,9 @@ class MaintenanceJob extends Model
         'completion_notes',
         'completed_at',
         'created_by',
+        'h1_day_reminder_sent_at',
+        'h1_hour_reminder_sent_at',
+        'last_overdue_reminder_sent_at',
     ];
 
     protected $casts = [
@@ -37,6 +41,9 @@ class MaintenanceJob extends Model
         'cost' => 'decimal:2',
         'checklist' => 'array',
         'completed_at' => 'datetime',
+        'h1_day_reminder_sent_at' => 'datetime',
+        'h1_hour_reminder_sent_at' => 'datetime',
+        'last_overdue_reminder_sent_at' => 'datetime',
     ];
 
     // --- Status ---

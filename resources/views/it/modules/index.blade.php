@@ -5,7 +5,7 @@
         </h2>
     </x-slot>
 
-    <div class="py-8">
+    <div class="font-it py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <p class="text-sm text-gray-500">
@@ -74,7 +74,7 @@
                                 }
                             },
                         }"
-                        class="bg-white shadow-sm rounded-lg p-5"
+                        class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-5"
                     >
                         <div class="flex items-start justify-between mb-3 gap-3">
                             <div class="min-w-0">
@@ -82,7 +82,7 @@
                                 <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ $module->key }}</p>
                             </div>
                             <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium shrink-0"
-                                  :class="underMaintenance ? 'bg-amber-100 text-amber-700' : 'bg-green-100 text-green-700'"
+                                  :class="underMaintenance ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'"
                                   x-text="underMaintenance ? 'Dalam Pemeliharaan' : 'Aktif'">
                             </span>
                         </div>
@@ -146,7 +146,7 @@
             </div>
 
             {{-- Aktivitas terbaru --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="font-medium text-gray-800">Aktivitas Mode Pemeliharaan Terbaru</h3>
                 </div>

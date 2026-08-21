@@ -3,9 +3,11 @@
 namespace Database\Seeders;
 
 use App\Models\Branch;
+use App\Models\Division;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class UserSeeder extends Seeder
@@ -154,6 +156,36 @@ class UserSeeder extends Seeder
 
         if ($financeRole) {
             $finance->roles()->syncWithoutDetaching([$financeRole->id]);
+        }
+
+        // --- Akun GA (General Affair) — Revisi V1 10/08/2026: sebelumnya
+        // belum ada akun GA yang di-seed sama sekali meski divisinya sudah
+        // terdaftar (Division::GA) & role GA sudah dipakai di banyak
+        // middleware. Modul di-attach otomatis dari default module_role GA
+        // (Request, Asset Inventory, Uniform Inventory, dst), sama seperti
+        // saran default yang dipakai IT saat bikin akun baru lewat UI.
+        $gaDivision = Division::where('code', Division::GA)->first();
+
+        $ga = User::updateOrCreate(
+            ['email' => 'ga@allez-group.com'],
+            [
+                'name' => 'GA Omotesando',
+                'password' => Hash::make('GA1945.'),
+                'division_id' => $gaDivision?->id,
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $gaRole = Role::where('name', Role::GA)->first();
+
+        if ($gaRole) {
+            $ga->roles()->syncWithoutDetaching([$gaRole->id]);
+
+            $gaDefaultModuleIds = DB::table('module_role')
+                ->where('role_id', $gaRole->id)
+                ->pluck('module_id');
+
+            $ga->modules()->syncWithoutDetaching($gaDefaultModuleIds);
         }
     }
 }

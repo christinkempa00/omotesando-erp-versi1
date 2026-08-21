@@ -30,7 +30,6 @@
                             <th class="px-4 py-3"></th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Aset</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Outlet</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">PIC</th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
@@ -48,7 +47,6 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $asset->asset_code }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-900">{{ $asset->name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $asset->category ?: '-' }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $asset->branch->name }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $asset->custodian_name ?: '-' }}</td>
                                 <td class="px-4 py-3">
@@ -59,7 +57,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada aset.</td>
+                                <td colspan="6" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada aset.</td>
                             </tr>
                         @endforelse
                     </tbody>

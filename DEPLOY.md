@@ -101,5 +101,25 @@ Kalau langkah 4b (route `/deploy-tasks/...`) dipakai:
   akses Terminal sama sekali, hapus file `bootstrap/cache/config.php` lewat
   File Manager — atau langsung pakai cara pertama (hapus `routes/deploy.php`).
 
+## 7. Cron Job — Pengingat Jadwal Pemeliharaan (WAJIB, sekali setup)
+
+Fitur pengingat Telegram H-1 hari & H-1 jam (Asset Maintenance Schedule)
+butuh Laravel scheduler jalan tiap menit. Ini **tidak bisa disetup lewat
+SSH** di Hostinger shared hosting (`crontab` tidak tersedia di shell) —
+harus lewat hPanel:
+
+- [ ] Login ke hPanel Hostinger → menu **Advanced → Cron Jobs**.
+- [ ] Tambah cron job baru, jadwal **"Every Minute"** (`* * * * *`), command:
+  ```
+  /usr/bin/php /home/u588808719/domains/portal.allez-group.com/laravel_app/artisan schedule:run >> /dev/null 2>&1
+  ```
+- [ ] Simpan. Tidak perlu langkah lain — `routes/console.php` sudah
+      mendaftarkan `maintenance:send-reminders` jalan tiap 15 menit lewat
+      scheduler ini; cron di atas cuma "detak jantung" yang men-trigger
+      Laravel utk cek jadwalnya sendiri tiap menit.
+- [ ] Verifikasi: `ssh hostinger-omotesando "cd .../laravel_app && php
+      artisan schedule:list"` harus menampilkan `maintenance:send-reminders`
+      dengan "Next Due" yang masuk akal (bukan tanggal lampau/error).
+
 Jangan biarkan route ini aktif permanen di production — ini murni alat
 bantu sekali pakai untuk deploy pertama.

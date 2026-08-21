@@ -90,6 +90,6 @@ class DeliveryReceiptController extends Controller
 
         $filename = 'BA-'.str_replace('/', '-', $deliveryNote->delivery_code).'.pdf';
 
-        return $pdf->download($filename);
+        return $pdf->stream($filename);
     }
 }

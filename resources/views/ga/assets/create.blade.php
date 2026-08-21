@@ -21,12 +21,7 @@
 
             <form method="POST" action="{{ route('ga.assets.store') }}" enctype="multipart/form-data">
                 @csrf
-                @include('ga.assets._form')
-
-                <div class="flex justify-end gap-3 mt-6">
-                    <a href="{{ route('ga.assets.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan</button>
-                </div>
+                @include('ga.assets._form', ['submitLabel' => 'Simpan', 'cancelUrl' => route('ga.assets.index')])
             </form>
         </div>
     </div>

@@ -55,7 +55,7 @@ class GaRequestController extends Controller
             'statusLabels' => GaRequest::statusLabels(),
             'selectedStatus' => $status,
             'search' => $search,
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
         ]);
     }
 
@@ -64,7 +64,7 @@ class GaRequestController extends Controller
         return view('ga.requests.create', [
             'categoryLabels' => GaRequest::categoryLabels(),
             'priorityLabels' => GaRequest::priorityLabels(),
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'savedSignatureUrl' => $this->savedSignatureUrl($request->user()),
         ]);
     }
@@ -93,9 +93,12 @@ class GaRequestController extends Controller
                 'requester_name' => $validated['requester_name'],
                 'requester_signature_path' => $requesterSignaturePath,
                 'status' => $intent === 'submit' ? GaRequest::STATUS_SUBMITTED : GaRequest::STATUS_DRAFT,
+                'discount_percent' => $validated['discount_percent'] ?? null,
+                'pph_percent' => $validated['pph_percent'] ?? null,
             ]);
 
             $this->syncItems($gaRequest, $validated['items']);
+            $gaRequest->recalculateTotal();
 
             if ($intent === 'submit') {
                 $gaRequest->generateApprovalSteps();
@@ -131,7 +134,7 @@ class GaRequestController extends Controller
             'gaRequest' => $gaRequest,
             'categoryLabels' => GaRequest::categoryLabels(),
             'priorityLabels' => GaRequest::priorityLabels(),
-            'branches' => Branch::orderedOutlets(),
+            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
             'savedSignatureUrl' => $this->savedSignatureUrl($user),
         ]);
     }
@@ -158,10 +161,13 @@ class GaRequestController extends Controller
                 'requester_name' => $validated['requester_name'],
                 'requester_signature_path' => $requesterSignaturePath ?? $gaRequest->requester_signature_path,
                 'status' => $intent === 'submit' ? GaRequest::STATUS_SUBMITTED : GaRequest::STATUS_DRAFT,
+                'discount_percent' => $validated['discount_percent'] ?? null,
+                'pph_percent' => $validated['pph_percent'] ?? null,
             ]);
 
             $gaRequest->items()->delete();
             $this->syncItems($gaRequest, $validated['items']);
+            $gaRequest->recalculateTotal();
 
             if ($intent === 'submit') {
                 $gaRequest->generateApprovalSteps();

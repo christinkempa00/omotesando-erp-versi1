@@ -55,7 +55,19 @@
                 </div>
             </div>
 
-            <div>{{ $batches->links() }}</div>
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                <div>{{ $batches->links() }}</div>
+                <div class="flex gap-2">
+                    <a href="{{ route('scm.batches.export.xlsx', request()->query()) }}"
+                       class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                        Export .xlsx
+                    </a>
+                    <a href="{{ route('scm.batches.export.pdf', request()->query()) }}"
+                       class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                        Export .pdf
+                    </a>
+                </div>
+            </div>
         </div>
     </div>
 </x-app-layout>

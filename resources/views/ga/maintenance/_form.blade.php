@@ -4,27 +4,87 @@
     if (empty($existingChecklist)) {
         $existingChecklist = [''];
     }
+    $assetsData = $assets->map(fn ($asset) => [
+        'id' => $asset->id,
+        'code' => $asset->asset_code,
+        'name' => $asset->name,
+        'branch_id' => $asset->branch_id,
+        'location' => $asset->location,
+    ])->values();
 @endphp
 
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-5"
+     x-data="{
+        branchId: '{{ old('branch_id', $job->branch_id ?? '') }}',
+        location: '{{ old('location', $job->location ?? '') }}',
+        assetId: '{{ old('asset_id', $job->asset_id ?? ($selectedAssetId ?? '')) }}',
+        assets: {{ Illuminate\Support\Js::from($assetsData) }},
+        cost: {{ (float) old('cost', $job->cost ?? 0) }},
+        scheduledDate: '{{ old('scheduled_date', optional($job->scheduled_date ?? null)->format('Y-m-d')) }}',
+        isCreate: {{ $job ? 'false' : 'true' }},
+        get minTime() {
+            const d = new Date();
+            const todayStr = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+            if (! this.isCreate || this.scheduledDate !== todayStr) {
+                return '';
+            }
+            return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        },
+        get filteredAssets() {
+            return this.assets.filter(a =>
+                (!this.branchId || String(a.branch_id) === String(this.branchId)) &&
+                (!this.location || a.location === this.location)
+            );
+        },
+        onFilterChange() {
+            if (! this.filteredAssets.some(a => String(a.id) === String(this.assetId))) {
+                this.assetId = '';
+            }
+        },
+        formatThousands(n) { return (Number(n) || 0).toLocaleString('id-ID'); },
+        parseThousands(str) { return Number(String(str).replace(/[^\d]/g, '')) || 0; }
+     }">
     <div class="sm:col-span-2">
         <label class="block text-sm font-medium text-gray-700 mb-1">Judul Pekerjaan *</label>
         <input type="text" name="title" required value="{{ old('title', $job->title ?? '') }}"
-               placeholder="mis. Servis AC rutin bulanan"
+               placeholder="Contoh: Servis rutin AC bulanan"
                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
     </div>
 
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Aset *</label>
-        <select name="asset_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-            <option value="">-- Pilih Aset --</option>
-            @foreach ($assets as $asset)
-                <option value="{{ $asset->id }}"
-                    @selected(old('asset_id', $job->asset_id ?? ($selectedAssetId ?? '')) == $asset->id)>
-                    {{ $asset->asset_code }} — {{ $asset->name }}
-                </option>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
+        <select name="branch_id" x-model="branchId" @change="onFilterChange()" required
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">-- Pilih Outlet --</option>
+            @foreach ($branches as $branch)
+                <option value="{{ $branch->id }}">{{ $branch->name }}</option>
             @endforeach
         </select>
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi *</label>
+        <select name="location" x-model="location" @change="onFilterChange()" required
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">-- Pilih Lokasi --</option>
+            @foreach (['Kitchen', 'Floor', 'Bar', 'Lainnya'] as $loc)
+                <option value="{{ $loc }}">{{ $loc }}</option>
+            @endforeach
+        </select>
+    </div>
+
+    <div class="sm:col-span-2">
+        <label class="block text-sm font-medium text-gray-700 mb-1">Aset *</label>
+        <select name="asset_id" x-model="assetId" required
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">-- Pilih Aset --</option>
+            <template x-for="asset in filteredAssets" :key="asset.id">
+                <option :value="asset.id" x-text="asset.code + ' — ' + asset.name"></option>
+            </template>
+        </select>
+        <p class="text-xs text-gray-400 mt-1" x-show="branchId || location">
+            Menampilkan aset sesuai outlet/lokasi yang dipilih.
+        </p>
     </div>
 
     <div>
@@ -56,21 +116,29 @@
 
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Jadwal *</label>
-        <input type="date" name="scheduled_date" required
-               value="{{ old('scheduled_date', optional($job->scheduled_date ?? null)->format('Y-m-d')) }}"
+        <input type="date" name="scheduled_date" x-model="scheduledDate" required
+               @if (! $job) min="{{ now()->toDateString() }}" @endif
                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
     </div>
 
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Jam</label>
-        <input type="time" name="scheduled_time"
+        <label class="block text-sm font-medium text-gray-700 mb-1">Jam Mulai *</label>
+        <input type="time" name="scheduled_time" required
                value="{{ old('scheduled_time', $job->scheduled_time ?? '') }}"
+               :min="minTime"
                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
     </div>
 
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Penanggung Jawab (PIC)</label>
-        <input type="text" name="pic_name" value="{{ old('pic_name', $job->pic_name ?? '') }}"
+        <label class="block text-sm font-medium text-gray-700 mb-1">Waktu Selesai</label>
+        <input type="time" name="scheduled_end_time"
+               value="{{ old('scheduled_end_time', $job->scheduled_end_time ?? '') }}"
+               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Penanggung Jawab (PIC) *</label>
+        <input type="text" name="pic_name" required value="{{ old('pic_name', $job->pic_name ?? '') }}"
                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
     </div>
 
@@ -81,26 +149,16 @@
     </div>
 
     <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Outlet</label>
-        <select name="branch_id" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-            <option value="">-- Pilih Outlet --</option>
-            @foreach ($branches as $branch)
-                <option value="{{ $branch->id }}" @selected(old('branch_id', $job->branch_id ?? '') == $branch->id)>{{ $branch->name }}</option>
-            @endforeach
-        </select>
-    </div>
-
-    <div>
-        <label class="block text-sm font-medium text-gray-700 mb-1">Lokasi</label>
-        <input type="text" name="location" value="{{ old('location', $job->location ?? '') }}"
-               placeholder="mis. Dapur, Ruang GM"
-               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-    </div>
-
-    <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Estimasi Biaya</label>
-        <input type="number" step="0.01" min="0" name="cost" value="{{ old('cost', $job->cost ?? '') }}"
-               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <div class="relative">
+            <span class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm pointer-events-none">Rp</span>
+            <input type="text" inputmode="numeric"
+                   :value="formatThousands(cost)"
+                   @input="cost = parseThousands($event.target.value)"
+                   placeholder="0"
+                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 pl-10">
+        </div>
+        <input type="hidden" name="cost" :value="cost">
     </div>
 
     {{-- Checklist dinamis --}}

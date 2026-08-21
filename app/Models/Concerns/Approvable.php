@@ -4,7 +4,6 @@ namespace App\Models\Concerns;
 
 use App\Models\Approval;
 use App\Models\User;
-use App\Services\TelegramNotifier;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Facades\DB;
 
@@ -98,7 +97,6 @@ trait Approvable
         });
 
         if ($approved) {
-            $this->sendApprovalNotification('Disetujui', $note);
             $this->sendFinalDocumentIfComplete();
         }
 
@@ -136,38 +134,7 @@ trait Approvable
             return true;
         });
 
-        if ($rejected) {
-            $this->sendApprovalNotification('Ditolak', $note);
-        }
-
         return $rejected;
-    }
-
-    /**
-     * Notifikasi generik ke channel yang sudah terintegrasi di project ini
-     * (Telegram) tiap kali status approval berubah. Dikirim SETELAH transaksi
-     * commit (bukan di dalamnya) supaya lock DB tidak tertahan oleh I/O
-     * jaringan. TelegramNotifier sendiri sudah aman-tanpa-kredensial (tidak
-     * melempar exception kalau bot belum dikonfigurasi).
-     *
-     * Model pemakai trait ini boleh override approvalNotificationText() utk
-     * pesan yang lebih spesifik (lihat GaRequest).
-     */
-    private function sendApprovalNotification(string $decision, ?string $note): void
-    {
-        app(TelegramNotifier::class)->sendMessage($this->approvalNotificationText($decision, $note));
-    }
-
-    public function approvalNotificationText(string $decision, ?string $note): string
-    {
-        $label = class_basename($this).' #'.$this->getKey();
-        $text = "*{$decision}*: {$label}";
-
-        if ($note) {
-            $text .= "\nCatatan: {$note}";
-        }
-
-        return $text;
     }
 
     /**

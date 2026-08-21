@@ -25,6 +25,7 @@ class SystemModule extends Model
     public const GA_UNIFORMS = 'ga.uniforms';
     public const GA_MAINTENANCE = 'ga.maintenance';
     public const GA_WORKLOG = 'ga.worklogs';
+        public const GA_OUTLET_MONITORING = 'ga.outlet-monitoring';
     public const HEAD_DASHBOARD = 'head.dashboard';
     public const HEAD_REQUESTS = 'head.requests';
     public const HEAD_APPROVALS = 'head.approvals';

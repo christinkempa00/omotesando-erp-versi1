@@ -7,12 +7,14 @@
                     Cetak Label QR ({{ $assets->count() }} aset)
                 </h2>
             </div>
-            <div class="print:hidden">
-                <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                    Cetak
+            <div class="print:hidden flex items-center gap-3">
+                <select id="qr-size-select" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></select>
+                <button type="button" id="qr-download-all-btn" class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-emerald-700">
+                    Download Semua (PNG)
                 </button>
             </div>
         </div>
+        <p id="qr-download-progress" class="print:hidden text-xs text-gray-400 mt-2"></p>
     </x-slot>
 
     <div class="py-8 print:py-0">
@@ -33,7 +35,7 @@
                                     <p class="font-bold text-[11px] text-gray-600 uppercase leading-tight truncate">{{ $asset->location }}</p>
                                 @endif
                                 <div class="border-t border-gray-200 my-1.5"></div>
-                                <p class="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">Serial Number</p>
+                                <p class="text-[9px] font-semibold text-gray-400 uppercase tracking-wider">Nomor Serial</p>
                                 <p class="font-bold text-xs text-gray-900 truncate">{{ $asset->serial_number ?: $asset->asset_code }}</p>
                             </div>
                         </div>
@@ -49,4 +51,39 @@
         }
         .break-inside-avoid { break-inside: avoid; page-break-inside: avoid; }
     </style>
+
+    @include('ga.assets.partials._qr-canvas-js')
+    <script>
+        const QR_ASSETS_DATA = {!! Illuminate\Support\Js::from($assets->map(fn ($a) => [
+            'code' => $a->asset_code,
+            'serial' => $a->serial_number,
+            'name' => $a->name,
+            'branch' => optional($a->branch)->name,
+            'location' => $a->location,
+            'qr' => $qrPngDataUris[$a->id],
+        ])->values()) !!};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('qr-size-select');
+            populateQrSizeSelect(select);
+
+            const btn = document.getElementById('qr-download-all-btn');
+            const progress = document.getElementById('qr-download-progress');
+            if (!btn) return;
+
+            btn.addEventListener('click', async () => {
+                btn.disabled = true;
+                for (let i = 0; i < QR_ASSETS_DATA.length; i++) {
+                    const asset = QR_ASSETS_DATA[i];
+                    progress.textContent = `Mengunduh ${i + 1} / ${QR_ASSETS_DATA.length}...`;
+                    const canvas = await buildQrLabelCanvas(asset, select.value);
+                    downloadCanvasAsPng(canvas, `QR-${asset.code}-${select.value}.png`);
+                    await new Promise(r => setTimeout(r, 350));
+                }
+                progress.textContent = `Selesai: ${QR_ASSETS_DATA.length} gambar diunduh.`;
+                btn.disabled = false;
+            });
+        });
+    </script>
 </x-app-layout>
+    

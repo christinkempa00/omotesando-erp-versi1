@@ -6,7 +6,7 @@
             </h2>
             <a href="{{ route('ga.worklogs.create') }}"
                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                + Work Log Baru
+                + Tambah Work Log
             </a>
         </div>
     </x-slot>
@@ -47,6 +47,12 @@
                 </div>
             </x-filter-bar>
 
+            <div class="bg-white shadow-sm rounded-lg p-6">
+                <h3 class="text-sm font-semibold text-gray-700">Distribusi Pekerjaan per Teknisi</h3>
+                <p class="text-xs text-gray-400 mb-4">Berdasarkan filter yang diterapkan di atas.</p>
+                <x-donut-chart :data="$technicianByCount" :labels="$technicianLabels" :total="$technicianTotal" size="w-28 h-28" />
+            </div>
+
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
@@ -74,7 +80,12 @@
                                 </td>
                                 <td class="px-4 py-3 text-sm">
                                     <div class="text-gray-900">{{ optional($workLog->work_date)->format('d/m/y') }}</div>
-                                    <div class="text-xs text-gray-500">{{ substr($workLog->work_time, 0, 5) }}</div>
+                                    <div class="text-xs text-gray-500">
+                                        {{ substr($workLog->start_time, 0, 5) }}@if ($workLog->end_time)&ndash;{{ substr($workLog->end_time, 0, 5) }}@endif
+                                    </div>
+                                    @if ($workLog->durationLabel())
+                                        <div class="text-xs text-gray-400">{{ $workLog->durationLabel() }}</div>
+                                    @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $workLog->branch->name }}</td>

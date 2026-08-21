@@ -8,8 +8,6 @@ use App\Models\Concerns\Approvable;
 use App\Models\Division;
 use App\Models\Role;
 use App\Models\User;
-use App\Services\TelegramNotifier;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -30,10 +28,16 @@ class GaRequest extends Model
         'requester_name',
         'requester_signature_path',
         'status',
+        'subtotal_amount',
+        'discount_percent',
+        'pph_percent',
         'total_amount',
     ];
 
     protected $casts = [
+        'subtotal_amount' => 'decimal:2',
+        'discount_percent' => 'decimal:2',
+        'pph_percent' => 'decimal:2',
         'total_amount' => 'decimal:2',
     ];
 
@@ -47,11 +51,11 @@ class GaRequest extends Model
     public static function categoryLabels(): array
     {
         return [
-            self::CATEGORY_PERBAIKAN_FASILITAS => 'Perbaikan Fasilitas',
-            self::CATEGORY_INFRASTRUKTUR_SISTEM => 'Infrastruktur & Sistem',
-            self::CATEGORY_KESELAMATAN_KEBERSIHAN => 'Keselamatan & Kebersihan',
-            self::CATEGORY_OPERASIONAL_PENGEMBANGAN => 'Operasional & Pengembangan',
-            self::CATEGORY_MAINTENANCE_STOCK => 'Maintenance & Stock',
+            self::CATEGORY_PERBAIKAN_FASILITAS => 'Perbaikan & Pemeliharaan Fasilitas',
+            self::CATEGORY_INFRASTRUKTUR_SISTEM => 'Infrastruktur & Sistem Pendukung',
+            self::CATEGORY_KESELAMATAN_KEBERSIHAN => 'Keselamatan, Kebersihan & Higienitas',
+            self::CATEGORY_OPERASIONAL_PENGEMBANGAN => 'Kebutuhan Operasional & Pengembangan',
+            self::CATEGORY_MAINTENANCE_STOCK => 'Maintenance Stock',
         ];
     }
 
@@ -146,13 +150,47 @@ class GaRequest extends Model
     // --- Business logic ---
 
     /**
-     * Hitung ulang total_amount dari seluruh item, lalu simpan.
-     * Dipanggil setiap kali item berubah (tambah/hapus/edit).
+     * Hitung ulang subtotal_amount dari seluruh item, lalu total_amount
+     * (subtotal dikurangi diskon & PPH, masing2 persentase dari subtotal —
+     * BUKAN dihitung berjenjang/compounding), lalu simpan. Dipanggil setiap
+     * kali item berubah (tambah/hapus/edit) & setelah discount/pph diubah.
      */
     public function recalculateTotal(): void
     {
-        $this->total_amount = $this->items()->sum('total');
+        $subtotal = (float) $this->items()->sum('total');
+
+        $this->subtotal_amount = $subtotal;
+        $this->total_amount = $subtotal - $this->discountAmount($subtotal) - $this->pphAmount($subtotal);
         $this->save();
+    }
+
+    /**
+     * Nominal diskon (Rupiah) dari discount_percent — bisa dipanggil dgn
+     * $subtotal eksplisit (saat recalculateTotal(), sblm disimpan) atau
+     * tanpa argumen (pakai subtotal_amount yg sudah tersimpan, utk display
+     * di show/PDF).
+     */
+    public function discountAmount(?float $subtotal = null): float
+    {
+        $subtotal ??= (float) $this->subtotal_amount;
+
+        return $this->discount_percent ? $subtotal * ((float) $this->discount_percent / 100) : 0.0;
+    }
+
+    /**
+     * "10,00" -> "10", "2,50" -> "2,5" — dipakai di show/PDF supaya label
+     * persentase tidak menampilkan angka nol yang tidak perlu.
+     */
+    public static function formatPercent(string|float|null $value): string
+    {
+        return rtrim(rtrim(number_format((float) $value, 2, ',', '.'), '0'), ',');
+    }
+
+    public function pphAmount(?float $subtotal = null): float
+    {
+        $subtotal ??= (float) $this->subtotal_amount;
+
+        return $this->pph_percent ? $subtotal * ((float) $this->pph_percent / 100) : 0.0;
     }
 
     /**
@@ -229,24 +267,6 @@ class GaRequest extends Model
     }
 
     /**
-     * Override pesan notifikasi generik dari trait Approvable supaya lebih
-     * informatif — sertakan nomor pengajuan, pemohon, dan outlet.
-     */
-    public function approvalNotificationText(string $decision, ?string $note): string
-    {
-        $text = "*Pengajuan {$decision}*\n";
-        $text .= "No: {$this->request_number}\n";
-        $text .= 'Pemohon: '.($this->requester_name ?: ($this->requestedBy?->name ?? '-'))."\n";
-        $text .= 'Outlet: '.($this->branch?->name ?? '-');
-
-        if ($note) {
-            $text .= "\nCatatan: {$note}";
-        }
-
-        return $text;
-    }
-
-    /**
      * Dipanggil trait Approvable tiap kali sebuah step di-approve/reject,
      * supaya status GaRequest ikut mencerminkan progres alur:
      * Step 1 (Finance "diketahui") approved -> in_review
@@ -269,46 +289,4 @@ class GaRequest extends Model
         $this->save();
     }
 
-    /**
-     * Override hook dari trait Approvable — sekali alur approval selesai
-     * penuh (status jadi RECEIVED), kirim PDF final (sudah memuat tanda
-     * tangan gambar tiap step, kalau ada) ke Telegram sebagai jejak audit —
-     * ke grup umum SEKALIGUS langsung ke chat pribadi pemohon (kalau sudah
-     * mengisi telegram_chat_id di profilnya; kalau belum, cuma ke grup,
-     * tidak error). TelegramNotifier aman-tanpa-kredensial, jadi ini tidak
-     * melempar error kalau bot belum dikonfigurasi di environment ini.
-     */
-    protected function sendFinalDocumentIfComplete(): void
-    {
-        if ($this->status !== self::STATUS_RECEIVED) {
-            return;
-        }
-
-        $this->loadMissing(['items', 'branch', 'division', 'requestedBy', 'approvals.approver']);
-
-        $pdfContents = Pdf::loadView('ga.requests.document-pdf', [
-            'gaRequest' => $this,
-            'categoryLabels' => self::categoryLabels(),
-        ])->setPaper('a4', 'portrait')->output();
-
-        $filename = 'GAR-'.str_replace('/', '-', $this->request_number).'.pdf';
-        $notifier = app(TelegramNotifier::class);
-
-        $notifier->sendDocument(
-            $filename,
-            $pdfContents,
-            "Dokumen final GAR {$this->request_number} — telah diterima & disetujui penuh."
-        );
-
-        if ($this->requestedBy?->telegram_chat_id) {
-            $requesterName = $this->requester_name ?: $this->requestedBy->name;
-
-            $notifier->sendDocument(
-                $filename,
-                $pdfContents,
-                "Halo {$requesterName}, pengajuan GAR {$this->request_number} Anda sudah disetujui penuh. Berikut dokumen finalnya.",
-                $this->requestedBy->telegram_chat_id
-            );
-        }
-    }
 }

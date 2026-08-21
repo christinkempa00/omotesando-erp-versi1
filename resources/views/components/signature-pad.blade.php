@@ -3,6 +3,7 @@
     'savedSignatureUrl' => null,
     'label' => 'Tanda Tangan',
     'showSaveAsDefaultOption' => false,
+    'required' => true,
 ])
 
 @once
@@ -44,6 +45,9 @@
             this.$refs.dataInput.value = (this.pad && ! this.pad.isEmpty()) ? this.pad.toDataURL('image/png') : '';
         },
         validateOnSubmit(event) {
+            if (! {{ $required ? 'true' : 'false' }}) {
+                return true;
+            }
             // Tombol submit bernilai 'draft' (konvensi form 2-tombol
             // Simpan Draft / Kirim) sengaja melewati validasi ini sama
             // sekali — tanda tangan cuma wajib pas benar-benar dikirim.

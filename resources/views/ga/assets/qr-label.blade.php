@@ -7,9 +7,10 @@
                     Label QR — {{ $asset->asset_code }}
                 </h2>
             </div>
-            <div class="print:hidden">
-                <button onclick="window.print()" class="px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                    Cetak
+            <div class="print:hidden flex items-center gap-3">
+                <select id="qr-size-select" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></select>
+                <button type="button" id="qr-download-btn" class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-emerald-700">
+                    Download Gambar (PNG)
                 </button>
             </div>
         </div>
@@ -28,7 +29,7 @@
 
                     <div class="border-t border-gray-200 my-3"></div>
 
-                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Serial Number</p>
+                    <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Nomor Serial</p>
                     <p class="font-bold text-lg text-gray-900">{{ $asset->serial_number ?: $asset->asset_code }}</p>
                 </div>
             </div>
@@ -40,4 +41,32 @@
             nav, header, .print\:hidden { display: none !important; }
         }
     </style>
+
+    @include('ga.assets.partials._qr-canvas-js')
+    <script>
+        const QR_ASSET_DATA = {!! Illuminate\Support\Js::from([
+            'code' => $asset->asset_code,
+            'serial' => $asset->serial_number,
+            'name' => $asset->name,
+            'branch' => optional($asset->branch)->name,
+            'location' => $asset->location,
+            'qr' => $qrPngDataUri,
+        ]) !!};
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const select = document.getElementById('qr-size-select');
+            populateQrSizeSelect(select);
+
+            document.getElementById('qr-download-btn').addEventListener('click', async (e) => {
+                const btn = e.currentTarget;
+                btn.disabled = true;
+                try {
+                    const canvas = await buildQrLabelCanvas(QR_ASSET_DATA, select.value);
+                    downloadCanvasAsPng(canvas, `QR-${QR_ASSET_DATA.code}-${select.value}.png`);
+                } finally {
+                    btn.disabled = false;
+                }
+            });
+        });
+    </script>
 </x-app-layout>

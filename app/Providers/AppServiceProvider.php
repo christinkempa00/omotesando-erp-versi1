@@ -63,5 +63,17 @@ class AppServiceProvider extends ServiceProvider
                 ? route(RoleHomeResolver::routeNameFor($request->user()))
                 : route('login')
         );
+
+        // Sama seperti fix split-hosting di bootstrap/app.php (usePublicPath)
+        // — TAPI barryvdh/laravel-dompdf TIDAK memakai helper public_path()
+        // Laravel, dia baca base_path('public') mentah-mentah lewat config
+        // dompdf.public_path. Tanpa ini, Pdf::loadView() di manapun
+        // (bukan cuma satu fitur — SEMUA export PDF di seluruh app) lempar
+        // "RuntimeException: Cannot resolve public path" di hosting split
+        // spt ini, krn <basePath>/public memang tidak pernah ada di sana.
+        $splitPublicPath = base_path('../public_html');
+        if (is_dir($splitPublicPath)) {
+            config(['dompdf.public_path' => realpath($splitPublicPath)]);
+        }
     }
 }

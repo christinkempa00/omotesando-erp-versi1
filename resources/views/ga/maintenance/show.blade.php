@@ -60,7 +60,12 @@
                         <dt class="text-gray-500">Jadwal</dt>
                         <dd class="text-gray-800 font-medium">
                             {{ optional($job->scheduled_date)->format('d M Y') }}
-                            {{ $job->scheduled_time ? \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) : '' }}
+                            @if ($job->scheduled_time)
+                                {{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}
+                                @if ($job->scheduled_end_time)
+                                    – {{ \Illuminate\Support\Str::of($job->scheduled_end_time)->substr(0, 5) }}
+                                @endif
+                            @endif
                         </dd>
                     </div>
                     <div>
@@ -134,7 +139,7 @@
                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm mb-3"></textarea>
                         <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
-                            Tandai Pekerjaan Selesai
+                            Selesai (Complete)
                         </button>
                     </form>
                 </div>

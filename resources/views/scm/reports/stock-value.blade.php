@@ -1,8 +1,20 @@
 <x-app-layout sidebar="scm">
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Laporan Nilai Persediaan
-        </h2>
+        <div class="flex items-center justify-between">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                Laporan Nilai Persediaan
+            </h2>
+            <div class="flex gap-2">
+                <a href="{{ route('scm.reports.stock-value.export.xlsx', request()->query()) }}"
+                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                    Export .xlsx
+                </a>
+                <a href="{{ route('scm.reports.stock-value.export.pdf', request()->query()) }}"
+                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                    Export .pdf
+                </a>
+            </div>
+        </div>
     </x-slot>
 
     <div class="py-8">

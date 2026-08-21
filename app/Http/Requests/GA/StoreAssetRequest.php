@@ -14,6 +14,12 @@ class StoreAssetRequest extends FormRequest
 
     public function rules(): array
     {
+        // Aset yang sedang diedit (null kalau ini request store/create).
+        // Foto cuma wajib diupload ulang kalau asetnya belum punya foto sama
+        // sekali — supaya edit aset lama yang sudah punya foto tidak dipaksa
+        // upload ulang tiap kali disimpan (input file tidak bisa "pre-filled").
+        $asset = $this->route('asset');
+
         return [
             'name' => ['required', 'string', 'max:255'],
             'category' => ['nullable', 'string', 'max:255'],
@@ -27,13 +33,13 @@ class StoreAssetRequest extends FormRequest
             'vendor_contact' => ['nullable', 'string', 'max:255'],
 
             'status' => ['required', 'in:'.implode(',', array_keys(Asset::statusLabels()))],
-            'location' => ['nullable', 'in:Kitchen,Floor,Bar'],
+            'location' => ['nullable', 'in:Kitchen,Floor,Bar,Lainnya'],
             'branch_id' => ['required', 'exists:branches,id'],
-            'custodian_name' => ['nullable', 'string', 'max:255'],
+            'custodian_name' => ['required', 'string', 'max:255'],
 
             'description' => ['nullable', 'string', 'max:2000'],
-            'image' => ['nullable', 'image', 'max:4096'], // max 4MB
-            'serial_number_photo' => ['nullable', 'image', 'max:4096'],
+            'image' => [$asset?->image_path ? 'nullable' : 'required', 'image', 'max:4096'], // max 4MB
+            'serial_number_photo' => [$asset?->serial_number_photo_path ? 'nullable' : 'required', 'image', 'max:4096'],
 
             'sp3_number' => ['nullable', 'string', 'max:255'],
             'po_number' => ['nullable', 'string', 'max:255'],

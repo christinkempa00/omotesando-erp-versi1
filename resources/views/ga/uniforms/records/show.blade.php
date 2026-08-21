@@ -10,7 +10,11 @@
             </div>
             <div class="flex flex-wrap items-center gap-2">
                 <a href="{{ route('ga.uniforms.records.document', $record) }}"
-                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Dokumen Serah Terima</a>
+                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Dokumen (PDF)</a>
+                @if ($record->status === \App\Models\GA\UniformRecord::STATUS_RETURNED)
+                    <a href="{{ route('ga.uniforms.records.return-document', $record) }}"
+                       class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Dokumen Pengembalian (PDF)</a>
+                @endif
                 <a href="{{ route('ga.uniforms.records.edit', $record) }}"
                    class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Edit</a>
                 <form method="POST" action="{{ route('ga.uniforms.records.destroy', $record) }}"
@@ -48,23 +52,22 @@
 
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
                     <div><dt class="text-gray-500">Seragam</dt>
-                        <dd class="font-medium text-gray-900">
-                            {{ $record->uniform_type }}
-                            @if ($record->size) &middot; {{ $record->size }} @endif
-                            @if ($record->color) &middot; {{ $record->color }} @endif
-                        </dd>
+                        <dd class="font-medium text-gray-900">{{ $record->summaryLabel() }}</dd>
                     </div>
                     <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $record->branch->name }}</dd></div>
+                    <div><dt class="text-gray-500">Nama Penyerah</dt><dd class="font-medium text-gray-900">{{ $record->issued_by_name ?: '—' }}</dd></div>
                     <div><dt class="text-gray-500">Tanggal Serah</dt><dd class="font-medium text-gray-900">{{ $record->issue_date->format('d M Y') }}</dd></div>
-                    <div><dt class="text-gray-500">Varian Stok</dt>
-                        <dd class="font-medium text-gray-900">
-                            @if ($record->uniformStock)
-                                <a href="{{ route('ga.uniforms.stocks.show', $record->uniformStock) }}" class="text-indigo-600 hover:underline">
-                                    {{ $record->uniformStock->stock_code }}
-                                </a>
-                            @else — @endif
-                        </dd>
-                    </div>
+                    @if (! $record->isItemized())
+                        <div><dt class="text-gray-500">Varian Stok</dt>
+                            <dd class="font-medium text-gray-900">
+                                @if ($record->uniformStock)
+                                    <a href="{{ route('ga.uniforms.stocks.show', $record->uniformStock) }}" class="text-indigo-600 hover:underline">
+                                        {{ $record->uniformStock->stock_code }}
+                                    </a>
+                                @else — @endif
+                            </dd>
+                        </div>
+                    @endif
                 </dl>
 
                 @if ($record->issue_notes)
@@ -90,6 +93,40 @@
                 </div>
             </div>
 
+            @if ($record->isItemized())
+                <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+                    <div class="px-6 py-4 border-b border-gray-100">
+                        <h3 class="font-medium text-gray-800">Daftar Item</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-100 text-sm">
+                            <thead class="bg-gray-50">
+                                <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-3">No</th>
+                                    <th class="px-6 py-3">Nama Barang</th>
+                                    <th class="px-6 py-3">Spesifikasi</th>
+                                    <th class="px-6 py-3">Qty</th>
+                                    <th class="px-6 py-3">Kondisi</th>
+                                    <th class="px-6 py-3">Keterangan</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                @foreach ($record->items as $i => $item)
+                                    <tr>
+                                        <td class="px-6 py-3 text-gray-500">{{ $i + 1 }}</td>
+                                        <td class="px-6 py-3 font-medium text-gray-800">{{ $item->uniform_type }}</td>
+                                        <td class="px-6 py-3 text-gray-600">{{ $item->specificationLabel() }}</td>
+                                        <td class="px-6 py-3 text-gray-600">{{ $item->qty }}</td>
+                                        <td class="px-6 py-3 text-gray-600">{{ $item->item_condition ?: '-' }}</td>
+                                        <td class="px-6 py-3 text-gray-600">{{ $item->item_notes ?: '-' }}</td>
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @endif
+
             @if ($record->status === \App\Models\GA\UniformRecord::STATUS_RETURNED)
                 <div class="bg-green-50 border border-green-200 shadow-sm rounded-lg p-6">
                     <h3 class="font-medium text-green-800 mb-1">Sudah Dikembalikan</h3>
@@ -103,29 +140,71 @@
                 </div>
             @else
                 <div class="bg-white shadow-sm rounded-lg p-6">
-                    <h3 class="font-medium text-gray-800 mb-3">Tandai Dikembalikan</h3>
-                    <form method="POST" action="{{ route('ga.uniforms.records.return', $record) }}" class="space-y-3">
+                    <h3 class="font-medium text-gray-800 mb-3">Tandai Dikembalikan — Pemeriksaan Pengembalian Barang</h3>
+                    <form method="POST" action="{{ route('ga.uniforms.records.return', $record) }}" class="space-y-4">
                         @csrf
-                        <div class="grid grid-cols-2 gap-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kembali *</label>
                                 <input type="date" name="return_date" required value="{{ now()->toDateString() }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                             <div>
-                                <label class="block text-sm font-medium text-gray-700 mb-1">Kondisi *</label>
-                                <select name="return_condition" required class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                    @foreach (\App\Models\GA\UniformRecord::conditionLabels() as $value => $label)
-                                        <option value="{{ $value }}">{{ $label }}</option>
-                                    @endforeach
-                                </select>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
+                                <input type="text" name="returned_by_name" required value="{{ old('returned_by_name', $record->employee_name) }}"
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <p class="mt-1 text-xs text-gray-400">Karyawan yang mengembalikan barang.</p>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penerima *</label>
+                                <input type="text" name="received_by_name" required value="{{ old('received_by_name', Auth::user()->name) }}"
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <p class="mt-1 text-xs text-gray-400">Staf GA yang memeriksa.</p>
                             </div>
                         </div>
-                        <textarea name="return_notes" rows="2" placeholder="Catatan pengembalian (opsional)"
-                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"></textarea>
-                        <p class="text-xs text-gray-400">
-                            Kondisi "Baik" mengembalikan stok ke tersedia, "Rusak" masuk stok rusak, "Hilang" tidak mengubah stok.
-                        </p>
+
+                        <div class="border border-gray-100 rounded-md divide-y divide-gray-100">
+                            <div class="p-3">
+                                <x-ya-tidak-radio name="qty_sesuai" label="Jumlah barang sesuai" />
+                                <input type="text" name="qty_sesuai_notes" placeholder="Keterangan (opsional)"
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div class="p-3">
+                                <x-ya-tidak-radio name="spesifikasi_sesuai" label="Spesifikasi sesuai" />
+                                <input type="text" name="spesifikasi_sesuai_notes" placeholder="Keterangan (opsional)"
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                            <div class="p-3">
+                                <x-ya-tidak-radio name="kondisi_sesuai" label="Kondisi sesuai" />
+                                <input type="text" name="kondisi_sesuai_notes" placeholder="Keterangan (opsional)"
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <x-signature-pad name="return_signature" label="Tanda Tangan Penyerah (Karyawan)" :required="false" />
+                            <x-signature-pad name="received_by_signature" label="Tanda Tangan Penerima (GA)" :required="false" />
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kondisi Fisik Barang *</label>
+                            <select name="return_condition" required class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                @foreach (\App\Models\GA\UniformRecord::conditionLabels() as $value => $label)
+                                    <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                            <p class="mt-1 text-xs text-gray-400">
+                                Menentukan pergerakan stok — "Bagus" kembali ke tersedia, "Rusak" masuk stok rusak.
+                                Berlaku untuk seluruh item dalam serah-terima ini.
+                            </p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
+                            <textarea name="return_notes" rows="2" placeholder="Catatan pengembalian (opsional)"
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"></textarea>
+                        </div>
+
                         <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                             Tandai Dikembalikan

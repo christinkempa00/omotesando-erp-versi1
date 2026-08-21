@@ -9,15 +9,15 @@
     <div class="flex items-center justify-between mb-3">
         <h3 class="text-sm font-semibold text-gray-700">{{ $calendarMonth->translatedFormat('F Y') }}</h3>
         <div class="flex items-center gap-1">
-            <a href="{{ route('ga.maintenance.index', array_filter(request()->except(['month', 'week']) + ['month' => $calendarMonth->copy()->subMonth()->format('Y-m')])) }}"
+            <a href="{{ route('ga.maintenance.index', array_filter(request()->except('month') + ['month' => $calendarMonth->copy()->subMonth()->format('Y-m')])) }}"
                class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">‹</a>
-            <a href="{{ route('ga.maintenance.index', array_filter(request()->except(['month', 'week']) + ['month' => $calendarMonth->copy()->addMonth()->format('Y-m')])) }}"
+            <a href="{{ route('ga.maintenance.index', array_filter(request()->except('month') + ['month' => $calendarMonth->copy()->addMonth()->format('Y-m')])) }}"
                class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">›</a>
         </div>
     </div>
 
     <div class="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 mb-1">
-        @foreach (['Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa', 'Su'] as $d)
+        @foreach (['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $d)
             <span>{{ $d }}</span>
         @endforeach
     </div>
@@ -29,17 +29,19 @@
                 $dateStr = $cursor->toDateString();
                 $inMonth = $cursor->month === $firstOfMonth->month;
                 $isToday = $dateStr === $today;
-                $inSelectedWeek = $cursor->between($weekStart, $weekEnd);
-                $hasJobs = $jobDatesInMonth->contains($dateStr);
+                $dateJobIds = $jobIdsByDate[$dateStr] ?? collect();
+                $hasJobs = $dateJobIds->isNotEmpty();
             @endphp
-            <a href="{{ route('ga.maintenance.index', array_filter(request()->except('week') + ['week' => $dateStr])) }}"
-               class="relative aspect-square flex items-center justify-center text-xs rounded-full
-                      {{ $isToday ? 'bg-indigo-600 text-white font-semibold' : ($inSelectedWeek ? 'bg-indigo-50 text-indigo-700' : ($inMonth ? 'text-gray-700 hover:bg-gray-100' : 'text-gray-300')) }}">
+            <button type="button"
+                    @if ($hasJobs) @click="onDateClick('{{ $dateStr }}', {{ Illuminate\Support\Js::from($dateJobIds) }})" @endif
+                    class="relative aspect-square flex items-center justify-center text-xs rounded-full
+                           {{ $isToday ? 'bg-indigo-600 text-white font-semibold' : ($inMonth ? 'text-gray-700' : 'text-gray-300') }}
+                           {{ $hasJobs ? 'cursor-pointer hover:bg-indigo-50 hover:text-indigo-700' : 'cursor-default' }}">
                 {{ $cursor->day }}
                 @if ($hasJobs && ! $isToday)
                     <span class="absolute bottom-0.5 w-1 h-1 rounded-full bg-orange-400"></span>
                 @endif
-            </a>
+            </button>
             @php $cursor->addDay(); @endphp
         @endwhile
     </div>

@@ -36,7 +36,7 @@
                         selected: {},
                         labels: [],
                         loadingLabels: false,
-                        photoDataUrl: null,
+                        hasPhoto: false,
                         async fetchLabels() {
                             if (! this.fromBranchId) { this.labels = []; return; }
                             this.loadingLabels = true;
@@ -66,14 +66,13 @@
                             this.selected = { ...this.selected, [id]: next };
                         },
                         onPhotoChange(e) {
-                            const file = e.target.files[0];
-                            this.photoDataUrl = file ? URL.createObjectURL(file) : null;
+                            this.hasPhoto = e.target.files.length > 0;
                         },
                         get selectedCount() { return Object.keys(this.selected).length; },
                         get canProceed() {
                             if (this.step === 1) return this.toBranchId && (!this.isAdmin || this.fromBranchId);
                             if (this.step === 2) return this.selectedCount > 0;
-                            if (this.step === 3) return this.photoDataUrl !== null;
+                            if (this.step === 3) return this.hasPhoto;
                             return true;
                         },
                         next() { if (this.canProceed && this.step < this.totalSteps) this.step++; },
@@ -176,23 +175,10 @@
                                 <div class="text-sm font-bold text-ink mb-1">Foto bukti muat barang</div>
                                 <p class="text-xs text-ink-muted mb-3.5">Wajib diisi sebelum surat jalan bisa dikirim</p>
 
-                                <input type="file" name="sent_photo" accept="image/*" capture="environment"
-                                       x-ref="photoInput" @change="onPhotoChange" class="hidden">
-
-                                <div x-show="!photoDataUrl" x-cloak @click="$refs.photoInput.click()"
-                                     class="h-52 rounded-2xl border-2 border-dashed border-accent/40 bg-accent-tint flex flex-col items-center justify-center gap-2.5 cursor-pointer">
-                                    <div class="w-14 h-14 rounded-full bg-white flex items-center justify-center text-2xl">📷</div>
-                                    <div class="text-sm font-bold text-accent">Ketuk untuk buka kamera</div>
-                                    <div class="text-[10.5px] font-bold text-white bg-status-rejected-fg px-2.5 py-1 rounded-full">WAJIB</div>
-                                </div>
-
-                                <div x-show="photoDataUrl" x-cloak class="rounded-2xl overflow-hidden border border-hairline">
-                                    <img :src="photoDataUrl" class="w-full h-44 object-cover">
-                                    <div class="px-3.5 py-2.5 bg-white flex items-center gap-2">
-                                        <div class="text-xs font-bold text-status-approved-fg flex-1">✓ Foto tersimpan</div>
-                                        <button type="button" @click="$refs.photoInput.click()" class="text-xs font-bold text-accent">Ambil ulang</button>
-                                    </div>
-                                </div>
+                                <input type="file" name="sent_photo" accept="image/*" capture="environment" required
+                                       @change="onPhotoChange"
+                                       class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                <p class="text-xs text-ink-muted mt-1">Wajib — foto bukti muat barang sebelum surat jalan bisa dikirim.</p>
                             </div>
 
                             {{-- Step 4: Review --}}

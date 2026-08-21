@@ -30,7 +30,12 @@ class ModuleSeeder extends Seeder
             $module = Module::updateOrCreate(['key' => $data['key']], $data + ['is_active' => true]);
             $module->roles()->syncWithoutDetaching($defaultRoleIds);
         }
-
+        $monitoringRoleIds = Role::whereIn('name', [Role::OUTLET, Role::GA, Role::HEAD, Role::ADMIN])->pluck('id');
+        $monitoring = Module::updateOrCreate(
+            ['key' => Module::OUTLET_MONITORING],
+            ['label' => 'Monitoring Outlet', 'description' => 'Laporan foto kebersihan outlet saat opening & closing', 'is_active' => true]
+        );
+        $monitoring->roles()->syncWithoutDetaching($monitoringRoleIds);
         // Modul SCM — akses default per section beda dari GA (lihat
         // routes/web.php grup scm.*).
         $scmModules = [

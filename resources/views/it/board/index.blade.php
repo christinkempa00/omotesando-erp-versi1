@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Papan Kerja — {{ $board->name }}
             </h2>
-            <a href="{{ route('it.labels.index') }}" class="text-sm text-indigo-600 hover:text-indigo-700 font-medium">
+            <a href="{{ route('it.labels.index') }}" class="text-sm text-gold-600 hover:text-gold-700 font-medium">
                 Kelola Label
             </a>
         </div>
@@ -12,7 +12,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.2/Sortable.min.js"></script>
 
-    <div class="py-6"
+    <div class="font-it py-6"
          x-data="kanbanBoard(
             @js($board->columns->map(fn ($c) => [
                 'id' => $c->id,
@@ -78,7 +78,7 @@
                                     <div class="flex items-center justify-between text-xs">
                                         <span class="px-2 py-0.5 rounded-full font-medium" :class="priorityClasses[task.priority] ?? priorityClasses.medium" x-text="priorityLabels[task.priority] ?? task.priority"></span>
 
-                                        <span class="w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px] font-semibold"
+                                        <span class="w-6 h-6 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 text-white flex items-center justify-center text-[10px] font-semibold"
                                               x-show="task.assignee" :title="task.assignee?.name" x-text="initials(task.assignee?.name)"></span>
                                     </div>
 
@@ -103,9 +103,9 @@
                                 <textarea x-ref="newTaskInput" x-model="title" rows="2" placeholder="Judul task..."
                                           @keydown.enter.prevent="$el.form.requestSubmit()"
                                           @keydown.escape="adding = false; title = ''"
-                                          class="w-full text-xs rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                          class="w-full text-xs rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500"></textarea>
                                 <div class="flex items-center gap-2">
-                                    <button type="submit" class="px-2.5 py-1 text-xs font-medium rounded-md bg-indigo-600 text-white hover:bg-indigo-700">Tambah</button>
+                                    <button type="submit" class="px-2.5 py-1 text-xs font-medium rounded-md bg-gradient-to-r from-gold-500 to-gold-600 text-white hover:shadow-[0_2px_8px_-1px_rgba(200,155,44,0.5)] transition">Tambah</button>
                                     <button type="button" @click="adding = false; title = ''" class="text-xs text-gray-500 hover:text-gray-700">Batal</button>
                                 </div>
                             </form>
@@ -121,12 +121,12 @@
              style="display: none;">
             <div class="fixed inset-0 bg-gray-900/50" @click="closeTask()"></div>
 
-            <div class="relative bg-white rounded-lg shadow-xl w-full max-w-2xl my-8" @click.stop x-show="activeTask" x-cloak>
+            <div class="relative bg-white rounded-xl shadow-xl w-full max-w-2xl my-8" @click.stop x-show="activeTask" x-cloak>
                 <template x-if="activeTask">
                     <div class="p-6 space-y-5">
                         <div class="flex items-start justify-between gap-3">
                             <input type="text" x-model="activeTask.title" @change="saveField('title', activeTask.title)"
-                                   class="flex-1 text-lg font-semibold text-gray-800 border-0 border-b border-transparent hover:border-gray-200 focus:border-indigo-500 focus:ring-0 px-0">
+                                   class="flex-1 text-lg font-semibold text-gray-800 border-0 border-b border-transparent hover:border-gray-200 focus:border-gold-500 focus:ring-0 px-0">
                             <button type="button" @click="closeTask()" class="text-gray-400 hover:text-gray-600 shrink-0">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M6 6l12 12M18 6 6 18" />
@@ -136,13 +136,13 @@
 
                         <textarea x-model="activeTask.description" @change="saveField('description', activeTask.description)"
                                   rows="3" placeholder="Deskripsi..."
-                                  class="w-full text-sm rounded-md border-gray-200 focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                                  class="w-full text-sm rounded-md border-gray-200 focus:border-gold-500 focus:ring-gold-500"></textarea>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div>
                                 <label class="block text-[11px] font-medium text-gray-500 mb-1">Prioritas</label>
                                 <select x-model="activeTask.priority" @change="saveField('priority', activeTask.priority)"
-                                        class="w-full text-xs rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="w-full text-xs rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500">
                                     <template x-for="[value, label] in Object.entries(priorityLabels)" :key="value">
                                         <option :value="value" x-text="label"></option>
                                     </template>
@@ -151,7 +151,7 @@
                             <div>
                                 <label class="block text-[11px] font-medium text-gray-500 mb-1">Assignee</label>
                                 <select x-model="activeTask.assignee_id" @change="saveField('assignee_id', activeTask.assignee_id || null)"
-                                        class="w-full text-xs rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="w-full text-xs rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500">
                                     <option value="">Belum ditugaskan</option>
                                     <template x-for="u in users" :key="u.id">
                                         <option :value="u.id" x-text="u.name"></option>
@@ -161,12 +161,12 @@
                             <div>
                                 <label class="block text-[11px] font-medium text-gray-500 mb-1">Due Date</label>
                                 <input type="date" x-model="activeTask.due_date" @change="saveField('due_date', activeTask.due_date || null)"
-                                       class="w-full text-xs rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full text-xs rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500">
                             </div>
                             <div>
                                 <label class="block text-[11px] font-medium text-gray-500 mb-1">Modul Terkait</label>
                                 <select x-model="activeTask.related_module_id" @change="saveField('related_module_id', activeTask.related_module_id || null)"
-                                        class="w-full text-xs rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="w-full text-xs rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500">
                                     <option value="">- Tidak ada -</option>
                                     <template x-for="m in systemModules" :key="m.id">
                                         <option :value="m.id" x-text="m.name"></option>
@@ -197,7 +197,7 @@
                                 <template x-for="item in activeTask.checklist_items" :key="item.id">
                                     <li class="flex items-center gap-2 text-sm group">
                                         <input type="checkbox" :checked="item.is_done" @change="toggleChecklistItem(item)"
-                                               class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                               class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                                         <span class="flex-1" :class="item.is_done ? 'line-through text-gray-400' : 'text-gray-700'" x-text="item.content"></span>
                                         <button type="button" @click="deleteChecklistItem(item)" class="text-gray-300 hover:text-red-500 opacity-0 group-hover:opacity-100">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -209,7 +209,7 @@
                             </ul>
                             <form @submit.prevent="addChecklistItem($refs.checklistInput.value); $refs.checklistInput.value = ''" class="flex gap-2">
                                 <input type="text" x-ref="checklistInput" placeholder="Tambah item checklist..."
-                                       class="flex-1 text-xs rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="flex-1 text-xs rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500">
                                 <button type="submit" class="px-2.5 py-1 text-xs font-medium rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200">+</button>
                             </form>
                         </div>
@@ -229,7 +229,7 @@
                             </ul>
                             <form @submit.prevent="addComment($refs.commentInput.value); $refs.commentInput.value = ''" class="flex gap-2">
                                 <input type="text" x-ref="commentInput" placeholder="Tulis komentar..."
-                                       class="flex-1 text-xs rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="flex-1 text-xs rounded-md border-gray-300 focus:border-gold-500 focus:ring-gold-500">
                                 <button type="submit" class="px-2.5 py-1 text-xs font-medium rounded-md bg-gray-100 text-gray-600 hover:bg-gray-200">Kirim</button>
                             </form>
                         </div>

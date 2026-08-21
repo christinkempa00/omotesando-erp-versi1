@@ -31,7 +31,7 @@
                 <th>Outlet</th>
                 <th>Lokasi</th>
                 <th>Tanggal Beli</th>
-                <th>Kondisi</th>
+                <th>Status</th>
                 <th>Penanggung Jawab</th>
                 <th class="text-right">Jumlah</th>
             </tr>

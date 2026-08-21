@@ -40,6 +40,10 @@ class StoreGaRequestRequest extends FormRequest
             'items.*.price_per_unit' => $isDraft ? ['nullable', 'numeric', 'min:0'] : ['required', 'numeric', 'gt:0'],
             'items.*.vendor_name' => $isDraft ? ['nullable', 'string', 'max:255'] : ['required', 'string', 'max:255'],
 
+            // PPH & Diskon: opsional, persentase dari Sub Total (bukan nominal).
+            'discount_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'pph_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+
             // Lampiran foto: opsional, boleh lebih dari satu.
             'attachments' => ['nullable', 'array'],
             'attachments.*' => ['image', 'max:4096'],
@@ -57,6 +61,7 @@ class StoreGaRequestRequest extends FormRequest
     public function messages(): array
     {
         return [
+            'requester_name.required' => 'Pemohon wajib diisi.',
             'items.required' => 'Minimal harus ada 1 item pengajuan.',
             'items.*.item_name.required' => 'Nama item wajib diisi.',
             'items.*.type.required' => 'Tipe wajib diisi.',
@@ -64,6 +69,13 @@ class StoreGaRequestRequest extends FormRequest
             'items.*.vendor_name.required' => 'Vendor wajib diisi.',
             'items.*.qty.min' => 'Qty minimal 1.',
             'items.*.price_per_unit.gt' => 'Harga Satuan wajib diisi (tidak boleh 0).',
+        ];
+    }
+
+    public function attributes(): array
+    {
+        return [
+            'requester_name' => 'Pemohon',
         ];
     }
 

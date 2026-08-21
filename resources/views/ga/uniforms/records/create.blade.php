@@ -7,7 +7,7 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white shadow-sm rounded-lg p-6">
 
                 @if ($errors->any())
@@ -30,67 +30,39 @@
                           x-data="{
                               tree: {{ Illuminate\Support\Js::from($stockTree) }},
                               branchId: '{{ old('branch_id') }}',
-                              type: '{{ old('type') }}',
-                              color: '{{ old('color') }}',
-                              stockId: '{{ old('uniform_stock_id') }}',
+                              items: {{ Illuminate\Support\Js::from(old('items', [['type' => '', 'color' => '', 'uniform_stock_id' => '', 'qty' => 1, 'item_notes' => '']])) }},
                               get types() { return this.branchId ? Object.keys(this.tree[this.branchId] || {}) : []; },
-                              get colors() { return (this.branchId && this.type) ? Object.keys((this.tree[this.branchId] || {})[this.type] || {}) : []; },
-                              get sizes() { return (this.branchId && this.type && this.color) ? ((this.tree[this.branchId] || {})[this.type] || {})[this.color] || [] : []; },
-                              signaturePad: null,
-                              initSignaturePad() {
-                                  const canvas = this.$refs.signatureCanvas;
-                                  const ctx = canvas.getContext('2d');
-                                  ctx.lineWidth = 2;
-                                  ctx.lineCap = 'round';
-                                  ctx.strokeStyle = '#111827';
-                                  let drawing = false;
-
-                                  const pos = (e) => {
-                                      const rect = canvas.getBoundingClientRect();
-                                      const point = e.touches ? e.touches[0] : e;
-                                      return { x: point.clientX - rect.left, y: point.clientY - rect.top };
-                                  };
-                                  const start = (e) => { drawing = true; const p = pos(e); ctx.beginPath(); ctx.moveTo(p.x, p.y); };
-                                  const move = (e) => { if (!drawing) return; e.preventDefault(); const p = pos(e); ctx.lineTo(p.x, p.y); ctx.stroke(); };
-                                  const end = () => { drawing = false; };
-
-                                  canvas.addEventListener('mousedown', start);
-                                  canvas.addEventListener('mousemove', move);
-                                  window.addEventListener('mouseup', end);
-                                  canvas.addEventListener('touchstart', start);
-                                  canvas.addEventListener('touchmove', move);
-                                  canvas.addEventListener('touchend', end);
+                              colorsFor(item) { return (this.branchId && item.type) ? Object.keys((this.tree[this.branchId] || {})[item.type] || {}) : []; },
+                              sizesFor(item) { return (this.branchId && item.type && item.color) ? ((this.tree[this.branchId] || {})[item.type] || {})[item.color] || [] : []; },
+                              onBranchChange() {
+                                  this.items.forEach(i => { i.type = ''; i.color = ''; i.uniform_stock_id = ''; });
                               },
-                              clearSignature() {
-                                  const canvas = this.$refs.signatureCanvas;
-                                  canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+                              addItem() {
+                                  this.items.push({ type: '', color: '', uniform_stock_id: '', qty: 1, item_notes: '' });
                               },
-                              submitForm() {
-                                  const canvas = this.$refs.signatureCanvas;
-                                  const blank = document.createElement('canvas');
-                                  blank.width = canvas.width;
-                                  blank.height = canvas.height;
-                                  if (canvas.toDataURL() !== blank.toDataURL()) {
-                                      this.$refs.signatureData.value = canvas.toDataURL('image/png');
-                                  }
+                              removeItem(index) {
+                                  this.items.splice(index, 1);
                               },
-                          }"
-                          @submit="submitForm()">
+                          }">
                         @csrf
 
-                        <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Nama Karyawan *</label>
-                            <input type="text" name="employee_name" required value="{{ old('employee_name') }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        </div>
-
-                        <div class="border border-gray-200 rounded-lg p-4 space-y-3">
-                            <p class="text-sm font-medium text-gray-700">Varian Seragam *</p>
-                            <p class="text-xs text-gray-400 -mt-2">Pilih outlet dulu, lalu jenis seragam, warna, dan ukuran akan menyesuaikan.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penerima *</label>
+                                <input type="text" name="employee_name" required value="{{ old('employee_name') }}"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                                <select x-model="branchId" @change="type = ''; color = ''; stockId = ''"
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
+                                <input type="text" name="issued_by_name" required value="{{ old('issued_by_name') }}"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <p class="mt-1 text-xs text-gray-400">Diisi sekali — otomatis jadi nama di baris "Diserahkan Oleh" pada dokumen PDF.</p>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
+                                <select name="branch_id" x-model="branchId" @change="onBranchChange()" required
                                         class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
                                     <option value="">-- Pilih Outlet --</option>
                                     @foreach ($branches as $branch)
@@ -100,43 +72,75 @@
                             </div>
 
                             <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Jenis Seragam</label>
-                                <select x-model="type" @change="color = ''; stockId = ''" :disabled="! branchId"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
-                                    <option value="">-- Pilih Jenis Seragam --</option>
-                                    <template x-for="t in types" :key="t">
-                                        <option :value="t" x-text="t"></option>
-                                    </template>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Warna</label>
-                                <select x-model="color" @change="stockId = ''" :disabled="! type"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
-                                    <option value="">-- Pilih Warna --</option>
-                                    <template x-for="c in colors" :key="c">
-                                        <option :value="c" x-text="c"></option>
-                                    </template>
-                                </select>
-                            </div>
-
-                            <div>
-                                <label class="block text-xs font-medium text-gray-500 mb-1">Ukuran</label>
-                                <select name="uniform_stock_id" x-model="stockId" required :disabled="! color"
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
-                                    <option value="">-- Pilih Ukuran --</option>
-                                    <template x-for="s in sizes" :key="s.id">
-                                        <option :value="s.id" x-text="'Size ' + s.size + ' (' + s.available + ' tersedia)'"></option>
-                                    </template>
-                                </select>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Serah *</label>
+                                <input type="date" name="issue_date" required value="{{ old('issue_date', now()->toDateString()) }}"
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                             </div>
                         </div>
 
+                        {{-- Item dinamis --}}
                         <div>
-                            <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Serah *</label>
-                            <input type="date" name="issue_date" required value="{{ old('issue_date', now()->toDateString()) }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <label class="block text-sm font-medium text-gray-700 mb-2">Daftar Item *</label>
+                            <p class="text-xs text-gray-400 -mt-1 mb-3" x-show="! branchId">Pilih outlet dulu, baru jenis seragam/warna/ukuran bisa dipilih.</p>
+
+                            <div class="space-y-3">
+                                <template x-for="(item, index) in items" :key="index">
+                                    <div class="relative grid grid-cols-12 gap-2 items-start border border-gray-100 rounded-md p-3 pr-8">
+                                        <button type="button" @click="removeItem(index)" x-show="items.length > 1"
+                                                class="absolute top-2 right-2 px-1.5 py-1 text-sm text-red-600 hover:bg-red-50 rounded-md">✕</button>
+
+                                        <div class="col-span-12 sm:col-span-3">
+                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Jenis Seragam</label>
+                                            <select x-model="item.type" @change="item.color = ''; item.uniform_stock_id = ''" :disabled="! branchId" required
+                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                <option value="">-- Pilih --</option>
+                                                <template x-for="t in types" :key="t">
+                                                    <option :value="t" x-text="t"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-span-6 sm:col-span-3">
+                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Warna</label>
+                                            <select x-model="item.color" @change="item.uniform_stock_id = ''" :disabled="! item.type" required
+                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                <option value="">-- Pilih --</option>
+                                                <template x-for="c in colorsFor(item)" :key="c">
+                                                    <option :value="c" x-text="c"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-span-6 sm:col-span-3">
+                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Ukuran</label>
+                                            <select :name="`items[${index}][uniform_stock_id]`" x-model="item.uniform_stock_id" :disabled="! item.color" required
+                                                    class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                <option value="">-- Pilih --</option>
+                                                <template x-for="s in sizesFor(item)" :key="s.id">
+                                                    <option :value="s.id" x-text="'Size ' + s.size + ' (' + s.available + ' tersedia)'"></option>
+                                                </template>
+                                            </select>
+                                        </div>
+
+                                        <div class="col-span-3 sm:col-span-1">
+                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Qty</label>
+                                            <input type="number" min="1" :name="`items[${index}][qty]`" x-model="item.qty" required
+                                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        </div>
+
+                                        <div class="col-span-12 sm:col-span-6">
+                                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Keterangan</label>
+                                            <input type="text" :name="`items[${index}][item_notes]`" x-model="item.item_notes"
+                                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+
+                            <button type="button" @click="addItem()"
+                                    class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                                + Tambah Item
+                            </button>
                         </div>
 
                         <div>
@@ -146,17 +150,9 @@
                             <p class="text-xs text-gray-400 mt-1">Wajib — bukti foto saat barang/seragam diambil karyawan.</p>
                         </div>
 
-                        <div>
-                            <div class="flex items-center justify-between mb-1">
-                                <label class="block text-sm font-medium text-gray-700">Tanda Tangan (Karyawan)</label>
-                                <button type="button" @click="clearSignature()" class="text-xs font-medium text-gray-500 hover:text-gray-700">
-                                    Bersihkan
-                                </button>
-                            </div>
-                            <canvas x-ref="signatureCanvas" x-init="initSignaturePad()" width="500" height="160"
-                                    class="w-full border border-gray-300 rounded-md bg-white touch-none" style="touch-action: none;"></canvas>
-                            <p class="text-xs text-gray-400 mt-1">Tanda tangan langsung di area ini menggunakan mouse/jari.</p>
-                            <input type="hidden" name="signature_data" x-ref="signatureData">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <x-signature-pad name="issued_by_signature" label="Tanda Tangan Penyerah (GA)" :required="false" />
+                            <x-signature-pad name="signature" label="Tanda Tangan Penerima (Karyawan)" :required="false" />
                         </div>
 
                         <div>

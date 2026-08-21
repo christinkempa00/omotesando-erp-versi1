@@ -19,8 +19,10 @@ use Tests\TestCase;
  * Cakupan pilot tanda tangan digital GaRequest (Tugas 1-4):
  * (1) submit tanpa tanda tangan pemohon ditolak,
  * (2) approve tanpa tanda tangan approver ditolak,
- * (3) dokumen final (Telegram sendDocument) cuma terkirim sekali status
- *     benar-benar RECEIVED (fully approved), bukan di tengah proses,
+ * (3) notifikasi Telegram (approval step & dokumen final) SENGAJA dihapus
+ *     dari GaRequest (Revisi V1 — bot Telegram sekarang eksklusif utk Jadwal
+ *     Pemeliharaan) — test memastikan sendDocument/sendMessage TIDAK pernah
+ *     terpanggil lagi, bahkan setelah fully approved,
  * (4) tanda tangan tersimpan di profil user dipakai ulang otomatis sbg
  *     default saat approve berikutnya (tidak perlu gambar ulang).
  */
@@ -258,7 +260,7 @@ class GaRequestSignatureTest extends TestCase
         ]);
     }
 
-    public function test_final_document_is_only_sent_once_fully_approved(): void
+    public function test_no_telegram_notification_is_sent_even_when_fully_approved(): void
     {
         $this->seedGaRequestReceivedMapping();
 
@@ -279,14 +281,15 @@ class GaRequestSignatureTest extends TestCase
             'signature_data' => self::TINY_PNG_DATA_URL,
         ])->assertSessionHasNoErrors();
 
-        Http::assertNotSent(fn ($request) => str_contains($request->url(), 'sendDocument'));
-
         // Step 3 (Finance, langsung lewat model — jalur approve Finance
         // belum ada UI-nya sendiri, sama seperti alur produksi asli).
         $gaRequest->approveCurrentStepBy($finance, 'final finance step');
 
         $this->assertSame(GaRequest::STATUS_RECEIVED, $gaRequest->fresh()->status);
-        Http::assertSent(fn ($request) => str_contains($request->url(), 'sendDocument'));
+
+        // Bot Telegram sekarang eksklusif utk Jadwal Pemeliharaan — GaRequest
+        // tidak lagi memanggil Telegram sama sekali, di step manapun.
+        Http::assertNothingSent();
     }
 
     public function test_saved_signature_is_reused_as_default_on_next_approve(): void

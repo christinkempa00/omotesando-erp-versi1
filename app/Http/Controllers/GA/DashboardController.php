@@ -52,7 +52,7 @@ class DashboardController extends Controller
         $gaRequestTotal = GaRequest::count();
 
         // --- Rincian per outlet: gabungan Aset, Seragam, & Pemeliharaan ---
-        $outletBreakdown = Branch::orderedOutlets()->map(function (Branch $branch) {
+        $outletBreakdown = Branch::orderedOutlets(Branch::GA_OUTLETS)->map(function (Branch $branch) {
             return [
                 'name' => $branch->name,
                 'total_assets' => Asset::where('branch_id', $branch->id)->count(),

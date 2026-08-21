@@ -13,6 +13,9 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * Rekap Periodik — semua pengiriman & selisih per periode/outlet. Akses
@@ -51,7 +54,7 @@ class ScmReportController extends Controller
             'dateTo' => $request->query('date_to'),
         ])->setPaper('a4', 'landscape');
 
-        return $pdf->download('rekap-scm-'.now()->format('Ymd-His').'.pdf');
+        return $pdf->stream('rekap-scm-'.now()->format('Ymd-His').'.pdf');
     }
 
     /**
@@ -68,7 +71,75 @@ class ScmReportController extends Controller
 
         $days = max(1, (int) $request->query('days', 7));
 
-        $balances = StockBalance::with(['branch'])
+        return view('scm.reports.near-expiry', [
+            'days' => $days,
+            'groups' => $this->nearExpiryBalances($days)->groupBy('branch_id'),
+        ]);
+    }
+
+    public function nearExpiryExportExcel(Request $request): StreamedResponse
+    {
+        abort_unless($request->user()->hasRole(Role::ADMIN, Role::GUDANG), 403);
+
+        $days = max(1, (int) $request->query('days', 7));
+        $balances = $this->nearExpiryBalances($days);
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Stok Mendekati ED');
+
+        $header = ['Outlet', 'Label', 'Produk', 'Qty', 'Satuan', 'Kedaluwarsa', 'Sisa Hari'];
+        $sheet->fromArray($header, null, 'A1');
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+        $row = 2;
+        foreach ($balances as $balance) {
+            [$code, $itemName, $unit] = $this->nearExpiryRowData($balance);
+
+            $sheet->fromArray([
+                $balance->branch?->name,
+                $code,
+                $itemName,
+                $balance->qty_on_hand,
+                $unit,
+                $balance->stockable->expiry_date->format('d/m/Y'),
+                $balance->stockable->daysUntilExpiry(),
+            ], null, "A{$row}");
+            $row++;
+        }
+
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'stok-mendekati-ed-'.now()->format('Ymd-His').'.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    public function nearExpiryExportPdf(Request $request)
+    {
+        abort_unless($request->user()->hasRole(Role::ADMIN, Role::GUDANG), 403);
+
+        $days = max(1, (int) $request->query('days', 7));
+        $balances = $this->nearExpiryBalances($days);
+
+        $pdf = Pdf::loadView('scm.reports.near-expiry-export-pdf', [
+            'balances' => $balances,
+            'days' => $days,
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream('stok-mendekati-ed-'.now()->format('Ymd-His').'.pdf');
+    }
+
+    private function nearExpiryBalances(int $days)
+    {
+        return StockBalance::with(['branch'])
             ->with(['stockable' => function ($morphTo) {
                 $morphTo->morphWith([
                     BatchLabel::class => ['productionBatchItem.productionBatch'],
@@ -80,13 +151,20 @@ class ScmReportController extends Controller
                 $q->whereNotNull('expiry_date')->whereDate('expiry_date', '<=', now()->addDays($days));
             })
             ->get()
-            ->sortBy(fn (StockBalance $balance) => $balance->stockable->expiry_date)
-            ->groupBy('branch_id');
+            ->sortBy(fn (StockBalance $balance) => $balance->stockable->expiry_date);
+    }
 
-        return view('scm.reports.near-expiry', [
-            'days' => $days,
-            'groups' => $balances,
-        ]);
+    /**
+     * @return array{0: string, 1: string, 2: string} [kode/label, nama item, satuan]
+     */
+    private function nearExpiryRowData(StockBalance $balance): array
+    {
+        $stockable = $balance->stockable;
+        $isBatchLabel = $stockable instanceof BatchLabel;
+        $item = $isBatchLabel ? $stockable->productionBatchItem : $stockable->purchaseOrderItem;
+        $code = $isBatchLabel ? $stockable->label_code : $stockable->purchaseOrderItem->purchaseOrder->po_number;
+
+        return [$code, $item->item_name, $item->unit];
     }
 
     /**
@@ -101,7 +179,79 @@ class ScmReportController extends Controller
     {
         abort_unless($request->user()->hasRole(Role::ADMIN), 403);
 
-        $rows = StockBalance::with(['branch'])
+        $rows = $this->stockValueRows();
+
+        return view('scm.reports.stock-value', [
+            'rows' => $rows,
+            'byBranch' => $rows->groupBy('branch_name'),
+            'grandTotal' => $rows->sum('value'),
+            'hasIncompleteValuation' => $rows->contains(fn ($row) => $row['unit_cost'] === null),
+        ]);
+    }
+
+    public function stockValueExportExcel(Request $request): StreamedResponse
+    {
+        abort_unless($request->user()->hasRole(Role::ADMIN), 403);
+
+        $rows = $this->stockValueRows();
+
+        $spreadsheet = new Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Nilai Persediaan');
+
+        $header = ['Outlet', 'Label', 'Produk', 'Qty', 'Satuan', 'Biaya/Unit', 'Nilai'];
+        $sheet->fromArray($header, null, 'A1');
+        $sheet->getStyle('A1:G1')->getFont()->setBold(true);
+
+        $row = 2;
+        foreach ($rows as $r) {
+            $sheet->fromArray([
+                $r['branch_name'],
+                $r['label_code'],
+                $r['item_name'],
+                $r['qty_on_hand'],
+                $r['unit'],
+                $r['unit_cost'],
+                $r['value'],
+            ], null, "A{$row}");
+            $row++;
+        }
+
+        if ($row > 2) {
+            $sheet->getStyle('F2:G'.($row - 1))->getNumberFormat()->setFormatCode('"Rp" #,##0');
+        }
+
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+
+        $writer = new Xlsx($spreadsheet);
+        $filename = 'nilai-persediaan-'.now()->format('Ymd-His').'.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    public function stockValueExportPdf(Request $request)
+    {
+        abort_unless($request->user()->hasRole(Role::ADMIN), 403);
+
+        $rows = $this->stockValueRows();
+
+        $pdf = Pdf::loadView('scm.reports.stock-value-export-pdf', [
+            'rows' => $rows,
+            'grandTotal' => $rows->sum('value'),
+        ])->setPaper('a4', 'landscape');
+
+        return $pdf->stream('nilai-persediaan-'.now()->format('Ymd-His').'.pdf');
+    }
+
+    private function stockValueRows()
+    {
+        return StockBalance::with(['branch'])
             ->with(['stockable' => function ($morphTo) {
                 $morphTo->morphWith([
                     BatchLabel::class => ['productionBatchItem'],
@@ -139,13 +289,6 @@ class ScmReportController extends Controller
                     'value' => $unitCost === null ? null : $unitCost * $balance->qty_on_hand,
                 ];
             });
-
-        return view('scm.reports.stock-value', [
-            'rows' => $rows,
-            'byBranch' => $rows->groupBy('branch_name'),
-            'grandTotal' => $rows->sum('value'),
-            'hasIncompleteValuation' => $rows->contains(fn ($row) => $row['unit_cost'] === null),
-        ]);
     }
 
     public function filteredQuery(Request $request): Builder

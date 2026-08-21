@@ -19,7 +19,7 @@
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                         <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8Z" /><path d="M14 2v6h6" />
                     </svg>
-                    Dokumen
+                    Dokumen (PDF)
                 </a>
             </div>
         </div>
@@ -102,6 +102,22 @@
                             @endforeach
                         </tbody>
                         <tfoot>
+                            <tr class="bg-gray-50">
+                                <td colspan="5" class="px-4 py-3 text-right text-gray-600">Sub Total</td>
+                                <td class="px-4 py-3 text-right text-gray-800">Rp {{ number_format((float) $gaRequest->subtotal_amount, 0, ',', '.') }}</td>
+                            </tr>
+                            @if ($gaRequest->discount_percent)
+                                <tr class="bg-gray-50">
+                                    <td colspan="5" class="px-4 py-3 text-right text-gray-600">Diskon ({{ \App\Models\GA\GaRequest::formatPercent($gaRequest->discount_percent) }}%)</td>
+                                    <td class="px-4 py-3 text-right text-gray-800">&minus; Rp {{ number_format($gaRequest->discountAmount(), 0, ',', '.') }}</td>
+                                </tr>
+                            @endif
+                            @if ($gaRequest->pph_percent)
+                                <tr class="bg-gray-50">
+                                    <td colspan="5" class="px-4 py-3 text-right text-gray-600">PPH ({{ \App\Models\GA\GaRequest::formatPercent($gaRequest->pph_percent) }}%)</td>
+                                    <td class="px-4 py-3 text-right text-gray-800">&minus; Rp {{ number_format($gaRequest->pphAmount(), 0, ',', '.') }}</td>
+                                </tr>
+                            @endif
                             <tr class="bg-gray-50">
                                 <td colspan="5" class="px-4 py-3 text-right font-medium text-gray-700">Total</td>
                                 <td class="px-4 py-3 text-right font-bold text-gray-800">Rp {{ number_format((float) $gaRequest->total_amount, 0, ',', '.') }}</td>

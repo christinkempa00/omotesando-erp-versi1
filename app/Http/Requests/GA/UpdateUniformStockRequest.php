@@ -22,10 +22,17 @@ class UpdateUniformStockRequest extends FormRequest
             'branch_id' => ['required', 'exists:branches,id'],
             'uniform_type' => ['required', 'string', 'max:255'],
             'size' => ['nullable', 'string', 'max:50'],
-            'color' => ['nullable', 'string', 'max:100'],
+            'color' => ['required', 'string', 'max:100'],
             'status' => ['required', 'in:'.implode(',', array_keys(UniformStock::statusLabels()))],
-            'low_stock_threshold' => ['required', 'integer', 'min:0'],
+            'low_stock_threshold' => ['nullable', 'integer', 'min:0'],
             'stock_photo' => ['nullable', 'image', 'max:4096'], // max 4MB
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'color.required' => 'Warna wajib diisi.',
         ];
     }
 }
