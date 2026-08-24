@@ -33,14 +33,14 @@
                     <div>
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Aset</p>
                         @include('ga.partials.status-donut', ['data' => $assetByStatus, 'labels' => $assetStatusLabels, 'total' => $assetTotal])
-                        <a href="{{ route('ga.assets.index') }}" class="mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-800">
+                        <a href="{{ route('ga.assets.index') }}" class="mt-4 inline-block text-sm text-gold-600 hover:text-gold-800">
                             Lihat semua aset &rarr;
                         </a>
                     </div>
                     <div>
                         <p class="text-xs font-medium text-gray-500 uppercase tracking-wider mb-3">Seragam</p>
                         @include('ga.partials.status-donut', ['data' => $uniformByStatus, 'labels' => $uniformStatusLabels, 'total' => $uniformTotal])
-                        <a href="{{ route('ga.uniforms.stocks.index') }}" class="mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-800">
+                        <a href="{{ route('ga.uniforms.stocks.index') }}" class="mt-4 inline-block text-sm text-gold-600 hover:text-gold-800">
                             Lihat semua seragam &rarr;
                         </a>
                     </div>
@@ -68,7 +68,7 @@
                         <span class="font-medium text-gray-700">{{ $maintenanceSummary['overdue'] }}</span>
                     </div>
                 </div>
-                <a href="{{ route('ga.maintenance.index') }}" class="mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-800">
+                <a href="{{ route('ga.maintenance.index') }}" class="mt-4 inline-block text-sm text-gold-600 hover:text-gold-800">
                     Lihat semua pemeliharaan &rarr;
                 </a>
             </div>
@@ -77,7 +77,7 @@
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700">Jadwal Pemeliharaan Mendatang</h3>
-                    <a href="{{ route('ga.maintenance.create') }}" class="text-sm text-indigo-600 hover:text-indigo-800">+ Pemeliharaan</a>
+                    <a href="{{ route('ga.maintenance.create') }}" class="text-sm text-gold-600 hover:text-gold-800">+ Pemeliharaan</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -120,7 +120,7 @@
                                         </span>
                                     </td>
                                     <td class="px-4 py-3 text-right">
-                                        <a href="{{ route('ga.maintenance.show', $job) }}" class="text-indigo-600 hover:text-indigo-800">Detail</a>
+                                        <a href="{{ route('ga.maintenance.show', $job) }}" class="text-gold-600 hover:text-gold-800">Detail</a>
                                     </td>
                                 </tr>
                             @empty
@@ -189,7 +189,7 @@
                                 <span class="font-medium text-gray-700">
                                     {{ $job->cost !== null ? 'Rp '.number_format((float) $job->cost, 0, ',', '.') : '—' }}
                                 </span>
-                                <a href="{{ route('ga.maintenance.show', $job) }}" class="text-indigo-600 hover:underline">Selesai</a>
+                                <a href="{{ route('ga.maintenance.show', $job) }}" class="text-gold-600 hover:underline">Selesai</a>
                             </div>
                         </div>
                     @empty

@@ -10,7 +10,7 @@
                     + Minta Aset
                 </button>
                 <a href="{{ route('ga.requests.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                   class="inline-flex items-center px-4 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">
                     + Buat Permintaan
                 </a>
 

@@ -12,7 +12,7 @@
             <x-filter-bar :action="route('ga.uniforms.movements.index')" :search-value="$search" search-placeholder="Cari kode movement/tipe..." :reset-url="route('ga.uniforms.movements.index')">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">Varian</label>
-                    <select name="uniform_stock_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select name="uniform_stock_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         <option value="">Semua Varian</option>
                         @foreach ($stocks as $stock)
                             <option value="{{ $stock->id }}" @selected($selectedStock == $stock->id)>{{ $stock->stock_code }}</option>
@@ -21,7 +21,7 @@
                 </div>
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         <option value="">Semua Outlet</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
@@ -53,7 +53,7 @@
                             <tr class="hover:bg-gray-50">
                                 <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ $movement->movement_code }}</td>
                                 <td class="px-4 py-3 text-gray-800">
-                                    <a href="{{ route('ga.uniforms.stocks.show', $movement->uniformStock) }}" class="text-indigo-600 hover:underline">
+                                    <a href="{{ route('ga.uniforms.stocks.show', $movement->uniformStock) }}" class="text-gold-600 hover:underline">
                                         {{ $movement->uniformStock->stock_code }}
                                     </a>
                                 </td>

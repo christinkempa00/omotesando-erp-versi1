@@ -18,7 +18,7 @@ class UserManagementStoreTest extends TestCase
         $it = User::factory()->create();
         $it->roles()->attach(Role::create(['name' => Role::IT]));
 
-        $gudangRole = Role::create(['name' => Role::GUDANG]);
+        $gudangRole = Role::create(['name' => 'Gudang']);
 
         $defaultModule = Module::create(['key' => 'default_module', 'label' => 'Default Module', 'is_active' => true]);
         $chosenModuleA = Module::create(['key' => 'chosen_a', 'label' => 'Chosen A', 'is_active' => true]);

@@ -25,30 +25,13 @@ class SystemModule extends Model
     public const GA_UNIFORMS = 'ga.uniforms';
     public const GA_MAINTENANCE = 'ga.maintenance';
     public const GA_WORKLOG = 'ga.worklogs';
-        public const GA_OUTLET_MONITORING = 'ga.outlet-monitoring';
+    public const GA_OUTLET_MONITORING = 'ga.outlet';
     public const HEAD_DASHBOARD = 'head.dashboard';
     public const HEAD_REQUESTS = 'head.requests';
-    public const HEAD_APPROVALS = 'head.approvals';
     public const HEAD_MODULES = 'head.modules';
     public const HEAD_ASSETS = 'head.assets';
     public const HEAD_UNIFORMS = 'head.uniforms';
     public const HEAD_MAINTENANCE = 'head.maintenance';
-    public const SCM_MATERIALS = 'scm.materials';
-    public const SCM_BATCHES = 'scm.batches';
-    public const SCM_DELIVERIES = 'scm.deliveries';
-    public const SCM_DISCREPANCIES = 'scm.discrepancies';
-    public const SCM_REPORTS = 'scm.reports';
-    public const SCM_NEAR_EXPIRY = 'scm.near-expiry';
-    public const SCM_STOCK_VALUE = 'scm.stock-value';
-    public const HEAD_SCM = 'head.scm';
-    public const PURCHASING_SUPPLIERS = 'purchasing.suppliers';
-    public const PURCHASING_REQUISITIONS = 'purchasing.requisitions';
-    public const PURCHASING_ORDERS = 'purchasing.orders';
-    public const PURCHASING_RECEIPTS = 'purchasing.receipts';
-    public const PURCHASING_INVOICES = 'purchasing.invoices';
-    public const FINANCE_CHART_OF_ACCOUNTS = 'finance.chart-of-accounts';
-    public const FINANCE_MAPPINGS = 'finance.mappings';
-    public const FINANCE_REPORTS = 'finance.reports';
 
     protected $fillable = ['key', 'name', 'is_under_maintenance', 'maintenance_note', 'updated_by'];
 

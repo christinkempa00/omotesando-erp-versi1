@@ -10,7 +10,7 @@
             <div class="flex items-center gap-2">
                 @if ($gaRequest->status === \App\Models\GA\GaRequest::STATUS_DRAFT && $gaRequest->requested_by === auth()->id())
                     <a href="{{ route('ga.requests.edit', $gaRequest) }}"
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">
                         Lanjutkan Draft
                     </a>
                 @endif
@@ -138,14 +138,6 @@
                             </a>
                         @endforeach
                     </div>
-                </div>
-            @endif
-
-            {{-- Langkah approval (read-only) --}}
-            @if ($gaRequest->approvals->isNotEmpty())
-                <div class="bg-white shadow-sm rounded-lg p-6">
-                    <h3 class="font-medium text-gray-800 mb-4">Alur Persetujuan</h3>
-                    <x-approval-stepper :approvals="$gaRequest->approvals->sortBy('step')->values()" />
                 </div>
             @endif
 

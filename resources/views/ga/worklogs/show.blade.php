@@ -92,7 +92,7 @@
             </div>
 
             <div>
-                <a href="{{ route('ga.worklogs.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">&larr; Kembali ke daftar Work Log</a>
+                <a href="{{ route('ga.worklogs.index') }}" class="text-sm text-gold-600 hover:text-gold-800">&larr; Kembali ke daftar Work Log</a>
             </div>
         </div>
     </div>

@@ -50,7 +50,7 @@
                         <dt class="text-gray-500">Aset</dt>
                         <dd class="text-gray-800 font-medium">
                             @if ($job->asset)
-                                <a href="{{ route('ga.assets.show', $job->asset) }}" class="text-indigo-600 hover:underline">
+                                <a href="{{ route('ga.assets.show', $job->asset) }}" class="text-gold-600 hover:underline">
                                     {{ $job->asset->asset_code }} — {{ $job->asset->name }}
                                 </a>
                             @else — @endif
@@ -136,7 +136,7 @@
                     <form method="POST" action="{{ route('ga.maintenance.complete', $job) }}">
                         @csrf
                         <textarea name="completion_notes" rows="2" placeholder="Catatan penyelesaian (opsional)"
-                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm mb-3"></textarea>
+                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm mb-3"></textarea>
                         <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                             Selesai (Complete)

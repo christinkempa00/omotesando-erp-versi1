@@ -23,7 +23,7 @@
                 @if ($branches->isEmpty())
                     <p class="text-sm text-gray-500">
                         Tidak ada varian seragam dengan stok tersedia. Restock dulu di
-                        <a href="{{ route('ga.uniforms.stocks.index') }}" class="text-indigo-600 hover:underline">halaman Stok</a>.
+                        <a href="{{ route('ga.uniforms.stocks.index') }}" class="text-gold-600 hover:underline">halaman Stok</a>.
                     </p>
                 @else
                     <form method="POST" action="{{ route('ga.uniforms.records.store') }}" enctype="multipart/form-data" class="space-y-5"
@@ -50,20 +50,20 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penerima *</label>
                                 <input type="text" name="employee_name" required value="{{ old('employee_name') }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
                                 <input type="text" name="issued_by_name" required value="{{ old('issued_by_name') }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                                 <p class="mt-1 text-xs text-gray-400">Diisi sekali — otomatis jadi nama di baris "Diserahkan Oleh" pada dokumen PDF.</p>
                             </div>
 
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
                                 <select name="branch_id" x-model="branchId" @change="onBranchChange()" required
-                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                        class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                                     <option value="">-- Pilih Outlet --</option>
                                     @foreach ($branches as $branch)
                                         <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -74,7 +74,7 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Serah *</label>
                                 <input type="date" name="issue_date" required value="{{ old('issue_date', now()->toDateString()) }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                             </div>
                         </div>
 
@@ -92,7 +92,7 @@
                                         <div class="col-span-6 sm:col-span-4">
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Jenis Seragam</label>
                                             <select x-model="item.type" @change="item.color = ''; item.uniform_stock_id = ''" :disabled="! branchId" required
-                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-gold-500 focus:ring-gold-500 disabled:bg-gray-50 disabled:text-gray-400">
                                                 <option value="">-- Pilih --</option>
                                                 <template x-for="t in types" :key="t">
                                                     <option :value="t" x-text="t"></option>
@@ -103,7 +103,7 @@
                                         <div class="col-span-6 sm:col-span-3">
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Warna</label>
                                             <select x-model="item.color" @change="item.uniform_stock_id = ''" :disabled="! item.type" required
-                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-gold-500 focus:ring-gold-500 disabled:bg-gray-50 disabled:text-gray-400">
                                                 <option value="">-- Pilih --</option>
                                                 <template x-for="c in colorsFor(item)" :key="c">
                                                     <option :value="c" x-text="c"></option>
@@ -114,7 +114,7 @@
                                         <div class="col-span-8 sm:col-span-3">
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Ukuran</label>
                                             <select :name="`items[${index}][uniform_stock_id]`" x-model="item.uniform_stock_id" :disabled="! item.color" required
-                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500 disabled:bg-gray-50 disabled:text-gray-400">
+                                                    class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-gold-500 focus:ring-gold-500 disabled:bg-gray-50 disabled:text-gray-400">
                                                 <option value="">-- Pilih --</option>
                                                 <template x-for="s in sizesFor(item)" :key="s.id">
                                                     <option :value="s.id" x-text="'Size ' + s.size + ' (' + s.available + ' tersedia)'"></option>
@@ -125,20 +125,20 @@
                                         <div class="col-span-4 sm:col-span-2">
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Qty</label>
                                             <input type="number" min="1" :name="`items[${index}][qty]`" x-model="item.qty" required
-                                                   class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500">
+                                                   class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-gold-500 focus:ring-gold-500">
                                         </div>
 
                                         <div class="col-span-12">
                                             <label class="block text-xs font-medium text-gray-500 mb-1">Keterangan</label>
                                             <input type="text" :name="`items[${index}][item_notes]`" x-model="item.item_notes"
-                                                   class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-indigo-500 focus:ring-indigo-500">
+                                                   class="w-full rounded-md border-gray-300 shadow-sm py-2.5 focus:border-gold-500 focus:ring-gold-500">
                                         </div>
                                     </div>
                                 </template>
                             </div>
 
                             <button type="button" @click="addItem()"
-                                    class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                                    class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-gold-600 hover:bg-gold-50 rounded-md">
                                 + Tambah Item
                             </button>
                         </div>
@@ -146,7 +146,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Foto Serah Terima *</label>
                             <input type="file" name="issue_photo" accept="image/*" required
-                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
                             <p class="text-xs text-gray-400 mt-1">Wajib — bukti foto saat barang/seragam diambil karyawan.</p>
                         </div>
 
@@ -158,12 +158,12 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
                             <textarea name="issue_notes" rows="2"
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('issue_notes') }}</textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">{{ old('issue_notes') }}</textarea>
                         </div>
 
                         <div class="flex justify-end gap-3">
                             <a href="{{ route('ga.uniforms.records.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                            <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan</button>
+                            <button type="submit" class="px-5 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">Simpan</button>
                         </div>
                     </form>
                 @endif

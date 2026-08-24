@@ -33,12 +33,12 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Seragam *</label>
                             <input type="text" name="uniform_type" required value="{{ old('uniform_type', $first->uniform_type) }}"
                                    placeholder="mis. Vest, Kemeja, Celana"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-                            <select name="branch_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select name="branch_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                                 <option value="">-- Pilih Outlet --</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}" @selected(old('branch_id', $first->branch_id) == $branch->id)>{{ $branch->name }}</option>
@@ -49,13 +49,13 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Warna *</label>
                             <input type="text" name="color" required value="{{ old('color', $first->color) }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Ambang Low Stock</label>
                             <input type="number" min="0" name="low_stock_threshold" value="{{ old('low_stock_threshold', $first->low_stock_threshold) }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                             <p class="text-xs text-gray-400 mt-1">Berlaku sama untuk semua ukuran di grup ini.</p>
                         </div>
 
@@ -65,7 +65,7 @@
                                 <img src="{{ Storage::url($first->stock_photo_path) }}" class="w-24 h-24 rounded object-cover mb-2">
                             @endif
                             <input type="file" name="stock_photo" accept="image/*"
-                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
                         </div>
                     </div>
 
@@ -84,7 +84,7 @@
 
                     <div class="flex justify-end gap-3 mt-6">
                         <a href="{{ route('ga.uniforms.stocks.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan</button>
+                        <button type="submit" class="px-5 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">Simpan</button>
                     </div>
                 </form>
             </div>

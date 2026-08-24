@@ -9,7 +9,7 @@
             </div>
             <div class="flex flex-wrap gap-2">
                 <a href="{{ route('ga.uniforms.stocks.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                   class="inline-flex items-center px-4 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">
                     + Varian Baru
                 </a>
             </div>
@@ -39,7 +39,7 @@
                 <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
                     <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Belum Dikembalikan</p>
                     <p class="text-2xl font-bold text-blue-600 mt-auto pt-1">{{ $summary['pending_return'] }}</p>
-                    <a href="{{ route('ga.uniforms.records.index', ['status' => \App\Models\GA\UniformRecord::STATUS_ISSUED]) }}" class="text-xs text-indigo-600 hover:underline mt-1">
+                    <a href="{{ route('ga.uniforms.records.index', ['status' => \App\Models\GA\UniformRecord::STATUS_ISSUED]) }}" class="text-xs text-gold-600 hover:underline mt-1">
                         Lihat di Inventaris Seragam &rarr;
                     </a>
                 </div>
@@ -53,7 +53,7 @@
             <x-filter-bar :action="route('ga.uniforms.stocks.index')" search-name="stock_search" :search-value="$stockSearch" search-placeholder="Cari tipe/kode/warna..." :reset-url="route('ga.uniforms.stocks.index')">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         <option value="">Semua Outlet</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
@@ -182,7 +182,7 @@
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700">Riwayat</h3>
-                    <a href="{{ route('ga.uniforms.movements.index') }}" class="text-xs text-indigo-600 hover:underline">Lihat Semua &rarr;</a>
+                    <a href="{{ route('ga.uniforms.movements.index') }}" class="text-xs text-gold-600 hover:underline">Lihat Semua &rarr;</a>
                 </div>
                 <div class="divide-y divide-gray-100">
                     @forelse ($recentMovements as $movement)

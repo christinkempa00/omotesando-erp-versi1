@@ -27,7 +27,7 @@
 
                     <div class="flex justify-end gap-3 mt-6">
                         <a href="{{ route('ga.uniforms.stocks.show', $stock) }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan</button>
+                        <button type="submit" class="px-5 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">Simpan</button>
                     </div>
                 </form>
             </div>

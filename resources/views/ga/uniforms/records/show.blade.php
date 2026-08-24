@@ -61,7 +61,7 @@
                         <div><dt class="text-gray-500">Varian Stok</dt>
                             <dd class="font-medium text-gray-900">
                                 @if ($record->uniformStock)
-                                    <a href="{{ route('ga.uniforms.stocks.show', $record->uniformStock) }}" class="text-indigo-600 hover:underline">
+                                    <a href="{{ route('ga.uniforms.stocks.show', $record->uniformStock) }}" class="text-gold-600 hover:underline">
                                         {{ $record->uniformStock->stock_code }}
                                     </a>
                                 @else — @endif
@@ -147,18 +147,18 @@
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Kembali *</label>
                                 <input type="date" name="return_date" required value="{{ now()->toDateString() }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
                                 <input type="text" name="returned_by_name" required value="{{ old('returned_by_name', $record->employee_name) }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                                 <p class="mt-1 text-xs text-gray-400">Karyawan yang mengembalikan barang.</p>
                             </div>
                             <div>
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penerima *</label>
                                 <input type="text" name="received_by_name" required value="{{ old('received_by_name', Auth::user()->name) }}"
-                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                                 <p class="mt-1 text-xs text-gray-400">Staf GA yang memeriksa.</p>
                             </div>
                         </div>
@@ -167,17 +167,17 @@
                             <div class="p-3">
                                 <x-ya-tidak-radio name="qty_sesuai" label="Jumlah barang sesuai" />
                                 <input type="text" name="qty_sesuai_notes" placeholder="Keterangan (opsional)"
-                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-gold-500 focus:ring-gold-500">
                             </div>
                             <div class="p-3">
                                 <x-ya-tidak-radio name="spesifikasi_sesuai" label="Spesifikasi sesuai" />
                                 <input type="text" name="spesifikasi_sesuai_notes" placeholder="Keterangan (opsional)"
-                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-gold-500 focus:ring-gold-500">
                             </div>
                             <div class="p-3">
                                 <x-ya-tidak-radio name="kondisi_sesuai" label="Kondisi sesuai" />
                                 <input type="text" name="kondisi_sesuai_notes" placeholder="Keterangan (opsional)"
-                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 shadow-sm text-xs focus:border-gold-500 focus:ring-gold-500">
                             </div>
                         </div>
 
@@ -188,7 +188,7 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Kondisi Fisik Barang *</label>
-                            <select name="return_condition" required class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select name="return_condition" required class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                                 @foreach (\App\Models\GA\UniformRecord::conditionLabels() as $value => $label)
                                     <option value="{{ $value }}">{{ $label }}</option>
                                 @endforeach
@@ -202,7 +202,7 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
                             <textarea name="return_notes" rows="2" placeholder="Catatan pengembalian (opsional)"
-                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm"></textarea>
+                                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm"></textarea>
                         </div>
 
                         <button type="submit"

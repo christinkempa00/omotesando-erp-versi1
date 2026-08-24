@@ -16,8 +16,6 @@ class DatabaseSeeder extends Seeder
             BranchSeeder::class,
             UserSeeder::class,
             ItBoardSeeder::class,
-            ChartOfAccountSeeder::class,
-            TransactionAccountMappingSeeder::class,
         ]);
     }
 }

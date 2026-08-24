@@ -72,9 +72,9 @@
                     <form method="POST" action="{{ route('ga.uniforms.stocks.restock', $stock) }}" class="space-y-2">
                         @csrf
                         <input type="number" name="quantity" min="1" required placeholder="Jumlah"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                         <input type="text" name="notes" placeholder="Catatan (opsional)"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                         <button type="submit" class="w-full px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                             Tambah Stok
                         </button>

@@ -27,13 +27,13 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Karyawan *</label>
                         <input type="text" name="employee_name" required value="{{ old('employee_name', $record->employee_name) }}"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
                         <input type="text" name="issued_by_name" required value="{{ old('issued_by_name', $record->issued_by_name) }}"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                     </div>
 
                     <div>
@@ -46,18 +46,18 @@
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Serah *</label>
                         <input type="date" name="issue_date" required
                                value="{{ old('issue_date', $record->issue_date->format('Y-m-d')) }}"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
                         <textarea name="issue_notes" rows="2"
-                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('issue_notes', $record->issue_notes) }}</textarea>
+                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">{{ old('issue_notes', $record->issue_notes) }}</textarea>
                     </div>
 
                     <div class="flex justify-end gap-3">
                         <a href="{{ route('ga.uniforms.records.show', $record) }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan</button>
+                        <button type="submit" class="px-5 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">Simpan</button>
                     </div>
                 </form>
             </div>

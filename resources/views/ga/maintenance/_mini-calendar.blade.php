@@ -35,8 +35,8 @@
             <button type="button"
                     @if ($hasJobs) @click="onDateClick('{{ $dateStr }}', {{ Illuminate\Support\Js::from($dateJobIds) }})" @endif
                     class="relative aspect-square flex items-center justify-center text-xs rounded-full
-                           {{ $isToday ? 'bg-indigo-600 text-white font-semibold' : ($inMonth ? 'text-gray-700' : 'text-gray-300') }}
-                           {{ $hasJobs ? 'cursor-pointer hover:bg-indigo-50 hover:text-indigo-700' : 'cursor-default' }}">
+                           {{ $isToday ? 'bg-gold-500 text-white font-semibold' : ($inMonth ? 'text-gray-700' : 'text-gray-300') }}
+                           {{ $hasJobs ? 'cursor-pointer hover:bg-gold-50 hover:text-gold-700' : 'cursor-default' }}">
                 {{ $cursor->day }}
                 @if ($hasJobs && ! $isToday)
                     <span class="absolute bottom-0.5 w-1 h-1 rounded-full bg-orange-400"></span>

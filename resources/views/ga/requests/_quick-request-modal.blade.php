@@ -70,12 +70,12 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal</label>
                         <input type="date" name="requested_date" x-model="requested_date" required
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
                         <select name="branch_id" x-model="branch_id" required
-                                class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                             <option value="">-- Pilih Outlet --</option>
                             @foreach ($branches as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
@@ -85,16 +85,16 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">User *</label>
                         <input type="text" name="user_name" x-model="user_name" required placeholder="Contoh: Deny"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Person in charge *</label>
                         <input type="text" name="pic_name" x-model="pic_name" required placeholder="Contoh: Deny"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Status Urgency</label>
-                        <select name="urgency" x-model="urgency" class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                        <select name="urgency" x-model="urgency" class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                             <option value="low">Low</option>
                             <option value="medium">Medium</option>
                             <option value="high">High</option>
@@ -120,16 +120,16 @@
                             </div>
                             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 mb-2">
                                 <input type="text" :name="`items[${index}][item_name]`" x-model="item.item_name" placeholder="Nama Item" required
-                                       class="col-span-1 rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="col-span-1 rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                                 <input type="number" min="1" :name="`items[${index}][qty]`" x-model="item.qty" placeholder="Qty" required
-                                       class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                                 <input type="text" :name="`items[${index}][unit]`" x-model="item.unit" placeholder="Satuan"
-                                       class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                             </div>
                             <input type="text" :name="`items[${index}][notes]`" x-model="item.notes" placeholder="Notes (opsional)"
-                                   class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500 mb-2">
+                                   class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500 mb-2">
                             <input type="text" :name="`items[${index}][photo_link]`" x-model="item.photo_link" placeholder="Link/foto barang (opsional)"
-                                   class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         </div>
                     </template>
                 </div>
@@ -137,7 +137,7 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-700 mb-1">Penjelasan kebutuhan</label>
                     <textarea name="needs_description" x-model="needs_description" rows="2" placeholder="Contoh: Alat kebersihan untuk OB"
-                              class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+                              class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500"></textarea>
                 </div>
             </div>
 
@@ -153,7 +153,7 @@
 
             <div class="lg:col-span-3 flex items-center justify-end gap-3 pt-2 border-t border-gray-100">
                 <button type="button" @click="quickOpen = false" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</button>
-                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                <button type="submit" class="inline-flex items-center gap-2 px-4 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">
                     Kirim ke Telegram
                 </button>
             </div>

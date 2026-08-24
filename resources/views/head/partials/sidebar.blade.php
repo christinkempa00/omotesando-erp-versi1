@@ -8,8 +8,6 @@
     $navItems = [
         ['route' => 'head.dashboard', 'pattern' => ['head.dashboard'], 'label' => 'Dashboard', 'icon' => 'home', 'system_module' => \App\Models\SystemModule::HEAD_DASHBOARD],
         ['route' => 'head.requests.index', 'pattern' => ['head.requests.*'], 'label' => 'Semua Pengajuan', 'icon' => 'list', 'system_module' => \App\Models\SystemModule::HEAD_REQUESTS],
-        ['route' => 'head.approvals.index', 'pattern' => ['head.approvals.*'], 'label' => 'Approval Inbox', 'icon' => 'inbox', 'system_module' => \App\Models\SystemModule::HEAD_APPROVALS],
-        ['route' => 'head.scm.index', 'pattern' => ['head.scm.*'], 'label' => 'Monitoring SCM', 'icon' => 'truck', 'system_module' => \App\Models\SystemModule::HEAD_SCM],
     ];
 
     // Modul GA (Aset/Seragam/Jadwal Pemeliharaan) digabung jadi satu menu

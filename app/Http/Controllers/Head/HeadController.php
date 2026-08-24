@@ -2,49 +2,32 @@
 
 namespace App\Http\Controllers\Head;
 
-use App\Http\Controllers\Concerns\ResolvesApprovalSignature;
 use App\Http\Controllers\Controller;
-use App\Models\Approval;
 use App\Models\GA\Asset;
 use App\Models\GA\GaRequest;
 use App\Models\GA\MaintenanceJob;
 use App\Models\GA\UniformStock;
-use App\Models\Role;
-use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
- * Dashboard Head: menampilkan & memproses approval berjenjang yang SUDAH ADA
- * (tabel approvals + trait Approvable pada GaRequest). Controller ini tidak
- * membuat ulang logic approval — hanya memanggil
- * GaRequest::approveCurrentStepBy()/rejectCurrentStepBy() yang didefinisikan
- * di app/Models/Concerns/Approvable.php.
+ * Dashboard Head: statistik/grafik lintas modul GA (read-only monitoring).
+ * Alur approval GaRequest (Finance->Head->Finance) dihapus total 24/08/2026
+ * — Head sekarang murni memantau, tidak ada lagi approve/reject di sini.
  */
 class HeadController extends Controller
 {
-    use ResolvesApprovalSignature;
-
     /**
      * Dashboard — HALAMAN OVERVIEW MURNI: statistik/grafik per modul saja,
-     * tanpa tabel approval (itu ada di Approval Inbox) atau daftar pengajuan
-     * (itu ada di Semua Pengajuan). Dipisah supaya tiap halaman Head punya
-     * satu fungsi yang jelas & tidak tumpang tindih.
+     * daftar pengajuan sendiri ada di "Semua Pengajuan". Dipisah supaya
+     * tiap halaman Head punya satu fungsi yang jelas & tidak tumpang tindih.
      */
     public function dashboard(): View
     {
-        $pendingForHead = GaRequest::whereHas('approvals', function ($q) {
-            $q->where('approver_role', Role::HEAD)->where('status', Approval::STATUS_PENDING);
-        })->get()->filter(function (GaRequest $r) {
-            $current = $r->currentApprovalStep();
-
-            return $current && $current->approver_role === Role::HEAD;
-        })->count();
-
         // Ringkasan lintas modul GA — dipakai sebagai caption di tiap kartu chart.
         $moduleSummary = [
             'requests' => [
-                'pending' => $pendingForHead,
+                'draft' => GaRequest::where('status', GaRequest::STATUS_DRAFT)->count(),
                 'total' => GaRequest::count(),
             ],
             'assets' => [
@@ -65,16 +48,12 @@ class HeadController extends Controller
         ];
 
         // --- Statistik per modul (donut chart) — data breakdown status
-        //     ATAS SELURUH data modul (bukan cuma yang giliran Head), dipakai
-        //     dashboard supaya lebih mudah dibaca lewat grafik ketimbang angka.
+        //     ATAS SELURUH data modul, dipakai dashboard supaya lebih mudah
+        //     dibaca lewat grafik ketimbang angka.
         $requestByStatus = GaRequest::selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
         $requestDonut = [
-            'pending' => (int) ($requestByStatus[GaRequest::STATUS_DRAFT] ?? 0)
-                + (int) ($requestByStatus[GaRequest::STATUS_SUBMITTED] ?? 0)
-                + (int) ($requestByStatus[GaRequest::STATUS_IN_REVIEW] ?? 0),
-            'approved' => (int) ($requestByStatus[GaRequest::STATUS_APPROVED] ?? 0)
-                + (int) ($requestByStatus[GaRequest::STATUS_RECEIVED] ?? 0),
-            'rejected' => (int) ($requestByStatus[GaRequest::STATUS_REJECTED] ?? 0),
+            'draft' => (int) ($requestByStatus[GaRequest::STATUS_DRAFT] ?? 0),
+            'submitted' => (int) ($requestByStatus[GaRequest::STATUS_SUBMITTED] ?? 0),
         ];
 
         $assetByStatus = Asset::selectRaw('status, count(*) as total')->groupBy('status')->pluck('total', 'status');
@@ -84,8 +63,8 @@ class HeadController extends Controller
         $moduleCharts = [
             'requests' => [
                 'data' => $requestDonut,
-                'labels' => ['pending' => 'Menunggu', 'approved' => 'Disetujui', 'rejected' => 'Ditolak'],
-                'colors' => ['pending' => '#3b82f6', 'approved' => '#22c55e', 'rejected' => '#ef4444'],
+                'labels' => ['draft' => 'Draft', 'submitted' => 'Diajukan'],
+                'colors' => ['draft' => '#9ca3af', 'submitted' => '#22c55e'],
                 'total' => array_sum($requestDonut),
             ],
             'assets' => [
@@ -154,7 +133,7 @@ class HeadController extends Controller
         $category = $request->query('category');
         $status = $request->query('status');
 
-        $query = GaRequest::with(['branch', 'requestedBy', 'approvals'])->latest();
+        $query = GaRequest::with(['branch', 'requestedBy'])->latest();
 
         if ($category) {
             $query->where('category', $category);
@@ -189,47 +168,11 @@ class HeadController extends Controller
      */
     public function showRequest(GaRequest $gaRequest): View
     {
-        $gaRequest->load(['items', 'branch', 'division', 'requestedBy', 'approvals.approver']);
+        $gaRequest->load(['items', 'branch', 'division', 'requestedBy']);
 
         return view('head.requests.show', [
             'gaRequest' => $gaRequest,
             'categoryLabels' => GaRequest::categoryLabels(),
         ]);
-    }
-
-    public function approve(Request $request, GaRequest $gaRequest): RedirectResponse
-    {
-        $validated = $request->validate([
-            'note' => ['nullable', 'string', 'max:1000'],
-            'signature_data' => ['nullable', 'string'],
-            'signature_use_saved' => ['nullable', 'boolean'],
-        ]);
-
-        $signaturePath = $this->resolveMandatorySignature($request, $validated);
-
-        if (! $gaRequest->approveCurrentStepBy($request->user(), $validated['note'] ?? null, $signaturePath)) {
-            return back()->withErrors(['approval' => 'Pengajuan ini bukan giliran Anda untuk approve, atau sudah diproses pihak lain.']);
-        }
-
-        return back()->with('success', "Pengajuan {$gaRequest->request_number} berhasil disetujui.");
-    }
-
-    /**
-     * Reject sengaja TIDAK butuh tanda tangan (cuma approve yang wajib) —
-     * lihat ResolvesApprovalSignature.
-     */
-    public function reject(Request $request, GaRequest $gaRequest): RedirectResponse
-    {
-        $validated = $request->validate([
-            'note' => ['required', 'string', 'max:1000'],
-        ], [
-            'note.required' => 'Alasan penolakan wajib diisi.',
-        ]);
-
-        if (! $gaRequest->rejectCurrentStepBy($request->user(), $validated['note'] ?? null)) {
-            return back()->withErrors(['approval' => 'Pengajuan ini bukan giliran Anda untuk reject, atau sudah diproses pihak lain.']);
-        }
-
-        return back()->with('success', "Pengajuan {$gaRequest->request_number} ditolak.");
     }
 }

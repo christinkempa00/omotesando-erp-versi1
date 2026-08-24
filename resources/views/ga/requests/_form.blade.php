@@ -17,7 +17,7 @@
     $initialPphPercent = old('pph_percent', $gaRequest?->pph_percent);
 @endphp
 
-<form method="POST" action="{{ $formAction }}" enctype="multipart/form-data"
+<form method="POST" action="{{ $formAction }}" enctype="multipart/form-data" class="space-y-5"
       x-data="{
         items: {{ Illuminate\Support\Js::from(old('items', $initialItems)) }},
         attachmentPreviews: [],
@@ -49,75 +49,80 @@
         @method('PUT')
     @endif
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Pemohon *</label>
-            <input type="text" name="requester_name" required value="{{ old('requester_name', $gaRequest?->requester_name) }}" placeholder="Nama Pemohon"
-                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-        </div>
+    {{-- Kartu 1: Informasi Pengajuan --}}
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h3 class="text-sm font-semibold text-gray-800 mb-4">Informasi Pengajuan</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Pemohon *</label>
+                <input type="text" name="requester_name" required value="{{ old('requester_name', $gaRequest?->requester_name) }}" placeholder="Nama Pemohon"
+                       class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
+            </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-            <select name="branch_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                <option value="">-- Pilih Outlet --</option>
-                @foreach ($branches as $branch)
-                    <option value="{{ $branch->id }}" @selected(old('branch_id', $gaRequest?->branch_id) == $branch->id)>{{ $branch->name }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
+                <select name="branch_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                    <option value="">-- Pilih Outlet --</option>
+                    @foreach ($branches as $branch)
+                        <option value="{{ $branch->id }}" @selected(old('branch_id', $gaRequest?->branch_id) == $branch->id)>{{ $branch->name }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Kategori / Tujuan *</label>
-            <select name="category" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                @foreach ($categoryLabels as $value => $label)
-                    <option value="{{ $value }}" @selected(old('category', $gaRequest?->category) === $value)>{{ $label }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Kategori / Tujuan *</label>
+                <select name="category" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                    @foreach ($categoryLabels as $value => $label)
+                        <option value="{{ $value }}" @selected(old('category', $gaRequest?->category) === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1">Prioritas *</label>
-            <select name="priority" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                @foreach ($priorityLabels as $value => $label)
-                    <option value="{{ $value }}" @selected(old('priority', $gaRequest?->priority ?? 'normal') === $value)>{{ $label }}</option>
-                @endforeach
-            </select>
-        </div>
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Prioritas *</label>
+                <select name="priority" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                    @foreach ($priorityLabels as $value => $label)
+                        <option value="{{ $value }}" @selected(old('priority', $gaRequest?->priority ?? 'normal') === $value)>{{ $label }}</option>
+                    @endforeach
+                </select>
+            </div>
 
-        <div class="sm:col-span-2">
-            <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi / Keterangan *</label>
-            <textarea name="description" rows="3" required
-                      class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('description', $gaRequest?->description) }}</textarea>
+            <div class="sm:col-span-2">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi / Keterangan *</label>
+                <textarea name="description" rows="3" required
+                          class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">{{ old('description', $gaRequest?->description) }}</textarea>
+            </div>
         </div>
     </div>
 
-    {{-- Item dinamis --}}
-    <div class="mt-6">
-        <label class="block text-sm font-medium text-gray-700 mb-2">Daftar Item *</label>
+    {{-- Kartu 2: Daftar Item --}}
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h3 class="text-sm font-semibold text-gray-800 mb-4">Daftar Item *</h3>
+
         <div class="space-y-3">
             <template x-for="(item, index) in items" :key="index">
-                <div class="relative grid grid-cols-12 gap-2 items-start border border-gray-100 rounded-md p-3 pr-8">
+                <div class="relative grid grid-cols-12 gap-2 items-start border border-gray-200 rounded-md p-3 pr-8">
                     <button type="button" @click="items.splice(index, 1)" x-show="items.length > 1"
                             class="absolute top-2 right-2 px-1.5 py-1 text-sm text-red-600 hover:bg-red-50 rounded-md">✕</button>
                     <div class="col-span-12 sm:col-span-3">
                         <input type="text" :name="`items[${index}][item_name]`" x-model="item.item_name"
                                placeholder="Nama item" required
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
                     </div>
                     <div class="col-span-6 sm:col-span-2">
                         <input type="text" :name="`items[${index}][type]`" x-model="item.type"
                                placeholder="Tipe"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
                     </div>
                     <div class="col-span-3 sm:col-span-2">
                         <input type="number" min="1" :name="`items[${index}][qty]`" x-model="item.qty"
                                placeholder="Qty" required
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none">
                     </div>
                     <div class="col-span-3 sm:col-span-1">
                         <input type="text" :name="`items[${index}][unit]`" x-model="item.unit"
                                placeholder="Satuan" required
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
                     </div>
                     <div class="col-span-6 sm:col-span-2">
                         <div class="relative">
@@ -126,14 +131,14 @@
                                    :value="formatThousands(item.price_per_unit)"
                                    @input="item.price_per_unit = parseThousands($event.target.value)"
                                    placeholder="0"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm pl-10">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm pl-10">
                         </div>
                         <input type="hidden" :name="`items[${index}][price_per_unit]`" :value="item.price_per_unit">
                     </div>
                     <div class="col-span-12 sm:col-span-2">
                         <input type="text" :name="`items[${index}][vendor_name]`" x-model="item.vendor_name"
                                placeholder="Vendor"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
                     </div>
                     <div class="col-span-6 sm:col-span-3">
                         <label class="block text-xs text-gray-400 mb-1">Total</label>
@@ -149,7 +154,7 @@
         </div>
 
         <button type="button" @click="items.push({ item_name: '', type: '', unit: 'Pcs', qty: 1, price_per_unit: 0, vendor_name: '' })"
-                class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-gold-600 hover:bg-gold-50 rounded-md">
             + Tambah item
         </button>
         <p class="text-xs text-gray-400 mt-1">Harga Satuan tiap item wajib diisi saat "Kirim Pengajuan" (boleh 0 dulu utk semua item selama masih disimpan sbg draft).</p>
@@ -157,11 +162,11 @@
         {{-- PPH & Diskon (opsional, persentase dari Sub Total) --}}
         <div class="mt-4 flex flex-wrap gap-2">
             <button type="button" @click="discountEnabled = true" x-show="!discountEnabled"
-                    class="inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                    class="inline-flex items-center px-3 py-1.5 text-sm text-gold-600 hover:bg-gold-50 rounded-md">
                 + Tambah Diskon
             </button>
             <button type="button" @click="pphEnabled = true" x-show="!pphEnabled"
-                    class="inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
+                    class="inline-flex items-center px-3 py-1.5 text-sm text-gold-600 hover:bg-gold-50 rounded-md">
                 + Tambah PPH
             </button>
         </div>
@@ -171,7 +176,7 @@
                 <div class="flex items-center gap-2">
                     <label class="text-sm text-gray-600 w-24 shrink-0">Diskon (%)</label>
                     <input type="number" min="0" max="100" step="0.01" name="discount_percent" x-model="discountPercent"
-                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
                     <span class="text-xs text-gray-500">&minus; <span x-text="rupiah(discountAmount)"></span></span>
                     <button type="button" @click="discountEnabled = false; discountPercent = 0" class="text-xs text-red-500 hover:text-red-700">Hapus</button>
                 </div>
@@ -180,14 +185,15 @@
                 <div class="flex items-center gap-2">
                     <label class="text-sm text-gray-600 w-24 shrink-0">PPH (%)</label>
                     <input type="number" min="0" max="100" step="0.01" name="pph_percent" x-model="pphPercent"
-                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm">
+                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
                     <span class="text-xs text-gray-500">&minus; <span x-text="rupiah(pphAmount)"></span></span>
                     <button type="button" @click="pphEnabled = false; pphPercent = 0" class="text-xs text-red-500 hover:text-red-700">Hapus</button>
                 </div>
             </template>
         </div>
 
-        <div class="mt-4 space-y-1 text-right">
+        {{-- Panel kwitansi: Sub Total / Diskon / PPH / Total --}}
+        <div class="mt-4 space-y-1 text-right bg-gray-50 border border-gray-200 rounded-lg p-4">
             <div class="text-sm text-gray-500">
                 Sub Total: <span class="text-gray-700 font-medium" x-text="rupiah(subtotal)"></span>
             </div>
@@ -201,16 +207,16 @@
                     PPH (<span x-text="pphPercent"></span>%): <span class="text-gray-700 font-medium">&minus; <span x-text="rupiah(pphAmount)"></span></span>
                 </div>
             </template>
-            <div class="pt-1 border-t border-gray-100">
+            <div class="pt-1 border-t border-gray-200">
                 <span class="text-sm text-gray-500">Total:</span>
                 <span class="text-lg font-bold text-gray-800 ml-2" x-text="rupiah(grandTotal)"></span>
             </div>
         </div>
     </div>
 
-    {{-- Lampiran foto (opsional) --}}
-    <div class="mt-6">
-        <label class="block text-sm font-medium text-gray-700 mb-1">Lampiran Foto</label>
+    {{-- Kartu 3: Lampiran Foto --}}
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
+        <h3 class="text-sm font-semibold text-gray-800 mb-1">Lampiran Foto</h3>
         <p class="text-xs text-gray-400 mb-2">Opsional — bisa lampirkan lebih dari satu foto.</p>
         @if ($gaRequest && $gaRequest->attachments->isNotEmpty())
             <div class="mb-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
@@ -221,7 +227,7 @@
             <p class="text-xs text-gray-400 mb-2">Foto di atas sudah tersimpan — unggah di bawah kalau mau menambah lagi.</p>
         @endif
         <input type="file" name="attachments[]" multiple accept="image/*" @change="onAttachmentsChange($event)"
-               class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+               class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
         <div class="mt-3 grid grid-cols-4 sm:grid-cols-6 gap-2" x-show="attachmentPreviews.length">
             <template x-for="(src, i) in attachmentPreviews" :key="i">
                 <img :src="src" class="w-full aspect-square rounded-md object-cover border border-gray-200">
@@ -229,13 +235,13 @@
         </div>
     </div>
 
-    {{-- Tanda tangan pemohon (wajib saat Kirim Pengajuan, opsional saat Draft) --}}
-    <div class="mt-6">
+    {{-- Kartu 4: Tanda Tangan Pemohon (wajib saat Kirim Pengajuan, opsional saat Draft) --}}
+    <div class="bg-white border border-gray-200 rounded-lg p-6">
         <x-signature-pad name="signature" :saved-signature-url="$savedSignatureUrl"
                           label="Tanda Tangan Pemohon *" :show-save-as-default-option="true" />
     </div>
 
-    <div class="mt-6 flex items-center justify-end gap-3">
+    <div class="flex items-center justify-end gap-3 border-t border-gray-100 pt-5">
         <a href="{{ route('ga.requests.index') }}"
            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
         <button type="submit" name="intent" value="draft"
@@ -243,7 +249,7 @@
             Simpan Draft
         </button>
         <button type="submit" name="intent" value="submit"
-                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                class="inline-flex items-center px-4 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">
             Kirim Pengajuan
         </button>
     </div>

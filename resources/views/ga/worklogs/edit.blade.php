@@ -51,7 +51,7 @@
 
                 <div class="flex justify-end gap-3 mt-6">
                     <a href="{{ route('ga.worklogs.show', $workLog) }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan Perubahan</button>
+                    <button type="submit" class="px-5 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">Simpan Perubahan</button>
                 </div>
             </form>
         </div>

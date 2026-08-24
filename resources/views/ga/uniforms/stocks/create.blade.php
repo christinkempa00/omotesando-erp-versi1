@@ -38,12 +38,12 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Seragam *</label>
                             <input type="text" name="uniform_type" required x-model="uniformType"
                                    placeholder="mis. Vest, Kemeja, Celana"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-                            <select name="branch_id" required @change="branchId = $event.target.value" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select name="branch_id" required @change="branchId = $event.target.value" class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                                 <option value="">-- Pilih Outlet --</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}" @selected(old('branch_id', $prefill['branch_id']) == $branch->id)>{{ $branch->name }}</option>
@@ -54,13 +54,13 @@
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Warna *</label>
                             <input type="text" name="color" required value="{{ old('color', $prefill['color']) }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         </div>
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Ambang Low Stock</label>
                             <input type="number" min="0" name="low_stock_threshold" value="{{ old('low_stock_threshold', 0) }}"
-                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
                             <p class="text-xs text-gray-400 mt-1">Berlaku sama untuk semua ukuran di bawah.</p>
                         </div>
 
@@ -73,7 +73,7 @@
                                 </div>
                             @endif
                             <input type="file" name="stock_photo" accept="image/*"
-                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+                                   class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
                         </div>
                     </div>
 
@@ -108,7 +108,7 @@
                          }">
                         <div class="flex items-center justify-between mb-1">
                             <label class="block text-sm font-medium text-gray-700">Jumlah Stok per Ukuran *</label>
-                            <button type="button" @click="addRow()" class="text-xs font-medium text-indigo-600 hover:text-indigo-800">
+                            <button type="button" @click="addRow()" class="text-xs font-medium text-gold-600 hover:text-gold-800">
                                 + Tambah Ukuran
                             </button>
                         </div>
@@ -118,9 +118,9 @@
                             <template x-for="(row, index) in rows" :key="index">
                                 <div class="flex items-center gap-2">
                                     <input type="text" :name="`sizes[${index}][name]`" x-model="row.name" placeholder="Ukuran"
-                                           class="w-32 rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                           class="w-32 rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                                     <input type="number" min="0" :name="`sizes[${index}][qty]`" x-model="row.qty" placeholder="Jumlah stok"
-                                           class="flex-1 rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                           class="flex-1 rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                                     <button type="button" @click="rows.splice(index, 1)" x-show="rows.length > 1"
                                             class="text-gray-400 hover:text-red-600 shrink-0">
                                         <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -134,7 +134,7 @@
 
                     <div class="flex justify-end gap-3 mt-6">
                         <a href="{{ route('ga.uniforms.stocks.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan</button>
+                        <button type="submit" class="px-5 py-2 bg-gold-500 text-white text-sm font-medium rounded-md hover:bg-gold-600">Simpan</button>
                     </div>
                 </form>
             </div>

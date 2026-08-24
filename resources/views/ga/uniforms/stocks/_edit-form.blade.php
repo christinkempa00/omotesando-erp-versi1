@@ -7,12 +7,12 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Tipe Seragam *</label>
         <input type="text" name="uniform_type" required value="{{ old('uniform_type', $stock->uniform_type ?? '') }}"
                placeholder="mis. Vest, Kemeja, Celana"
-               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
     </div>
 
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-        <select name="branch_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <select name="branch_id" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
             <option value="">-- Pilih Outlet --</option>
             @foreach ($branches as $branch)
                 <option value="{{ $branch->id }}" @selected(old('branch_id', $stock->branch_id ?? '') == $branch->id)>{{ $branch->name }}</option>
@@ -24,18 +24,18 @@
         <label class="block text-sm font-medium text-gray-700 mb-1">Ukuran</label>
         <input type="text" name="size" value="{{ old('size', $stock->size ?? '') }}"
                placeholder="S / M / L / XL / XXL"
-               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
     </div>
 
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Warna *</label>
         <input type="text" name="color" required value="{{ old('color', $stock->color ?? '') }}"
-               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
     </div>
 
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Kondisi *</label>
-        <select name="status" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+        <select name="status" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
             @foreach (\App\Models\GA\UniformStock::statusLabels() as $value => $label)
                 <option value="{{ $value }}" @selected(old('status', $stock->status ?? 'bagus') === $value)>{{ $label }}</option>
             @endforeach
@@ -45,7 +45,7 @@
     <div>
         <label class="block text-sm font-medium text-gray-700 mb-1">Ambang Low Stock</label>
         <input type="number" min="0" name="low_stock_threshold" value="{{ old('low_stock_threshold', $stock->low_stock_threshold ?? 0) }}"
-               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+               class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500">
         <p class="text-xs text-gray-400 mt-1">Ditandai "low stock" kalau stok tersedia &le; angka ini.</p>
     </div>
 
@@ -55,7 +55,7 @@
             <img src="{{ Storage::url($stock->stock_photo_path) }}" class="w-24 h-24 rounded object-cover mb-2">
         @endif
         <input type="file" name="stock_photo" accept="image/*"
-               class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
+               class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
     </div>
 </div>
 

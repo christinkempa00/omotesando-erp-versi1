@@ -14,16 +14,10 @@ class Role extends Model
      * Dipakai sebagai referensi supaya tidak ada "magic string" tersebar.
      */
     public const GA = 'GA';
-    public const FINANCE = 'Finance';
-    public const HR = 'HR';
-    public const COST_CONTROL = 'Cost Control';
     public const HEAD = 'Head';
     public const ADMIN = 'Admin';
     public const IT = 'IT';
-    public const PRODUKSI = 'Produksi';
-    public const GUDANG = 'Gudang';
     public const OUTLET = 'Outlet';
-    public const PURCHASING = 'Purchasing';
 
     public function users(): BelongsToMany
     {
