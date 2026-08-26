@@ -154,8 +154,31 @@
                 </div>
                 <div class="px-6 py-4">
                     @forelse ($recentActivity as $log)
-                        <div class="relative pl-6 pb-4 last:pb-0 border-l-2 border-gold-200 last:border-transparent">
-                            <span class="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-gold-500 ring-4 ring-white"></span>
+                        <div class="relative pl-11 pb-4 last:pb-0 border-l-2 border-gold-200 last:border-transparent">
+                            {{-- Ikon dipilih dari $log->action, satu-satunya penanda jenis
+                                 aktivitas yang tersedia di data ini (lihat ModuleControlController
+                                 -- query recentActivity dibatasi hanya ke dua nilai action ini).
+                                 Cabang @else adalah fallback netral kalau suatu saat action lain
+                                 ikut masuk ke query ini. --}}
+                            @if ($log->action === 'system_module.maintenance_on')
+                                <span class="absolute -left-[18px] top-0 w-9 h-9 rounded-full flex items-center justify-center ring-4 ring-white bg-amber-100 text-amber-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M14.5 6.5a4 4 0 0 0-5.6 4.9L4 16.3V20h3.7l4.9-4.9a4 4 0 0 0 4.9-5.6l-2.6 2.6-2-2 2.6-2.6Z" />
+                                    </svg>
+                                </span>
+                            @elseif ($log->action === 'system_module.maintenance_off')
+                                <span class="absolute -left-[18px] top-0 w-9 h-9 rounded-full flex items-center justify-center ring-4 ring-white bg-emerald-100 text-emerald-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M12 2v6" /><path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+                                    </svg>
+                                </span>
+                            @else
+                                <span class="absolute -left-[18px] top-0 w-9 h-9 rounded-full flex items-center justify-center ring-4 ring-white bg-gold-100 text-gold-600">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 2" />
+                                    </svg>
+                                </span>
+                            @endif
                             <div class="flex items-center justify-between text-sm">
                                 <div class="min-w-0">
                                     <p class="text-gray-800 truncate">{{ $log->description }}</p>
