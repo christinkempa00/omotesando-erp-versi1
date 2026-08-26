@@ -2,11 +2,8 @@
 
 namespace App\Models\GA;
 
-use App\Models\Approval;
 use App\Models\Branch;
-use App\Models\Concerns\Approvable;
 use App\Models\Division;
-use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,8 +12,6 @@ use Illuminate\Support\Facades\DB;
 
 class GaRequest extends Model
 {
-    use Approvable;
-
     protected $fillable = [
         'request_number',
         'division_id',
@@ -84,39 +79,25 @@ class GaRequest extends Model
     }
 
     // --- Konstanta status ---
+    // Disederhanakan 24/08/2026 — alur approval (Finance->Head->Finance)
+    // dihapus total, GaRequest berhenti di "submitted" (dokumen sudah bisa
+    // dicetak), tidak ada lagi in_review/approved/rejected/received.
     public const STATUS_DRAFT = 'draft';
     public const STATUS_SUBMITTED = 'submitted';
-    public const STATUS_IN_REVIEW = 'in_review';
-    public const STATUS_APPROVED = 'approved';
-    public const STATUS_REJECTED = 'rejected';
-    public const STATUS_RECEIVED = 'received';
 
     public static function statusLabels(): array
     {
         return [
             self::STATUS_DRAFT => 'Draft',
             self::STATUS_SUBMITTED => 'Diajukan',
-            self::STATUS_IN_REVIEW => 'Dalam Review',
-            self::STATUS_APPROVED => 'Disetujui',
-            self::STATUS_REJECTED => 'Ditolak',
-            self::STATUS_RECEIVED => 'Diterima',
         ];
     }
 
-    /**
-     * Warna badge per status — mengikuti kontrak 5-status baku Allez ERP
-     * Redesign (Pending/Approved/Rejected/Received), SAMA di semua modul
-     * (GA/SCM/dst) supaya user tidak belajar ulang arti warna tiap pindah
-     * modul. draft/submitted/in_review semua masuk tone "pending" (masih
-     * dalam proses, belum final).
-     */
     public static function statusBadgeColor(string $status): string
     {
         return match ($status) {
-            self::STATUS_DRAFT, self::STATUS_SUBMITTED, self::STATUS_IN_REVIEW => 'bg-status-pending-bg text-status-pending-fg',
-            self::STATUS_APPROVED => 'bg-status-approved-bg text-status-approved-fg',
-            self::STATUS_REJECTED => 'bg-status-rejected-bg text-status-rejected-fg',
-            self::STATUS_RECEIVED => 'bg-status-received-bg text-status-received-fg',
+            self::STATUS_DRAFT => 'bg-status-pending-bg text-status-pending-fg',
+            self::STATUS_SUBMITTED => 'bg-status-approved-bg text-status-approved-fg',
             default => 'bg-status-pending-bg text-status-pending-fg',
         };
     }
@@ -226,67 +207,4 @@ class GaRequest extends Model
 
         return $romans[$month] ?? 'I';
     }
-
-    /**
-     * Generate 3 baris approval berjenjang sesuai alur dokumen GAR:
-     * Step 1: Finance ("Diketahui oleh")
-     * Step 2: Head ("Disetujui oleh")
-     * Step 3: Finance lagi ("Diterima Finance")
-     *
-     * Dipanggil sekali saat request pertama kali disubmit.
-     */
-    public function generateApprovalSteps(): void
-    {
-        // Hindari duplikat kalau method ini ke-panggil dua kali
-        if ($this->approvals()->exists()) {
-            return;
-        }
-
-        $steps = [
-            ['step' => 1, 'role' => Role::FINANCE],
-            ['step' => 2, 'role' => Role::HEAD],
-            ['step' => 3, 'role' => Role::FINANCE],
-        ];
-
-        foreach ($steps as $step) {
-            $this->approvals()->create([
-                'step' => $step['step'],
-                'approver_role' => $step['role'],
-                'status' => Approval::STATUS_PENDING,
-            ]);
-        }
-    }
-
-    /**
-     * Hanya pembuat request yang boleh resubmit request yang ditolak.
-     */
-    public function canBeResubmittedBy(User $user): bool
-    {
-        return $this->status === self::STATUS_REJECTED
-            && $this->requested_by === $user->id;
-    }
-
-    /**
-     * Dipanggil trait Approvable tiap kali sebuah step di-approve/reject,
-     * supaya status GaRequest ikut mencerminkan progres alur:
-     * Step 1 (Finance "diketahui") approved -> in_review
-     * Step 2 (Head "disetujui") approved     -> approved
-     * Step 3 (Finance "diterima") approved   -> received (selesai)
-     * Step manapun rejected                  -> rejected
-     */
-    public function syncStatusAfterApproval(): void
-    {
-        if ($this->hasRejectedStep()) {
-            $this->status = self::STATUS_REJECTED;
-        } elseif ($this->isFullyApproved()) {
-            $this->status = self::STATUS_RECEIVED;
-        } elseif ($this->approvals()->where('approver_role', Role::HEAD)->where('status', Approval::STATUS_APPROVED)->exists()) {
-            $this->status = self::STATUS_APPROVED;
-        } else {
-            $this->status = self::STATUS_IN_REVIEW;
-        }
-
-        $this->save();
-    }
-
 }

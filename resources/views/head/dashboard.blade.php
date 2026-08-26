@@ -16,18 +16,18 @@
 
             {{-- Statistik Per Modul — breakdown status dalam bentuk donut chart,
                  lebih mudah dibaca sekilas ketimbang angka polos. Klik kartu
-                 utk lanjut ke halaman modulnya. Approval & daftar pengajuan
-                 ada di halaman tersendiri (Approval Inbox / Semua Pengajuan)
-                 supaya Dashboard murni jadi overview. --}}
+                 utk lanjut ke halaman modulnya. Daftar pengajuan lengkap ada
+                 di halaman tersendiri (Semua Pengajuan) supaya Dashboard
+                 murni jadi overview. --}}
             <div>
                 <h3 class="text-sm font-semibold text-gray-700 mb-3">Statistik Per Modul</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-                    <a href="{{ route('head.approvals.index') }}" class="bg-white shadow-sm rounded-lg p-4 flex flex-col hover:shadow-md transition">
+                    <a href="{{ route('head.requests.index') }}" class="bg-white shadow-sm rounded-lg p-4 flex flex-col hover:shadow-md transition">
                         <p class="text-sm font-medium text-gray-700 mb-3">Request</p>
                         <div class="mt-auto">
                             <x-donut-chart :data="$moduleCharts['requests']['data']" :labels="$moduleCharts['requests']['labels']"
                                             :colors="$moduleCharts['requests']['colors']" :total="$moduleCharts['requests']['total']" size="w-20 h-20" />
-                            <p class="text-xs text-gray-400 mt-2">{{ $moduleSummary['requests']['pending'] }} pending &middot; {{ $moduleSummary['requests']['total'] }} total</p>
+                            <p class="text-xs text-gray-400 mt-2">{{ $moduleSummary['requests']['draft'] }} draft &middot; {{ $moduleSummary['requests']['total'] }} total</p>
                         </div>
                     </a>
                     <a href="{{ route('head.assets.index') }}" class="bg-white shadow-sm rounded-lg p-4 flex flex-col hover:shadow-md transition">

@@ -19,17 +19,11 @@
             $moduleLabel = match ($sidebar) {
                 'head' => 'Head Office',
                 'it' => 'IT Support',
-                'scm' => 'Supply Chain',
-                'purchasing' => 'Purchasing',
-                'finance' => 'Finance',
                 default => 'General Affairs',
             };
             $sidebarPartial = match ($sidebar) {
                 'head' => 'head.partials.sidebar',
                 'it' => 'it.partials.sidebar',
-                'scm' => 'scm.partials.sidebar',
-                'purchasing' => 'purchasing.partials.sidebar',
-                'finance' => 'finance.partials.sidebar',
                 default => 'layouts.sidebar',
             };
         @endphp

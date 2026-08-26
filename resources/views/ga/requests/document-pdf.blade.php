@@ -28,7 +28,7 @@
         .text-right { text-align: right; }
 
         .signatures { display: table; width: 100%; margin-top: 30px; }
-        .signatures .col { display: table-cell; width: 25%; vertical-align: top; padding-right: 10px; }
+        .signatures .col { display: table-cell; width: 30%; vertical-align: top; padding-right: 10px; }
         .signatures .label { font-size: 10px; color: #4b5563; margin-bottom: 34px; }
         .signatures .name { font-size: 11px; font-weight: bold; border-top: 1px solid #9ca3af; padding-top: 3px; }
         .signatures .role { font-size: 10px; color: #4b5563; }
@@ -129,14 +129,10 @@
     </table>
 
     @php
-        $step1 = $gaRequest->approvals->firstWhere('step', 1);
-        $step2 = $gaRequest->approvals->firstWhere('step', 2);
-        $step3 = $gaRequest->approvals->firstWhere('step', 3);
-
         // Tanda tangan gambar (bukan e-signature tersertifikasi) — ditempel
-        // sebagai <img> base64 di atas nama (approver ATAU pemohon) kalau
-        // signature_path-nya ada. Base64-embed (bukan URL) supaya tampil
-        // di Dompdf terlepas dari konfigurasi remote-resource-nya.
+        // sebagai <img> base64 di atas nama pemohon kalau signature_path-nya
+        // ada. Base64-embed (bukan URL) supaya tampil di Dompdf terlepas
+        // dari konfigurasi remote-resource-nya.
         $signaturePathToImage = function (?string $path): ?string {
             if (! $path || ! \Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
                 return null;
@@ -146,7 +142,6 @@
 
             return 'data:image/png;base64,'.base64_encode($binary);
         };
-        $signatureImage = fn (?\App\Models\Approval $approval) => $signaturePathToImage($approval?->signature_path);
         $requesterSignatureSrc = $signaturePathToImage($gaRequest->requester_signature_path);
     @endphp
 
@@ -158,30 +153,6 @@
             @endif
             <div class="name">{{ $gaRequest->requester_name ?: ($gaRequest->requestedBy?->name ?: '-') }}</div>
             <div class="role">{{ $gaRequest->division?->name ?: '-' }}</div>
-        </div>
-        <div class="col">
-            <div class="label" @if ($signatureImage($step1)) style="margin-bottom: 4px;" @endif>Diketahui oleh</div>
-            @if ($src = $signatureImage($step1))
-                <img src="{{ $src }}" class="signature-img">
-            @endif
-            <div class="name">{{ $step1?->approver?->name ?: '-' }}</div>
-            <div class="role">Finance</div>
-        </div>
-        <div class="col">
-            <div class="label" @if ($signatureImage($step2)) style="margin-bottom: 4px;" @endif>Disetujui oleh</div>
-            @if ($src = $signatureImage($step2))
-                <img src="{{ $src }}" class="signature-img">
-            @endif
-            <div class="name">{{ $step2?->approver?->name ?: '-' }}</div>
-            <div class="role">Head</div>
-        </div>
-        <div class="col">
-            <div class="label" @if ($signatureImage($step3)) style="margin-bottom: 4px;" @endif>Diterima finance</div>
-            @if ($src = $signatureImage($step3))
-                <img src="{{ $src }}" class="signature-img">
-            @endif
-            <div class="name">{{ $step3?->approver?->name ?: '-' }}</div>
-            <div class="role">Finance</div>
         </div>
     </div>
 </body>

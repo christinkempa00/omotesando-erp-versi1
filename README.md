@@ -10,6 +10,32 @@ Catatan perubahan per tanggal — detail lengkap tiap fitur tetap ada di
 "Daftar Modul" & "Alur Kerja per Modul" di bawah, bagian ini cuma ringkasan
 kapan sesuatu berubah.
 
+- **24/08/2026** — **Evaluasi sistem menyeluruh: hapus modul SCM/Purchasing/
+  Finance & seluruh sistem Approval, sisakan role GA/Head/IT/Outlet** — (1)
+  **Fix bug bfcache**: user yang logout lalu langsung kunjungi
+  `/dashboard` (browser back-forward cache) bisa masuk tanpa lewat login
+  lagi — header `Cache-Control: no-cache` bawaan Laravel TIDAK cukup
+  mencegah ini, cuma `no-store` yang efektif; ditambah middleware global
+  baru (`PreventBackHistoryCache`) yang memaksa
+  `no-store, no-cache, must-revalidate, max-age=0, private` + `Pragma:
+  no-cache` di setiap response. (2) **Modul SCM, Purchasing, dan Finance
+  dihapus total** (kode, route, view, migrasi tabel, seeder) — ketiganya
+  belum pernah dipakai nyata & kebutuhan aksesnya belum jelas, keputusan
+  eksplisit dari owner supaya struktur sistem bisa dibangun ulang dari
+  awal dengan jelas begitu kebutuhannya sudah pasti. (3) **Role dihapus**:
+  Finance, HR, Cost Control, Produksi, Gudang, Purchasing — baris DB-nya
+  ikut dihapus (bukan cuma berhenti di-seed), termasuk 4 akun seed test
+  yang cuma scaffolding utk role yang dihapus. Sisa role: GA, Head, Admin,
+  IT, Outlet (Outlet "masih dalam pengembangan" — modulnya sendiri,
+  Monitoring Outlet, belum sampai tahap Outlet bisa submit laporan). (4)
+  **Sistem Approval generik dihapus total** (trait `Approvable`, model
+  `Approval`, tabel `approvals`, Approval Inbox milik Head) — **Asset
+  Request (dulu "Pengajuan GA") disederhanakan**: alur approval
+  Finance→Head→Finance dihapus, sekarang murni draft → diajukan → cetak
+  dokumen, sama seperti pola Work Log/Inventaris Aset (tanpa approval).
+  Modul & data GA lain (Aset, Seragam, Pemeliharaan, Work Log, Monitoring
+  Outlet) sama sekali tidak disentuh. Lihat "Daftar Modul" & "Alur Kerja
+  per Modul" di bawah utk bentuk akhirnya.
 - **21/08/2026** — **Fix bug: landing page setelah login/kunjungi '/' bisa
   403 kalau modul default role tidak diberikan ke user** — `/` (root)
   dulu menampilkan halaman welcome bawaan Laravel yg tidak dibranding
@@ -18,7 +44,7 @@ kapan sesuatu berubah.
   (login). Ditemukan while itu: `RoleHomeResolver` (dipakai jalur login
   & redirect '/') memilih halaman rumah HANYA dari role, tanpa cek apa
   user itu betulan diberi akses ke modul-nya (mis. akun Outlet yg sengaja
-  cuma dikasih akses modul Monitoring Outlet, bukan modul default role
+  cuma dikasih akses modul Outlet, bukan modul default role
   Outlet yaitu SCM Deliveries) — user begini 403 begitu landing, baik
   lewat '/' MAUPUN langsung setelah login (bug lama, cuma baru kelihatan
   lewat perubahan '/' di atas). Diperbaiki: tiap kandidat halaman rumah
@@ -332,85 +358,35 @@ akun: **`password`**.
 
 | Role       | Email                          | Catatan |
 |------------|---------------------------------|---------|
-| Admin + GA | admin@omotesando.test           | Akses penuh ke modul GA & SCM, plus approval Admin di semua alur |
-| Head       | head@omotesando.test            | Approval lintas modul + monitoring read-only (tidak bisa input data) |
-| IT         | it@omotesando.test              | Kontrol Akses & Mode Pemeliharaan + Papan Kerja Kanban |
-| Produksi   | produksi@omotesando.test        | Modul SCM: buat Pengajuan Bahan & Batch Produksi |
-| Gudang     | gudang@omotesando.test          | Modul SCM: cetak label, buat Surat Jalan — terikat branch **Central Kitchen** |
-| Outlet     | outlet@omotesando.test          | Modul SCM: terima kiriman — terikat branch **Ironiku** |
-| Purchasing | purchasing@omotesando.test      | Modul Purchasing: approve Purchase Requisition dari Outlet, lalu buat PO kategori bahan makanan |
-| Finance    | finance@omotesando.test         | Modul Purchasing: approval step terakhir (pencairan dana) + catat invoice/pembayaran supplier |
-
-> Role `HR` dan `Cost Control` (lihat `app/Models/Role.php`) sudah
-> didaftarkan di sistem tapi belum punya akun seeded maupun modul yang
-> memakainya — buat manual lewat `php artisan tinker` atau tambahkan ke
-> `UserSeeder` kalau dibutuhkan.
+| Admin + GA | admin@omotesando.test           | Akses penuh ke modul GA (bypass pengecekan module_user) |
+| GA         | ga@allez-group.com              | Akun GA sungguhan (password beda, lihat `UserSeeder`) — akses modul GA sesuai default role |
+| Head       | head@omotesando.test            | Semua Pengajuan (monitoring) + Kontrol Modul + monitoring read-only lain |
+| IT         | it@omotesando.test              | Kontrol Akses & Mode Pemeliharaan + Papan Kerja Kanban + Manajemen User |
+| Outlet     | outlet@omotesando.test          | Masih dalam pengembangan — belum punya halaman modul sendiri, landing di `/profile` |
 
 ## Daftar Modul
 
-### GA (General Affairs) — `/ga` — role GA, Admin, Finance
+### GA (General Affairs) — `/ga` — role GA, Admin
 Sidebar disusun berjenjang (label Inggris — lihat Riwayat Perubahan utk kapan berubahnya):
 `Dashboard` · `Uniform Inventory` (+ sub-item `Stock Management`) · `Asset Inventory` (+ sub-item `Asset Maintenance Schedule`) ·
 seksi `Operational Support` (`Asset Request`, `Work Log`).
-- **Dashboard** (`/dashboard`) — ringkasan KPI: total aset, total pengajuan, total biaya pemeliharaan, total nilai pengiriman SCM.
-- **Asset Request** (`ga.requests.*`, dulu "Pengajuan GA") — pengajuan barang/jasa dengan approval bertingkat, cetak dokumen PDF, pengajuan cepat (quick request).
+- **Dashboard** (`/dashboard`) — ringkasan KPI: total aset, total pengajuan, total biaya pemeliharaan.
+- **Asset Request** (`ga.requests.*`, dulu "Pengajuan GA") — pengajuan barang/jasa TANPA approval (dihapus 24/08/2026), murni draft → diajukan → cetak dokumen PDF, pengajuan cepat (quick request).
 - **Asset Inventory** (`ga.assets.*`, dulu "Inventaris Aset") — CRUD aset (kode otomatis `AST-0001`, dst.), foto aset & foto serial number, QR code per aset (+ halaman publik scan tanpa login di `/a/{kode_aset}`), cetak label massal, export Excel/PDF.
 - **Uniform Inventory** (`ga.uniforms.records.*`) — daftar & CRUD serah-terima/pemakaian seragam per karyawan (issue/return), foto serah terima **wajib** diunggah sbg bukti pengambilan barang, dokumen Berita Acara Serah Terima (PDF). Sub-halaman **Stock Management** (`ga.uniforms.stocks.*`, dipisah dari halaman ini) — stok per varian (outlet/tipe/warna/ukuran), mutasi (restock/adjustment/disposal), riwayat movement lengkap (`ga.uniforms.movements.index`, link "Lihat semua" dari situ). Keduanya satu modul & saling terhubung (issue/return otomatis memutasi stok yang sama).
 - **Asset Maintenance Schedule** (`ga.maintenance.*`, dulu "Jadwal Pemeliharaan", sub-item dari Asset Inventory) — CRUD pekerjaan pemeliharaan per aset, nomor otomatis `MNT-2026-0001` (reset per tahun), status (Terjadwal/Sedang Berjalan/Selesai/Dibatalkan), tipe (Preventive/Corrective/Cleaning Inspection/Calibration/Service Vendor/Predictive), prioritas (Emergency/High/Normal), checklist dinamis + progress bar. Tanpa langkah approval — langsung dijadwalkan & diselesaikan oleh tim GA.
 - **Work Log** (`ga.worklogs.*`) — catatan aktivitas teknisi per outlet utk kontrol kinerja: tanggal + waktu mulai/berakhir (durasi dihitung otomatis), kategori (Pemeriksaan/Perbaikan/Instalasi/Maintenance/Pendampingan Vendor), outlet (6 outlet berstaf, termasuk Central Kitchen), teknisi in charge (dropdown tetap: Bangkat/Toni/Widi) & teknisi assist (teks bebas), detail pengerjaan (wajib) & hasil pengerjaan (opsional saat dibuat, diisi begitu selesai — status "Selesai"/"Belum Ada Hasil" otomatis), keterangan, lampiran foto (boleh lebih dari satu). Diagram bulat "Distribusi Pekerjaan per Teknisi" di halaman daftar (ikut filter aktif) utk memantau beban kerja tiap teknisi. Tanpa approval, tidak terikat ke Asset/Jadwal Pemeliharaan tertentu — murni log independen.
 
 ### Head — `/head` — role Head
-Halaman monitoring read-only + approval, terpisah dari halaman operasional GA/SCM:
-- Dashboard, Semua Pengajuan (approve/reject), Approval Inbox (generik lintas modul).
-- Kontrol Modul — aktif/nonaktifkan modul GA/SCM & atur role yang boleh akses.
-- Monitoring Aset, Seragam, Pemeliharaan, dan SCM (rekap + laporan selisih) — semua read-only.
-
-### SCM (Supply Chain / Warehouse) — `/scm` — role Produksi, Gudang, Outlet, Admin
-Alur: Pengajuan Bahan → Batch Produksi → Cetak Label → Surat Jalan → Terima Outlet → Laporan Selisih (otomatis).
-- **Pengajuan Bahan** (`scm.materials.*`) — diajukan Produksi, disetujui Admin.
-- **Batch Produksi** (`scm.batches.*`) — satu batch bisa menghasilkan beberapa produk berbeda; disetujui Admin.
-- **Cetak Label** — QR + tanggal kedaluwarsa per produk hasil batch; mencatat stok masuk otomatis di gudang.
-- **Surat Jalan** (`scm.deliveries.*`) — dibuat & dikirim Gudang, wajib foto bukti muat, item dipilih otomatis berdasar **FEFO** (kedaluwarsa terdekat) via endpoint `deliveries/available-labels`.
-- **Terima Outlet** — konfirmasi qty diterima + wajib foto; selisih qty terdeteksi & tercatat otomatis (Laporan Selisih).
-- **Laporan Selisih** (`scm.discrepancies.*`) — dibuat otomatis saat qty diterima ≠ qty dikirim.
-- **Rekap Periodik** (`scm.reports.index`) — rekap pengiriman per periode/outlet + export PDF.
-- **Stok Mendekati Kedaluwarsa** (`scm.reports.near-expiry`) — daftar batch dengan ED mendekati (ambang hari bisa diatur), dikelompokkan per lokasi.
-- **Laporan Nilai Persediaan** (`scm.reports.stock-value`) — nilai stok saat ini (qty × biaya/unit) per outlet & konsolidasi.
-- Stok real-time per lokasi & histori pergerakannya tercatat otomatis di balik layar setiap ada cetak label/kirim/terima (tidak ada halaman terpisah, dipakai oleh fitur-fitur di atas).
-
-### Purchasing — `/purchasing` — role Purchasing, Outlet, GA, Finance, Gudang, Admin
-Pembelian bahan baku/barang ke supplier, dua alur berbeda tergantung kategori. Head **sengaja tidak** punya akses langsung ke halaman modul ini — approval Head selalu lewat Approval Inbox generik yang sudah ada.
-- **Purchase Requisition** (`purchasing.purchase-requisitions.*`) — khusus kategori **food** (bahan makanan): diajukan **Outlet** (nama & qty saja, tanpa harga) → disetujui/ditolak **Purchasing** (1 langkah).
-- **Purchase Order** (`purchasing.purchase-orders.*`) — 2 jalur:
-  - **food**: dibuat **Purchasing** dari Purchase Requisition yang sudah disetujui (pilih supplier, tujuan pengiriman — biasanya Central Kitchen/Storage, bukan langsung ke outlet pemohon — & isi harga per item); approval PO-nya sendiri cuma 2 langkah (Head → Finance) karena Purchasing sudah menyetujui lewat requisisi.
-  - **general** (barang umum): dibuat langsung oleh **GA** tanpa requisisi; approval PO-nya 3 langkah (Purchasing → Head → Finance) karena belum pernah direview Purchasing sebelumnya.
-  - Nomor otomatis format `000X/[bulan romawi]/PO/[tahun]` (requisisi pakai kode `PR`, PO pakai kode `PO`).
-- **Penerimaan Barang** — konfirmasi barang sampai dari supplier, wajib foto. Gudang menerima kalau PO tujuannya branch miliknya (kategori apa saja); GA menerima kalau kategori 'general' (tidak terikat branch tertentu).
-- **Stok real-time** — HANYA PO kategori **food** yang ikut memperbarui stok (`stock_balances`/`stock_movements`, tabel yang sama dipakai modul SCM produksi) — barang kategori general tidak dilacak sebagai stok "batch" sama sekali, cuma tercatat sebagai bukti penerimaan. Laporan **Stok Mendekati Kedaluwarsa** & **Nilai Persediaan** milik SCM otomatis mencakup stok dari sini juga.
-- **Invoice Supplier** (`purchasing.supplier-invoices.*`) — domain Finance: catat invoice per penerimaan barang, catat pembayaran (mendukung cicilan/partial), status otomatis unpaid → partial → paid.
-
-> Catatan navigasi: role yang punya akses ke lebih dari satu modul (mis.
-> Gudang punya akses SCM & Purchasing) belum ada tombol pindah sidebar
-> antar-modul — untuk sekarang harus lewat URL langsung
-> (`/purchasing/...`), sama seperti keterbatasan yang sudah ada sebelumnya
-> di modul lain.
-
-### Finance — `/finance` — role Admin, Finance
-Chart of Accounts, mapping akun jurnal, & laporan keuangan. **Tidak ada input jurnal manual** — semua jurnal dibuat OTOMATIS lewat Observer setiap ada event tertentu, akun debit/kredit-nya diatur di halaman mapping (bukan di-hardcode).
-- **Chart of Accounts** (`finance.chart-of-accounts.index`) — baca saja (5 tipe akun: Aset/Liabilitas/Ekuitas/Pendapatan/Beban), tampilkan saldo tiap akun.
-- **Mapping Akun Jurnal** (`finance.transaction-mappings.*`) — atur akun debit/kredit tiap jenis transaksi (edit saja, bukan create — jenis transaksi tetap 3, sesuai observer yang ada).
-- **Auto-posting jurnal** — 3 event: (1) Pengajuan GA berstatus "Diterima" → debit Beban Operasional, kredit Kas; (2) Barang dari supplier diterima (GoodsReceipt, kategori food atau general) → debit Persediaan, kredit Hutang Usaha; (3) Invoice supplier LUNAS penuh (bukan tiap cicilan) → debit Hutang Usaha, kredit Kas.
-- **Buku Besar** (`finance.reports.general-ledger`) — mutasi 1 akun dalam periode + saldo berjalan.
-- **Beban Operasional & Persediaan** (`finance.reports.expense-inventory`) — per outlet (ditelusuri dari GaRequest/PurchaseOrder terkait) & konsolidasi.
-- **Umur Hutang / Aging Payable** (`finance.reports.payables-aging`) — supplier invoice belum lunas, dikelompokkan belum jatuh tempo / 1–30 / 31–60 / >60 hari.
-- **Neraca Sederhana** (`finance.reports.balance-sheet`) — saldo akhir tiap akun Aset/Liabilitas/Ekuitas, TANPA closing entry otomatis dari Pendapatan/Beban.
-
-> Kalau mapping akun utk suatu jenis transaksi belum ada (dihapus/belum di-seed), aksi terkait (mis. approve step terakhir Pengajuan GA) akan GAGAL dengan error jelas — bukan lolos tanpa jurnal. Ini kesengajaan (supaya buku tidak pernah diam-diam tidak balance) dan aman: seluruh aksi terkait (bukan cuma jurnalnya) ikut dibatalkan (rollback), jadi tidak ada state rusak — tinggal perbaiki mapping-nya lalu ulangi aksinya.
+Halaman monitoring read-only, terpisah dari halaman operasional GA:
+- Dashboard, Semua Pengajuan (monitoring draft/diajukan — TANPA approve/reject, dihapus 24/08/2026).
+- Kontrol Modul — aktif/nonaktifkan modul GA & atur role yang boleh akses.
+- Monitoring Aset, Seragam, Pemeliharaan — semua read-only.
 
 ### IT — `/it` — role IT
 - **Kontrol Akses & Mode Pemeliharaan** — nyalakan/matikan status "sedang dalam pemeliharaan" per halaman tanpa perlu deploy ulang.
 - **Papan Kerja Kanban** — task IT (bug fix/pengembangan), checklist, komentar, label.
-- **Manajemen User** — satu-satunya jalur pembuatan akun baru (`/register` publik sudah dihapus). IT memilih role (dipakai murni untuk approval) DAN daftar modul eksplisit per akun (`module_user`, independen dari role — role cuma dipakai sebagai saran default modul saat bikin akun baru). Password awal diketik manual atau digenerate acak di form (tampil sekali, disampaikan manual lewat WA/Telegram), user wajib ganti sendiri di login pertama. IT juga bisa nonaktifkan akun (`is_active`, ditolak langsung saat login) dan reset password kapan saja.
+- **Manajemen User** — satu-satunya jalur pembuatan akun baru (`/register` publik sudah dihapus). IT memilih role (dipakai murni buat akses route/`RoleMiddleware`) DAN daftar modul eksplisit per akun (`module_user`, independen dari role — role cuma dipakai sebagai saran default modul saat bikin akun baru). Password awal diketik manual atau digenerate acak di form (tampil sekali, disampaikan manual lewat WA/Telegram), user wajib ganti sendiri di login pertama. IT juga bisa nonaktifkan akun (`is_active`, ditolak langsung saat login) dan reset password kapan saja.
 - **Design System** — halaman referensi visual & komponen inti Allez ERP.
 
 ### Umum
@@ -422,13 +398,7 @@ Ringkasan urutan proses end-to-end tiap modul — siapa mengerjakan apa, setelah
 
 ### GA
 
-```
-Pengajuan GA:
-Staff GA ajukan → Finance "diketahui" (step 1) → Head "disetujui" (step 2)
-→ Finance "diterima" (step 3, selesai)
-Status: Diajukan → Dalam Review → Disetujui → Diterima (Ditolak bisa terjadi di step mana pun)
-```
-
+- **Asset Request** — tanpa approval (dihapus 24/08/2026). Staff GA isi form → simpan draft (opsional, bisa diedit ulang) → diajukan (submitted) → cetak dokumen PDF. Status: Draft → Diajukan saja, tidak ada langkah persetujuan Finance/Head lagi.
 - **Inventaris Aset** — tanpa approval. GA CRUD aset kapan saja; status (Bagus/Dalam Pemeliharaan/Rusak) cuma penanda kondisi, bukan alur berjenjang.
 - **Inventaris Seragam** — tanpa approval. restock (tambah stok) / issue (keluarkan ke karyawan → catatan "Dipakai") / adjustment (koreksi manual) / disposal (buang stok rusak); karyawan mengembalikan → catatan ditandai "Dikembalikan".
 - **Jadwal Pemeliharaan** — tanpa approval. GA jadwalkan pekerjaan pada aset → kerjakan → tandai selesai + catatan penyelesaian.
@@ -436,68 +406,15 @@ Status: Diajukan → Dalam Review → Disetujui → Diterima (Ditolak bisa terja
 
 ### Head
 
-- **Approval Inbox** — satu halaman generik menampung SEMUA item yang gilirannya Head approve, lintas modul apa pun yang pakai trait `Approvable` (Pengajuan GA step 2, PO step Head, dst) — approve/reject di sana, bukan di halaman masing-masing modul.
-- **Kontrol Modul** — aktif/nonaktifkan modul GA/SCM/Purchasing & atur role yang boleh akses per modul.
-- **Monitoring** (Aset/Seragam/Pemeliharaan/SCM) — read-only murni, tidak ada aksi approve/edit di halaman ini.
-
-### SCM (Supply Chain / Warehouse)
-
-```
-Produksi ajukan Pengajuan Bahan → Admin approve (1 langkah)
-→ Produksi buat Batch Produksi dari pengajuan yang disetujui (bisa multi-produk)
-→ Admin approve (1 langkah)
-→ Gudang cetak Label (QR + ED opsional → stok OTOMATIS bertambah di Gudang)
-→ Gudang buat & kirim Surat Jalan ke Outlet (wajib foto, item dipilih otomatis FEFO
-   → stok berkurang dari Gudang saat status jadi "sent")
-→ Outlet konfirmasi Terima (wajib foto, isi qty diterima → stok bertambah di Outlet)
-→ Kalau qty diterima ≠ qty dikirim: Laporan Selisih dibuat OTOMATIS (bukan approval,
-   murni observer)
-```
-
-### Purchasing
-
-```
-FOOD (bahan makanan):
-Outlet ajukan Purchase Requisition (nama+qty saja)
-→ Purchasing approve/reject (1 langkah)
-→ [kalau approved] Purchasing buat PO sesungguhnya (pilih supplier, tujuan
-   pengiriman — biasanya Central Kitchen/Storage, & isi harga per item)
-→ Head approve (lewat Approval Inbox) → Finance approve ("pencairan dana")
-→ Gudang/GA konfirmasi terima barang (wajib foto → stok OTOMATIS bertambah)
-→ Finance catat Invoice Supplier → Finance catat pembayaran (unpaid → partial → paid)
-
-GENERAL (barang umum):
-GA buat PO langsung (TANPA requisisi)
-→ Purchasing approve (step tambahan, krn belum pernah direview lewat requisisi)
-→ Head approve → Finance approve
-→ Gudang/GA konfirmasi terima barang (tercatat sbg bukti, stok TIDAK disentuh)
-→ Invoice & pembayaran sama seperti food
-```
-
-### Finance
-
-```
-Tidak ada input manual — jurnal ter-post OTOMATIS lewat Observer tiap kali:
-
-Pengajuan GA jadi "Diterima" (step 3 Finance selesai)
-→ jurnal: debit Beban Operasional, kredit Kas (sebesar total_amount)
-
-GoodsReceipt tersimpan (barang dari supplier diterima, kategori apa pun)
-→ jurnal: debit Persediaan, kredit Hutang Usaha (sebesar qty x harga/unit)
-
-SupplierInvoice status jadi "paid" PENUH (bukan tiap cicilan)
-→ jurnal: debit Hutang Usaha, kredit Kas (sebesar total invoice)
-
-Semua akun debit/kredit di atas diambil dari halaman Mapping Akun Jurnal
-(Admin/Finance bisa ubah tanpa sentuh kode). Kalau mapping belum ada →
-aksi terkait GAGAL (rollback total), bukan lolos tanpa jurnal.
-```
+- **Semua Pengajuan** — monitoring read-only murni (approve/reject & Approval Inbox dihapus 24/08/2026, lihat Riwayat Perubahan) — lihat daftar & detail tiap Asset Request, tidak ada aksi apa pun di halaman ini.
+- **Kontrol Modul** — aktif/nonaktifkan modul GA & atur role yang boleh akses per modul.
+- **Monitoring** (Aset/Seragam/Pemeliharaan) — read-only murni, tidak ada aksi approve/edit di halaman ini.
 
 ### IT
 
 - **Kontrol Akses & Mode Pemeliharaan** — IT tandai satu halaman tertentu "Dalam Pemeliharaan" (per key `SystemModule`) → user non-IT/Admin yang akses halaman itu otomatis dialihkan ke halaman notice pemeliharaan → IT matikan status itu kalau perbaikan selesai.
 - **Papan Kerja Kanban** — buat task → pindah kolom (drag & drop status) → tambah checklist/komentar → selesai.
-- **Manajemen User** — IT isi nama/email/divisi/branch → pilih role (checkbox multi, cuma dipakai untuk approval) → checklist modul auto-tercentang sesuai default role yang dipilih (bisa diubah manual, ini yang disimpan) → isi password (ketik manual/generate acak, tampil sekali) → simpan → user wajib ganti password sendiri di login pertama. Edit: ubah role/modul/branch/divisi & toggle aktif-nonaktif kapan saja (independen satu sama lain); tombol Reset Password generate password baru + paksa ganti lagi.
+- **Manajemen User** — IT isi nama/email/divisi/branch → pilih role (checkbox multi, dipakai murni buat akses route/`RoleMiddleware`) DAN checklist modul auto-tercentang sesuai default role yang dipilih (bisa diubah manual, ini yang disimpan) → isi password (ketik manual/generate acak, tampil sekali) → simpan → user wajib ganti password sendiri di login pertama. Edit: ubah role/modul/branch/divisi & toggle aktif-nonaktif kapan saja (independen satu sama lain); tombol Reset Password generate password baru + paksa ganti lagi.
 
 ---
 

@@ -27,15 +27,7 @@ class Module extends Model
     public const UNIFORMS = 'uniforms';
     public const MAINTENANCE = 'maintenance';
     public const WORK_LOG = 'work_log';
-        public const OUTLET_MONITORING = 'outlet_monitoring';
-    public const SCM_MATERIALS = 'scm_materials';
-    public const SCM_DELIVERIES = 'scm_deliveries';
-    public const SCM_REPORTS = 'scm_reports';
-    public const SCM_NEAR_EXPIRY = 'scm_near_expiry';
-    public const PURCHASING_REQUISITIONS = 'purchasing_requisitions';
-    public const PURCHASING_ORDERS = 'purchasing_orders';
-    public const PURCHASING_RECEIPTS = 'purchasing_receipts';
-    public const FINANCE = 'finance';
+    public const OUTLET_MONITORING = 'outlet';
 
     public function roles(): BelongsToMany
     {

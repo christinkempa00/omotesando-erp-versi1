@@ -4,7 +4,6 @@ namespace App\Http\Controllers\GA;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreGaRequestRequest;
-use App\Models\Approval;
 use App\Models\Branch;
 use App\Models\Division;
 use App\Models\GA\GaRequest;
@@ -15,6 +14,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -22,8 +22,7 @@ class GaRequestController extends Controller
 {
     /**
      * Staff GA hanya lihat pengajuan miliknya sendiri.
-     * Head & Admin lihat semua pengajuan (untuk kebutuhan monitoring),
-     * meskipun aksi approve/reject belum dibangun di tahap ini.
+     * Head & Admin lihat semua pengajuan (untuk kebutuhan monitoring).
      */
     public function index(Request $request): View
     {
@@ -100,10 +99,6 @@ class GaRequestController extends Controller
             $this->syncItems($gaRequest, $validated['items']);
             $gaRequest->recalculateTotal();
 
-            if ($intent === 'submit') {
-                $gaRequest->generateApprovalSteps();
-            }
-
             return $gaRequest;
         });
 
@@ -116,8 +111,8 @@ class GaRequestController extends Controller
 
     /**
      * Hanya draft milik sendiri yang boleh dibuka utk dilanjutkan — begitu
-     * status berubah jadi submitted (alur approval sudah mulai), tidak ada
-     * lagi jalur edit lewat sini (integritas alur approval).
+     * status berubah jadi submitted (dokumen sudah final), tidak ada lagi
+     * jalur edit lewat sini.
      */
     public function edit(Request $request, GaRequest $gaRequest): View
     {
@@ -168,10 +163,6 @@ class GaRequestController extends Controller
             $gaRequest->items()->delete();
             $this->syncItems($gaRequest, $validated['items']);
             $gaRequest->recalculateTotal();
-
-            if ($intent === 'submit') {
-                $gaRequest->generateApprovalSteps();
-            }
         });
 
         $this->storeAttachments($request, $gaRequest);
@@ -236,11 +227,34 @@ class GaRequestController extends Controller
             return null;
         }
 
-        $path = Approval::storeSignatureImage($validated['signature_data']);
+        $path = $this->storeSignatureImage($validated['signature_data']);
 
         if ($path && ($validated['signature_save_as_default'] ?? false)) {
             $user->update(['signature_path' => $path]);
         }
+
+        return $path;
+    }
+
+    /**
+     * Decode data URL PNG (dari canvas tanda tangan) & simpan ke disk public.
+     * Dulu lewat Approval::storeSignatureImage() — dipindah ke sini setelah
+     * sistem approval dihapus 24/08/2026 (GaRequest tidak lagi punya alasan
+     * bergantung ke model Approval sama sekali).
+     */
+    private function storeSignatureImage(?string $signatureData): ?string
+    {
+        if (! $signatureData || ! preg_match('/^data:image\/png;base64,(.+)$/', $signatureData, $matches)) {
+            return null;
+        }
+
+        $binary = base64_decode($matches[1]);
+        if ($binary === false) {
+            return null;
+        }
+
+        $path = 'ga-requests/signatures/'.Str::random(32).'.png';
+        Storage::disk('public')->put($path, $binary);
 
         return $path;
     }
@@ -250,11 +264,11 @@ class GaRequestController extends Controller
         $user = $request->user();
 
         abort_unless(
-            $user->hasRole(Role::HEAD, Role::ADMIN, Role::FINANCE) || $gaRequest->requested_by === $user->id,
+            $user->hasRole(Role::HEAD, Role::ADMIN) || $gaRequest->requested_by === $user->id,
             403
         );
 
-        $gaRequest->load(['items', 'branch', 'division', 'requestedBy', 'approvals.approver', 'attachments']);
+        $gaRequest->load(['items', 'branch', 'division', 'requestedBy', 'attachments']);
 
         return view('ga.requests.show', [
             'gaRequest' => $gaRequest,
@@ -264,19 +278,19 @@ class GaRequestController extends Controller
     }
 
     /**
-     * Dokumen GAR resmi (PDF) — dibangun dari data pengajuan + alur approval
-     * yang sudah ada, mengikuti format dokumen GAR fisik yang lama.
+     * Dokumen GAR resmi (PDF) — dibangun dari data pengajuan, mengikuti
+     * format dokumen GAR fisik yang lama.
      */
     public function document(Request $request, GaRequest $gaRequest): Response
     {
         $user = $request->user();
 
         abort_unless(
-            $user->hasRole(Role::HEAD, Role::ADMIN, Role::FINANCE) || $gaRequest->requested_by === $user->id,
+            $user->hasRole(Role::HEAD, Role::ADMIN) || $gaRequest->requested_by === $user->id,
             403
         );
 
-        $gaRequest->load(['items', 'branch', 'requestedBy', 'approvals.approver']);
+        $gaRequest->load(['items', 'branch', 'requestedBy']);
 
         $pdf = Pdf::loadView('ga.requests.document-pdf', [
             'gaRequest' => $gaRequest,
@@ -304,7 +318,6 @@ class GaRequestController extends Controller
             Storage::disk('public')->delete($attachment->photo_path);
         }
 
-        $gaRequest->approvals()->delete();
         $gaRequest->delete();
 
         return redirect()

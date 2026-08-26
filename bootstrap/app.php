@@ -3,6 +3,7 @@
 use App\Http\Middleware\CheckModuleMaintenance;
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\ModuleAccessMiddleware;
+use App\Http\Middleware\PreventBackHistoryCache;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -42,6 +43,11 @@ return Application::configure(basePath: dirname(__DIR__))
         // (akun baru/reset dari IT) di-redirect paksa ke halaman ganti
         // password dulu, apa pun halaman yang mereka coba akses.
         $middleware->appendToGroup('web', EnsurePasswordChanged::class);
+
+        // Global di semua route 'web' — paksa "no-store" di tiap respons
+        // supaya browser tidak bisa tampilkan halaman dari bfcache setelah
+        // logout (lihat docblock PreventBackHistoryCache).
+        $middleware->appendToGroup('web', PreventBackHistoryCache::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
