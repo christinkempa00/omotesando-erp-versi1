@@ -74,7 +74,8 @@
                                 }
                             },
                         }"
-                        class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-5"
+                        class="glass-panel p-5"
+                        :class="underMaintenance ? 'border-t-[3px] border-t-amber-500' : 'border-t-[3px] border-t-emerald-500'"
                     >
                         <div class="flex items-start justify-between mb-3 gap-3">
                             <div class="min-w-0">
@@ -146,7 +147,7 @@
             </div>
 
             {{-- Aktivitas terbaru --}}
-            <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="font-medium text-gray-800">Aktivitas Mode Pemeliharaan Terbaru</h3>
                 </div>
