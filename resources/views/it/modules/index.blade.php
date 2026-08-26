@@ -125,8 +125,9 @@
                             <p class="text-xs text-gray-500 mb-2" x-text="'Catatan: ' + note"></p>
                         </template>
 
-                        <p class="text-xs text-gray-400" x-show="updatedBy">
-                            Terakhir diubah oleh <span x-text="updatedBy"></span> pada <span x-text="updatedAt"></span>
+                        <p class="flex items-center gap-1.5 text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100" x-show="updatedBy">
+                            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
+                            Terakhir diubah oleh <span x-text="updatedBy" class="font-medium text-gray-500"></span> pada <span x-text="updatedAt"></span>
                         </p>
 
                         @if ($module->linkedTasks->isNotEmpty())
@@ -151,17 +152,20 @@
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="font-medium text-gray-800">Aktivitas Mode Pemeliharaan Terbaru</h3>
                 </div>
-                <div class="divide-y divide-gray-100">
+                <div class="px-6 py-4">
                     @forelse ($recentActivity as $log)
-                        <div class="px-6 py-3 flex items-center justify-between text-sm">
-                            <div class="min-w-0">
-                                <p class="text-gray-800 truncate">{{ $log->description }}</p>
-                                <p class="text-xs text-gray-400">oleh {{ $log->user?->name ?? 'Sistem' }}</p>
+                        <div class="relative pl-6 pb-4 last:pb-0 border-l-2 border-gold-200 last:border-transparent">
+                            <span class="absolute -left-[5px] top-1 w-2.5 h-2.5 rounded-full bg-gold-500 ring-4 ring-white"></span>
+                            <div class="flex items-center justify-between text-sm">
+                                <div class="min-w-0">
+                                    <p class="text-gray-800 truncate">{{ $log->description }}</p>
+                                    <p class="text-xs text-gray-400">oleh {{ $log->user?->name ?? 'Sistem' }}</p>
+                                </div>
+                                <span class="text-xs text-gray-400 shrink-0">{{ $log->created_at->format('d M Y H:i') }}</span>
                             </div>
-                            <span class="text-xs text-gray-400 shrink-0">{{ $log->created_at->format('d M Y H:i') }}</span>
                         </div>
                     @empty
-                        <p class="px-6 py-8 text-center text-sm text-gray-500">Belum ada aktivitas.</p>
+                        <p class="text-center text-sm text-gray-500 py-4">Belum ada aktivitas.</p>
                     @endforelse
                 </div>
             </div>
