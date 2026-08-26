@@ -17,23 +17,23 @@
                 [$gaModules, $headModules] = $modules->partition(fn ($m) => str_starts_with($m->key, 'ga.'));
             @endphp
 
-            <div class="space-y-3">
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">General Affairs</h3>
+            <section class="rounded-xl border border-gold-100 bg-gold-50/40 p-5 sm:p-6">
+                <h2 class="text-base font-semibold text-gray-800 mb-4">General Affairs</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     @foreach ($gaModules as $module)
                         @include('it.modules._card', ['module' => $module])
                     @endforeach
                 </div>
-            </div>
+            </section>
 
-            <div class="space-y-3">
-                <h3 class="text-xs font-semibold uppercase tracking-wider text-gray-400">Head</h3>
+            <section class="rounded-xl border border-gold-100 bg-gold-50/40 p-5 sm:p-6">
+                <h2 class="text-base font-semibold text-gray-800 mb-4">Head</h2>
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                     @foreach ($headModules as $module)
                         @include('it.modules._card', ['module' => $module])
                     @endforeach
                 </div>
-            </div>
+            </section>
 
             {{-- Aktivitas terbaru --}}
             <div class="glass-panel overflow-hidden">
