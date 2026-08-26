@@ -6,7 +6,7 @@
         </div>
     </x-slot>
 
-    <div class="font-it py-8">
+    <div class="py-8">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
@@ -39,7 +39,7 @@
                         <input type="hidden" name="is_active" value="0">
                         <input type="checkbox" name="is_active" value="1"
                                @checked(old('is_active', $user->is_active))
-                               class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                               class="rounded border-gray-300 text-accent focus:ring-accent">
                         Akun aktif (bisa login)
                     </label>
                     <p class="mt-1 text-xs text-gray-400">
@@ -53,7 +53,7 @@
 
                 <div class="flex justify-end gap-3">
                     <a href="{{ route('it.users.index') }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                    <button type="submit" class="px-5 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-sm font-medium rounded-lg shadow-[0_4px_12px_-2px_rgba(200,155,44,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(200,155,44,0.5)] transition">Simpan Perubahan</button>
+                    <button type="submit" class="px-5 py-2.5 bg-accent text-white text-sm font-medium rounded-lg hover:opacity-90 transition">Simpan Perubahan</button>
                 </div>
             </form>
 
