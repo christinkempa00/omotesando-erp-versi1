@@ -86,6 +86,10 @@
                                             <span x-text="checklistProgress(task)"></span>
                                         </span>
                                     </div>
+
+                                    <div x-show="task.checklist_items.length" class="h-1 bg-gray-100 rounded-full overflow-hidden">
+                                        <div class="h-full bg-gold-500 transition-all" :style="`width: ${checklistPercent(task)}%`"></div>
+                                    </div>
                                 </li>
                             </template>
                         </ul>
