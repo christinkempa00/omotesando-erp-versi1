@@ -45,16 +45,16 @@
         <div class="max-w-full mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex gap-4 overflow-x-auto pb-4 items-start">
                 <template x-for="column in columns" :key="column.id">
-                    <div class="flex-shrink-0 w-72 bg-gray-100 rounded-lg p-3">
+                    <div class="flex-shrink-0 w-72 glass-panel p-3">
                         <div class="flex items-center justify-between mb-3 px-1">
                             <h3 class="font-semibold text-sm text-gray-700" x-text="column.name"></h3>
-                            <span class="text-xs text-gray-400 bg-gray-200 rounded-full px-2 py-0.5" x-text="column.tasks.length"></span>
+                            <span class="text-xs text-gold-700 bg-gold-100 rounded-full px-2 py-0.5 font-medium" x-text="column.tasks.length"></span>
                         </div>
 
                         <ul class="kanban-column-list space-y-2 min-h-[40px]" :data-column-id="column.id">
                             <template x-for="task in column.tasks" :key="task.id">
                                 <li :data-task-id="task.id" @click="openTask(task)"
-                                    class="bg-white rounded-lg shadow-sm p-3 cursor-pointer hover:shadow-md transition space-y-2">
+                                    class="glass-panel p-3 cursor-pointer hover:shadow-[0_4px_14px_-2px_rgba(0,0,0,0.12)] hover:-translate-y-px transition space-y-2">
 
                                     <template x-if="task.related_module">
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700">
@@ -86,15 +86,26 @@
                                         <span x-show="task.due_date"
                                               :class="isOverdue(task) ? 'text-red-600 font-semibold' : (isDueSoon(task) ? 'text-amber-600 font-medium' : '')"
                                               x-text="formatDate(task.due_date)"></span>
-                                        <span x-show="task.checklist_items.length" x-text="checklistProgress(task)"></span>
+                                        <span x-show="task.checklist_items.length" class="inline-flex items-center gap-1">
+                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4" /><circle cx="12" cy="12" r="9" /></svg>
+                                            <span x-text="checklistProgress(task)"></span>
+                                        </span>
                                     </div>
                                 </li>
                             </template>
                         </ul>
 
+                        {{-- Ditaruh di luar <ul> (bukan jadi <li>) supaya tidak
+                             ikut dihitung SortableJS sebagai item yang bisa
+                             di-drag/drop — murni teks kosong, tidak menyentuh
+                             kontrak DOM milik Sortable. --}}
+                        <p x-show="!column.tasks.length" x-cloak class="text-center text-xs text-gray-400 italic py-3">
+                            Belum ada task.
+                        </p>
+
                         <div class="mt-2" x-data="{ adding: false, title: '' }">
                             <button type="button" x-show="!adding" @click="adding = true; $nextTick(() => $refs.newTaskInput?.focus())"
-                                    class="w-full text-left text-xs text-gray-500 hover:text-gray-700 hover:bg-gray-200 rounded-md px-2 py-1.5">
+                                    class="w-full text-left text-xs text-gray-500 hover:text-gold-700 hover:bg-gold-500/10 rounded-md px-2 py-1.5 transition">
                                 + Tambah Task
                             </button>
                             <form x-show="adding" x-cloak
