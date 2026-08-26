@@ -1,3 +1,13 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+    /* Kartu "gold/glass" modul IT (Kontrol Modul, Papan Kerja, Manajemen
+       User, dst) -- menggantikan pola literal bg-white rounded-xl
+       shadow-[...] yang diulang di tiap file. Cuma dipakai di
+       resources/views/it/**, tidak menimpa styling kartu modul lain. */
+    .glass-panel {
+        @apply bg-white/80 backdrop-blur-md border border-gold-500/20 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)];
+    }
+}

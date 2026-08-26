@@ -30,7 +30,7 @@
 </style>
 
 <aside
-    class="font-it fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-gradient-to-b from-gold-950 to-gold-900 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
+    class="font-it fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-gradient-to-b from-gold-950 to-gold-900 border-r border-gold-500/20 shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
     <div class="h-16 shrink-0 flex items-center justify-between px-5 border-b border-white/10">
@@ -55,7 +55,7 @@
         @foreach ($navItems as $item)
             <a href="{{ route($item['route']) }}" @click="sidebarOpen = false"
                class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
-                      {{ request()->routeIs(...$item['pattern']) ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_2px_10px_-2px_rgba(200,155,44,0.6)]' : 'text-gold-200/80 hover:bg-white/5 hover:text-white' }}">
+                      {{ request()->routeIs(...$item['pattern']) ? 'bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_0_12px_rgba(212,175,55,0.4)]' : 'text-gold-200/80 hover:bg-gold-500/10' }}">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     {!! $icons[$item['icon']] !!}
                 </svg>
