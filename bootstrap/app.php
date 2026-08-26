@@ -74,6 +74,20 @@ return Application::configure(basePath: dirname(__DIR__))
         // resources/views/auth/login.blade.php utk sisi baca query-nya.
         $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
             if ($e->getStatusCode() === 419 && ! $request->expectsJson()) {
+                // CSRF gagal berarti ValidateCsrfToken menolak request SEBELUM
+                // sempat sampai ke LogoutController — user submit form logout
+                // tapi TIDAK BENAR-BENAR ter-logout (masih authenticated).
+                // Kalau cuma redirect ke /login di sini, RedirectIfAuthenticated
+                // langsung mantulkan mereka balik ke dashboard krn masih login.
+                // Karena submit ke /logout artinya niatnya sudah jelas (mau
+                // keluar), logout-kan paksa di sini juga supaya redirect-nya
+                // benar-benar mendarat di halaman login, bukan mantul balik.
+                if ($request->routeIs('logout')) {
+                    \Illuminate\Support\Facades\Auth::guard('web')->logout();
+                    $request->session()->invalidate();
+                    $request->session()->regenerateToken();
+                }
+
                 return redirect()->route('login', ['expired' => 1]);
             }
         });
