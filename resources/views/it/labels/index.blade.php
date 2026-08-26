@@ -4,7 +4,7 @@
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                 Kelola Label
             </h2>
-            <a href="{{ route('it.board.index') }}" class="text-sm text-accent hover:text-accent-dark font-medium">
+            <a href="{{ route('it.board.index') }}" class="text-sm text-gold-600 hover:text-gold-700 font-medium">
                 &larr; Kembali ke Papan Kerja
             </a>
         </div>
@@ -23,7 +23,7 @@
         ];
     @endphp
 
-    <div class="py-8">
+    <div class="font-it py-8">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             @if (session('success'))
@@ -44,17 +44,17 @@
                     <div class="flex-1 min-w-[160px]">
                         <label class="block text-xs font-medium text-gray-500 mb-1">Nama Label</label>
                         <input type="text" name="name" value="{{ old('name') }}" required maxlength="50"
-                               class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-accent focus:ring-2 focus:ring-accent">
+                               class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-500">
                     </div>
                     <div class="min-w-[140px]">
                         <label class="block text-xs font-medium text-gray-500 mb-1">Warna</label>
-                        <select name="color" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-accent focus:ring-2 focus:ring-accent">
+                        <select name="color" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-500">
                             @foreach ($colors as $color)
                                 <option value="{{ $color }}">{{ ucfirst($color) }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="px-5 py-2.5 text-sm font-medium rounded-lg bg-accent text-white hover:opacity-90 transition">
+                    <button type="submit" class="px-5 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_4px_12px_-2px_rgba(200,155,44,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(200,155,44,0.5)] transition">
                         Tambah
                     </button>
                 </form>
