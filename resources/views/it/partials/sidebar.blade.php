@@ -9,13 +9,11 @@
         ['route' => 'it.board.index', 'pattern' => ['it.board.*', 'it.labels.*'], 'label' => 'Papan Kerja', 'icon' => 'board'],
         ['route' => 'it.modules.index', 'pattern' => ['it.modules.*'], 'label' => 'Kontrol Modul', 'icon' => 'toggle'],
         ['route' => 'it.users.index', 'pattern' => ['it.users.*'], 'label' => 'Manajemen User', 'icon' => 'users'],
-        ['route' => 'it.design-system.index', 'pattern' => ['it.design-system.*'], 'label' => 'Design System', 'icon' => 'palette'],
     ];
 
     $icons = [
         'toggle' => '<rect x="2" y="7" width="20" height="10" rx="5" /><circle cx="16" cy="12" r="3" fill="currentColor" stroke="none" />',
         'board' => '<rect x="3" y="4" width="18" height="16" rx="2" /><path d="M9 4v16M15 4v16" />',
-        'palette' => '<path d="M12 3a9 9 0 1 0 0 18c1.1 0 1.8-.9 1.8-2 0-.5-.2-1-.5-1.3-.3-.4-.5-.8-.5-1.2 0-1.1.9-2 2-2h2.4c1.8 0 3.3-1.5 3.3-3.3C20.5 6.4 16.7 3 12 3Z" /><circle cx="7.5" cy="10.5" r="1.2" fill="currentColor" stroke="none" /><circle cx="11" cy="7" r="1.2" fill="currentColor" stroke="none" /><circle cx="15.5" cy="8" r="1.2" fill="currentColor" stroke="none" />',
         'users' => '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" /><path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />',
     ];
 @endphp

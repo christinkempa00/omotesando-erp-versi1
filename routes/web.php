@@ -28,7 +28,6 @@ use App\Http\Controllers\IT\ItTaskController;
 use App\Http\Controllers\IT\ItTaskChecklistController;
 use App\Http\Controllers\IT\ItTaskCommentController;
 use App\Http\Controllers\IT\ItTaskLabelController;
-use App\Http\Controllers\IT\DesignSystemController;
 use App\Http\Controllers\IT\UserManagementController;
 
 // Dulu langsung view('welcome') bawaan Laravel (halaman dev "Let's get
@@ -220,9 +219,6 @@ Route::middleware(['auth', 'role:IT'])
 
         Route::get('labels', [ItTaskLabelController::class, 'index'])->name('labels.index');
         Route::post('labels', [ItTaskLabelController::class, 'store'])->name('labels.store');
-
-        // Referensi visual & komponen inti Allez ERP (lihat .design-sync/NOTES.md).
-        Route::get('design-system', [DesignSystemController::class, 'index'])->name('design-system.index');
 
         // Manajemen User — satu-satunya jalur bikin akun baru (/register
         // publik sudah dihapus, lihat routes/auth.php). Lihat
