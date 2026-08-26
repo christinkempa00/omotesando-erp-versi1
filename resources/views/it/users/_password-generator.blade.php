@@ -12,7 +12,7 @@
         <input :type="visible ? 'text' : 'password'" name="password" x-model="password" required minlength="8"
                placeholder="Ketik manual atau klik &quot;Generate Password Acak&quot;"
                autocomplete="new-password"
-               class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg focus:border-accent focus:ring-2 focus:ring-accent font-mono text-sm">
+               class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg focus:border-gold-500 focus:ring-2 focus:ring-gold-500 font-mono text-sm">
         <button type="button" @click="visible = !visible"
                 class="px-3 py-2 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
                 x-text="visible ? 'Sembunyikan' : 'Lihat'"></button>
@@ -21,7 +21,7 @@
                 x-text="copied ? 'Tersalin!' : 'Copy'"></button>
     </div>
     <button type="button" @click="generate()"
-            class="px-3 py-1.5 text-xs font-medium rounded-lg bg-accent-tint text-accent hover:opacity-80">
+            class="px-3 py-1.5 text-xs font-medium rounded-lg bg-gold-100 text-gold-700 hover:bg-gold-200">
         Generate Password Acak
     </button>
     <p class="text-xs text-gray-500">

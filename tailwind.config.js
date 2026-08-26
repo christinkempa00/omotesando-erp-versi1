@@ -28,8 +28,31 @@ export default {
             fontFamily: {
                 sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
                 mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
+                // Scoped to the IT module only (`font-it`) — mirrors the
+                // look of the native PHP IT system. Loaded via @import in
+                // it/partials/sidebar.blade.php since the shared
+                // layouts/app.blade.php <head> can't be touched for this.
+                // Global `font-sans` above stays Plus Jakarta Sans.
+                it: ['Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
+                // IT-module-only accent ("gold/glass" look ported from the
+                // native PHP IT system) — additive alongside ink/accent
+                // above, not a replacement. Only used inside
+                // resources/views/it/**.
+                gold: {
+                    50: '#fdf8ec',
+                    100: '#faefd0',
+                    200: '#f4dfa3',
+                    300: '#ecc96c',
+                    400: '#e0b23e',
+                    500: '#c89b2c',
+                    600: '#a67f20',
+                    700: '#85661a',
+                    800: '#6b5216',
+                    900: '#574314',
+                    950: '#2e230a',
+                },
                 // Allez ERP Redesign tokens — warm neutral ink/surface with a
                 // single terracotta accent, replacing the generic indigo/gray
                 // Tailwind defaults used until now. See
