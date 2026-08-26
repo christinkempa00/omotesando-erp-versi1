@@ -37,7 +37,7 @@
                 </div>
             @endif
 
-            <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-5">
+            <div class="glass-panel p-5">
                 <h3 class="font-medium text-gray-800 mb-3">Tambah Label Baru</h3>
                 <form method="POST" action="{{ route('it.labels.store') }}" class="flex flex-wrap items-end gap-3">
                     @csrf
@@ -60,7 +60,7 @@
                 </form>
             </div>
 
-            <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="font-medium text-gray-800">Label Tersedia</h3>
                 </div>
@@ -73,7 +73,7 @@
                             <span class="text-xs text-gray-400">{{ $label->tasks_count }} task</span>
                         </div>
                     @empty
-                        <p class="px-6 py-8 text-center text-sm text-gray-500">Belum ada label.</p>
+                        <p class="px-6 py-10 text-center text-sm text-gray-400 italic">Belum ada label.</p>
                     @endforelse
                 </div>
             </div>
