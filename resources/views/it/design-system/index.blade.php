@@ -27,7 +27,7 @@
                         ['name' => 'Gold 700', 'class' => 'bg-gold-700', 'token' => 'bg-gold-700'],
                         ['name' => 'Gold 950', 'class' => 'bg-gold-950', 'token' => 'bg-gold-950'],
                     ] as $c)
-                        <div class="rounded-xl overflow-hidden border border-gray-200">
+                        <div class="glass-panel overflow-hidden">
                             <div class="h-16 {{ $c['class'] }}"></div>
                             <div class="p-2.5 bg-white">
                                 <div class="text-xs font-bold text-gray-800">{{ $c['name'] }}</div>
@@ -54,7 +54,7 @@
                         ['label' => 'Danger', 'bg' => 'bg-red-100', 'fg' => 'text-red-700', 'desc' => 'Aksi merusak/menghapus atau gagal.'],
                         ['label' => 'Info', 'bg' => 'bg-cyan-100', 'fg' => 'text-cyan-700', 'desc' => 'Info netral, bukan aksi.'],
                     ] as $s)
-                        <div class="rounded-xl border border-gray-200 p-3.5 bg-white">
+                        <div class="glass-panel p-3.5">
                             <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11.5px] font-bold {{ $s['bg'] }} {{ $s['fg'] }} mb-2">
                                 <span class="w-1.5 h-1.5 rounded-full {{ $s['fg'] }} bg-current"></span>{{ $s['label'] }}
                             </span>
@@ -70,7 +70,7 @@
             {{-- Tipografi --}}
             <section>
                 <h3 class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-3">Tipografi</h3>
-                <div class="bg-white border border-gray-200 rounded-xl p-6">
+                <div class="glass-panel p-6">
                     <div class="text-3xl font-extrabold text-gray-800">Inter — Display / Heading 800</div>
                     <div class="text-xl font-bold text-gray-800 mt-2.5">Judul Section &amp; Kartu — 600/700</div>
                     <div class="text-sm text-gray-800 mt-2.5">Body teks reguler 400/500 — label form, deskripsi, isi tabel.</div>
@@ -86,7 +86,7 @@
             {{-- Tombol --}}
             <section>
                 <h3 class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-3">Tombol</h3>
-                <div class="bg-white border border-gray-200 rounded-xl p-6 flex flex-wrap gap-3">
+                <div class="glass-panel p-6 flex flex-wrap gap-3">
                     <button type="button" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_4px_12px_-2px_rgba(200,155,44,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(200,155,44,0.5)] transition">Primary</button>
                     <button type="button" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition">Secondary</button>
                     <button type="button" class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-r from-emerald-500 to-emerald-600 text-white shadow-[0_4px_12px_-2px_rgba(16,185,129,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(16,185,129,0.5)] transition">Success</button>
@@ -99,7 +99,7 @@
             {{-- Badge --}}
             <section>
                 <h3 class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-3">Badge</h3>
-                <div class="bg-white border border-gray-200 rounded-xl p-6 flex flex-wrap gap-2">
+                <div class="glass-panel p-6 flex flex-wrap gap-2">
                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">Primary</span>
                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">Success</span>
                     <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-amber-100 text-amber-700">Warning</span>
@@ -111,7 +111,7 @@
             {{-- Card + Form --}}
             <section>
                 <h3 class="text-xs font-bold uppercase tracking-wide text-gray-500 mb-3">Card &amp; Form</h3>
-                <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6 max-w-md">
+                <div class="glass-panel p-6 max-w-md">
                     <div class="flex items-center justify-between border-b border-gray-100 pb-4 mb-6">
                         <h4 class="font-semibold text-gray-800">Contoh Card</h4>
                         <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">Label</span>
