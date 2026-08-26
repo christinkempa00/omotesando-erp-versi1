@@ -132,12 +132,15 @@
              style="display: none;">
             <div class="fixed inset-0 bg-gray-900/50" @click="closeTask()"></div>
 
-            <div class="relative bg-white rounded-xl shadow-xl w-full max-w-2xl my-8" @click.stop x-show="activeTask" x-cloak>
+            <div class="relative bg-white rounded-xl shadow-xl border border-gold-500/20 w-full max-w-2xl my-8" @click.stop x-show="activeTask" x-cloak>
                 <template x-if="activeTask">
                     <div class="p-6 space-y-5">
                         <div class="flex items-start justify-between gap-3">
-                            <input type="text" x-model="activeTask.title" @change="saveField('title', activeTask.title)"
-                                   class="flex-1 text-lg font-semibold text-gray-800 border-0 border-b border-transparent hover:border-gray-200 focus:border-gold-500 focus:ring-0 px-0">
+                            <div class="flex-1 flex items-center gap-2 min-w-0">
+                                <input type="text" x-model="activeTask.title" @change="saveField('title', activeTask.title)"
+                                       class="flex-1 min-w-0 text-lg font-semibold text-gray-800 border-0 border-b border-transparent hover:border-gray-200 focus:border-gold-500 focus:ring-0 px-0">
+                                <span class="shrink-0 px-2.5 py-1 rounded-full text-[11px] font-medium bg-gold-100 text-gold-700" x-text="columnName(activeTask)"></span>
+                            </div>
                             <button type="button" @click="closeTask()" class="text-gray-400 hover:text-gray-600 shrink-0">
                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M6 6l12 12M18 6 6 18" />
@@ -145,9 +148,12 @@
                             </button>
                         </div>
 
-                        <textarea x-model="activeTask.description" @change="saveField('description', activeTask.description)"
-                                  rows="3" placeholder="Deskripsi..."
-                                  class="w-full text-sm rounded-md border-gray-200 focus:border-gold-500 focus:ring-gold-500"></textarea>
+                        <div>
+                            <label class="block text-[11px] font-medium text-gray-500 mb-1">Deskripsi</label>
+                            <textarea x-model="activeTask.description" @change="saveField('description', activeTask.description)"
+                                      rows="3" placeholder="Deskripsi..."
+                                      class="w-full text-sm rounded-md border-gray-200 focus:border-gold-500 focus:ring-gold-500"></textarea>
+                        </div>
 
                         <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                             <div>
@@ -204,6 +210,9 @@
                                     Checklist <span x-show="activeTask.checklist_items.length" x-text="'(' + checklistProgress(activeTask) + ')'"></span>
                                 </label>
                             </div>
+                            <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden mb-2" x-show="activeTask.checklist_items.length">
+                                <div class="h-full bg-gold-500 transition-all" :style="`width: ${checklistPercent(activeTask)}%`"></div>
+                            </div>
                             <ul class="space-y-1 mb-2">
                                 <template x-for="item in activeTask.checklist_items" :key="item.id">
                                     <li class="flex items-center gap-2 text-sm group">
@@ -227,6 +236,7 @@
 
                         <div>
                             <label class="block text-[11px] font-medium text-gray-500 mb-1.5">Komentar</label>
+                            <p x-show="!activeTask.comments.length" class="text-xs text-gray-400 italic mb-2">Belum ada komentar.</p>
                             <ul class="space-y-2 mb-2 max-h-48 overflow-y-auto">
                                 <template x-for="comment in activeTask.comments" :key="comment.id">
                                     <li class="bg-gray-50 rounded-md p-2 text-xs">
@@ -246,7 +256,11 @@
                         </div>
 
                         <div class="pt-3 border-t border-gray-100 flex justify-end">
-                            <button type="button" @click="deleteTask(activeTask)" class="text-xs text-red-500 hover:text-red-700 font-medium">
+                            <button type="button" @click="deleteTask(activeTask)"
+                                    class="inline-flex items-center gap-1.5 text-xs text-red-500 hover:text-red-700 font-medium">
+                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z" />
+                                </svg>
                                 Hapus Task
                             </button>
                         </div>
@@ -424,6 +438,16 @@
                 checklistProgress(task) {
                     const done = task.checklist_items.filter((i) => i.is_done).length;
                     return `${done}/${task.checklist_items.length}`;
+                },
+
+                checklistPercent(task) {
+                    if (!task.checklist_items.length) return 0;
+                    const done = task.checklist_items.filter((i) => i.is_done).length;
+                    return Math.round((done / task.checklist_items.length) * 100);
+                },
+
+                columnName(task) {
+                    return this.columns.find((c) => c.id === task.board_column_id)?.name ?? '';
                 },
 
                 formatDate(dateStr) {
