@@ -50,7 +50,33 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('web', PreventBackHistoryCache::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        // CSRF token/session kadaluwarsa (419) — biasa terjadi kalau tab
+        // dibiarkan terbuka lama lalu klik logout/submit form apa pun.
+        // Bawaan Laravel cuma nampilin halaman error mati; redirect ke
+        // login lebih masuk akal karena user secara efektif memang sudah
+        // ter-logout. Dikecualikan utk request yang expectsJson() (mis.
+        // fetch() Papan Kerja IT) supaya tetap dapat respons yang bisa
+        // ditangani kodenya, bukan HTML halaman login.
         //
+        // Type-hint HARUS HttpException (bukan TokenMismatchException) --
+        // Handler::prepareException() sudah membungkus TokenMismatchException
+        // jadi HttpException(419, ...) SEBELUM render callback manapun
+        // dicek, jadi renderable(TokenMismatchException::class) tidak akan
+        // pernah cocok.
+        //
+        // Pesannya lewat query string (?expired=1), BUKAN session()->flash()
+        // -- exception yang dilempar sedalam ValidateCsrfToken bikin flash
+        // ter-age dua kali sebelum request ini selesai (StartSession tidak
+        // sempat nge-save normal krn exception melompati kode itu, tapi
+        // ageFlashData() kedua tetap jalan entah dari mana -- sudah
+        // ditelusuri baca source Laravel & dicoba save() manual, pesannya
+        // tetap hilang sebelum halaman login sempat baca). Lihat
+        // resources/views/auth/login.blade.php utk sisi baca query-nya.
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            if ($e->getStatusCode() === 419 && ! $request->expectsJson()) {
+                return redirect()->route('login', ['expired' => 1]);
+            }
+        });
     })
     ->create()
     ->usePublicPath(is_dir($splitPublicPath) ? $splitPublicPath : dirname(__DIR__).'/public');

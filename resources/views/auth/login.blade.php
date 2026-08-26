@@ -1,6 +1,6 @@
 <x-guest-layout>
     <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <x-auth-session-status class="mb-4" :status="session('status') ?? (request()->query('expired') ? 'Sesi Anda telah berakhir — silakan login kembali.' : null)" />
 
     <form method="POST" action="{{ route('login') }}">
         @csrf
