@@ -22,15 +22,15 @@
             <form method="POST" action="{{ route('it.users.store') }}" class="space-y-6">
                 @csrf
 
-                <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6">
+                <div class="glass-panel p-6">
                     @include('it.users._contact-fields')
                 </div>
 
-                <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6">
+                <div class="glass-panel p-6">
                     @include('it.users._password-generator', ['label' => 'Password Awal'])
                 </div>
 
-                <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6">
+                <div class="glass-panel p-6">
                     @include('it.users._access-fields')
                 </div>
 
