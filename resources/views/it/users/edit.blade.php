@@ -29,11 +29,11 @@
                 @csrf
                 @method('PUT')
 
-                <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6">
+                <div class="glass-panel p-6">
                     @include('it.users._contact-fields')
                 </div>
 
-                <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6">
+                <div class="glass-panel p-6">
                     <h3 class="text-sm font-semibold text-gray-700 mb-3">Status Akun</h3>
                     <label class="flex items-center gap-2 text-sm text-gray-700">
                         <input type="hidden" name="is_active" value="0">
@@ -47,7 +47,7 @@
                     </p>
                 </div>
 
-                <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6">
+                <div class="glass-panel p-6">
                     @include('it.users._access-fields')
                 </div>
 
@@ -59,7 +59,7 @@
 
             {{-- Form terpisah (BUKAN nested di dalam form update di atas) —
                  reset password adalah aksi independen dari data profil user. --}}
-            <div class="bg-white rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6 border border-amber-200">
+            <div class="glass-panel p-6 border-amber-200">
                 <h3 class="text-sm font-semibold text-gray-700 mb-1">Reset Password</h3>
                 <p class="text-xs text-gray-500 mb-4">
                     Set password baru untuk user ini — user akan wajib ganti password sendiri lagi saat login berikutnya.
