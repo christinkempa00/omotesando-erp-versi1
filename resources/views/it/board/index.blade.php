@@ -57,12 +57,7 @@
                                     class="glass-panel p-3 cursor-pointer hover:shadow-[0_4px_14px_-2px_rgba(0,0,0,0.12)] hover:-translate-y-px transition space-y-2">
 
                                     <template x-if="task.related_module">
-                                        <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700">
-                                            <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M14.5 6.5a4 4 0 0 0-5.6 4.9L4 16.3V20h3.7l4.9-4.9a4 4 0 0 0 4.9-5.6l-2.6 2.6-2-2 2.6-2.6Z" />
-                                            </svg>
-                                            <span x-text="task.related_module.name"></span>
-                                        </span>
+                                        <p class="text-[10px] font-semibold uppercase tracking-wider text-gray-400" x-text="task.related_module.name"></p>
                                     </template>
 
                                     <p class="text-sm font-medium text-gray-800" x-text="task.title"></p>
