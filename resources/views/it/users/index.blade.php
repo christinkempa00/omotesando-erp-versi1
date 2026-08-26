@@ -3,13 +3,13 @@
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Manajemen User</h2>
             <a href="{{ route('it.users.create') }}"
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-sm font-medium rounded-lg shadow-[0_4px_12px_-2px_rgba(200,155,44,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(200,155,44,0.5)] transition">
+               class="inline-flex items-center gap-2 px-5 py-2.5 bg-accent text-white text-sm font-medium rounded-lg hover:opacity-90 transition">
                 + User Baru
             </a>
         </div>
     </x-slot>
 
-    <div class="font-it py-8">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             @if (session('success'))
@@ -39,7 +39,7 @@
                                     <td class="px-4 py-3.5">
                                         <div class="flex flex-wrap gap-1">
                                             @forelse ($user->roles as $role)
-                                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">{{ $role->name }}</span>
+                                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-accent-tint text-accent">{{ $role->name }}</span>
                                             @empty
                                                 <span class="text-xs text-gray-400">-</span>
                                             @endforelse
@@ -54,7 +54,7 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-3.5 text-right">
-                                        <a href="{{ route('it.users.edit', $user) }}" class="text-gold-600 hover:text-gold-800 font-medium text-xs">Edit</a>
+                                        <a href="{{ route('it.users.edit', $user) }}" class="text-accent hover:text-accent-dark font-medium text-xs">Edit</a>
                                     </td>
                                 </tr>
                             @empty

@@ -23,7 +23,7 @@
                         <input type="checkbox" name="roles[]" value="{{ $role->id }}"
                                :checked="roles.includes('{{ $role->id }}')"
                                @change="toggleRole('{{ $role->id }}')"
-                               class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                               class="rounded border-gray-300 text-accent focus:ring-accent">
                         {{ $role->name }}
                     </label>
                 @endforeach
@@ -41,7 +41,7 @@
                         <input type="checkbox" name="modules[]" value="{{ $module->id }}"
                                :checked="modules.includes('{{ $module->id }}')"
                                @change="toggleModule('{{ $module->id }}')"
-                               class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                               class="rounded border-gray-300 text-accent focus:ring-accent">
                         {{ $module->label }}
                     </label>
                 @endforeach
