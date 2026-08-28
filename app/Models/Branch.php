@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Branch extends Model
 {
@@ -11,7 +12,12 @@ class Branch extends Model
     protected $casts = [
         'is_active' => 'boolean',
     ];
-    
+
+    public function locations(): HasMany
+    {
+        return $this->hasMany(BranchLocation::class);
+    }
+
     /**
      * Urutan outlet baku dipakai di seluruh modul GA (dropdown, filter, dll).
      * "Outlet Pusat" sengaja tidak disertakan di sini — bukan outlet fisik

@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             SystemModuleSeeder::class,
             DivisionSeeder::class,
             BranchSeeder::class,
+            BranchLocationSeeder::class,
             UserSeeder::class,
             ItBoardSeeder::class,
         ]);
