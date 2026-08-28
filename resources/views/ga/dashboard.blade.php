@@ -181,7 +181,7 @@
                             <div class="min-w-0">
                                 <p class="font-medium text-gray-800 truncate">{{ $job->title }}</p>
                                 <p class="text-xs text-gray-500 truncate">
-                                    {{ $typeLabels[$job->type] ?? $job->type }} &middot; {{ $job->branch?->name ?? '—' }}
+                                    {{ $typeLabels[$job->type] ?? $job->type }} &middot; {{ $job->outletLabel() ?? '—' }}
                                 </p>
                             </div>
                             <div class="flex items-center gap-3 shrink-0 text-right">

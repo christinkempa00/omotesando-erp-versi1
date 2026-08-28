@@ -38,7 +38,7 @@ class DashboardController extends Controller
             ])->whereDate('scheduled_date', '<', now()->toDateString())->count(),
         ];
 
-        $upcomingJobs = MaintenanceJob::with('asset')
+        $upcomingJobs = MaintenanceJob::with(['asset', 'branch', 'branchLocation'])
             ->whereIn('status', [MaintenanceJob::STATUS_SCHEDULED, MaintenanceJob::STATUS_IN_PROGRESS])
             ->whereDate('scheduled_date', '<=', now()->addDays(7)->toDateString())
             ->orderBy('scheduled_date')
