@@ -47,18 +47,6 @@
             @endif
         </div>
 
-        <div>
-            <x-input-label for="telegram_chat_id" :value="__('Telegram Chat ID')" />
-            <x-text-input id="telegram_chat_id" name="telegram_chat_id" type="text" class="mt-1 block w-full"
-                           :value="old('telegram_chat_id', $user->telegram_chat_id)" autocomplete="off" />
-            <p class="mt-1 text-sm text-gray-500">
-                {{ __('Opsional — isi supaya dokumen PDF (mis. GAR yang sudah disetujui penuh) dikirim langsung ke Telegram pribadi Anda, bukan cuma ke grup. Cara dapatnya: chat bot') }}
-                <span class="font-mono">@userinfobot</span>
-                {{ __('di Telegram, lalu tempel angka ID yang diberikan ke sini.') }}
-            </p>
-            <x-input-error class="mt-2" :messages="$errors->get('telegram_chat_id')" />
-        </div>
-
         <div class="flex items-center gap-4">
             <x-primary-button>{{ __('Save') }}</x-primary-button>
 
