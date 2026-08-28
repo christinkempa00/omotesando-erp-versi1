@@ -42,7 +42,7 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
                 <select name="branch_id" id="branch_id" required
-                        x-model="branchId"
+                        x-model="branchId" @change="branchLocationId = ''"
                         onchange="document.getElementById('summary-outlet').textContent = this.options[this.selectedIndex].text || '-'"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">-- Pilih Outlet --</option>

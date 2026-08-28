@@ -60,7 +60,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-                <select name="branch_id" required x-model="branchId" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                <select name="branch_id" required x-model="branchId" @change="branchLocationId = ''" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">-- Pilih Outlet --</option>
                     @foreach ($branches as $branch)
                         <option value="{{ $branch->id }}" @selected(old('branch_id', $workLog->branch_id ?? '') == $branch->id)>

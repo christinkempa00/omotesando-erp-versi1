@@ -43,6 +43,9 @@
             if (! this.filteredAssets.some(a => String(a.id) === String(this.assetId))) {
                 this.assetId = '';
             }
+            if (! this.availableBranchLocations.some(l => String(l.id) === String(this.branchLocationId))) {
+                this.branchLocationId = '';
+            }
         },
         formatThousands(n) { return (Number(n) || 0).toLocaleString('id-ID'); },
         parseThousands(str) { return Number(String(str).replace(/[^\d]/g, '')) || 0; }
