@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Concerns\RedirectsToRoleHome;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -11,6 +12,8 @@ use Illuminate\View\View;
 
 class ConfirmablePasswordController extends Controller
 {
+    use RedirectsToRoleHome;
+
     /**
      * Show the confirm password view.
      */
@@ -35,6 +38,10 @@ class ConfirmablePasswordController extends Controller
 
         $request->session()->put('auth.password_confirmed_at', time());
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // BUKAN ->intended() — sama seperti RedirectsToRoleHome (lihat
+        // docblock trait itu): URL intended di session bisa saja halaman
+        // milik role LAIN dari percobaan akses sebelumnya, dan
+        // route('dashboard') sendiri di-gate role:GA,Admin (403 utk IT/Head).
+        return $this->redirectToRoleHome($request->user());
     }
 }

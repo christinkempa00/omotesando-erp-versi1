@@ -38,7 +38,10 @@ class EmailVerificationTest extends TestCase
 
         Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
-        $response->assertRedirect(route('dashboard', absolute: false).'?verified=1');
+        // Bukan route('dashboard') — user tanpa role apa pun jatuh ke
+        // profile.edit per RoleHomeResolver (dashboard di-gate role:GA,Admin,
+        // akan 403 kalau user test ini kebetulan bukan role itu).
+        $response->assertRedirect(route('profile.edit', absolute: false).'?verified=1');
     }
 
     public function test_email_is_not_verified_with_invalid_hash(): void
