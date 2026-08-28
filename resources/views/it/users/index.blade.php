@@ -61,13 +61,24 @@
                                     </td>
                                     <td class="px-4 py-3.5 text-right">
                                         <div class="flex items-center justify-end gap-3">
-                                            <a href="{{ route('it.users.edit', $user) }}" class="text-gold-600 hover:text-gold-800 font-medium text-xs">Edit</a>
+                                            <a href="{{ route('it.users.edit', $user) }}" title="Edit" class="text-gold-600 hover:text-gold-800">
+                                                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7"/>
+                                                    <path d="M18.5 2.5a1.71 1.71 0 0 1 2 2L12 13l-4 1 1-4Z"/>
+                                                </svg>
+                                            </a>
                                             @if ($user->id !== auth()->id())
                                                 <form method="POST" action="{{ route('it.users.destroy', $user) }}"
                                                       onsubmit="return confirm('Hapus akun {{ $user->name }}? Tindakan ini permanen.')">
                                                     @csrf
                                                     @method('DELETE')
-                                                    <button type="submit" class="text-red-600 hover:text-red-800 font-medium text-xs">Hapus</button>
+                                                    <button type="submit" title="Hapus" class="text-red-600 hover:text-red-800">
+                                                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                                                            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+                                                            <path d="M10 11v6M14 11v6"/>
+                                                        </svg>
+                                                    </button>
                                                 </form>
                                             @endif
                                         </div>
