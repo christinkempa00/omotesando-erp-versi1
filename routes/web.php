@@ -52,7 +52,6 @@ Route::get('/a/{asset:asset_code}', [AssetQrController::class, 'publicShow'])
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Halaman "Sedang Dalam Pemeliharaan" — tujuan redirect
     // CheckModuleMaintenance middleware saat sebuah halaman ditandai IT
