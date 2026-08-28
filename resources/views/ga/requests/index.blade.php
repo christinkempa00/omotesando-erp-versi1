@@ -7,11 +7,11 @@
             <div class="flex flex-wrap gap-2" x-data="{ quickOpen: false }">
                 <button type="button" @click="quickOpen = true"
                         class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-                    + Minta Aset
+                    Buat Permintaan
                 </button>
                 <a href="{{ route('ga.requests.create') }}"
                    class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                    Buat Permintaan
+                    Buat Pengajuan
                 </a>
 
                 @include('ga.requests._quick-request-modal')
