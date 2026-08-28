@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GA;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreGaRequestRequest;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\Division;
 use App\Models\GA\GaRequest;
 use App\Models\Role;
@@ -28,7 +29,7 @@ class GaRequestController extends Controller
     {
         $user = $request->user();
 
-        $query = GaRequest::with(['branch', 'requestedBy'])
+        $query = GaRequest::with(['branch', 'branchLocation', 'requestedBy'])
             ->latest();
 
         if (! $user->hasRole(Role::HEAD, Role::ADMIN)) {
@@ -55,6 +56,7 @@ class GaRequestController extends Controller
             'selectedStatus' => $status,
             'search' => $search,
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
         ]);
     }
 
@@ -64,6 +66,7 @@ class GaRequestController extends Controller
             'categoryLabels' => GaRequest::categoryLabels(),
             'priorityLabels' => GaRequest::priorityLabels(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'savedSignatureUrl' => $this->savedSignatureUrl($request->user()),
         ]);
     }
@@ -85,6 +88,7 @@ class GaRequestController extends Controller
                 // memblokir submit sama sekali.
                 'division_id' => $user->division_id ?? Division::where('code', Division::GA)->value('id'),
                 'branch_id' => $validated['branch_id'],
+                'branch_location_id' => $validated['branch_location_id'] ?? null,
                 'category' => $validated['category'],
                 'priority' => $validated['priority'],
                 'description' => $validated['description'],
@@ -130,6 +134,7 @@ class GaRequestController extends Controller
             'categoryLabels' => GaRequest::categoryLabels(),
             'priorityLabels' => GaRequest::priorityLabels(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'savedSignatureUrl' => $this->savedSignatureUrl($user),
         ]);
     }
@@ -150,6 +155,7 @@ class GaRequestController extends Controller
         DB::transaction(function () use ($gaRequest, $validated, $intent, $requesterSignaturePath) {
             $gaRequest->update([
                 'branch_id' => $validated['branch_id'],
+                'branch_location_id' => $validated['branch_location_id'] ?? null,
                 'category' => $validated['category'],
                 'priority' => $validated['priority'],
                 'description' => $validated['description'],
@@ -268,7 +274,7 @@ class GaRequestController extends Controller
             403
         );
 
-        $gaRequest->load(['items', 'branch', 'division', 'requestedBy', 'attachments']);
+        $gaRequest->load(['items', 'branch', 'branchLocation', 'division', 'requestedBy', 'attachments']);
 
         return view('ga.requests.show', [
             'gaRequest' => $gaRequest,
@@ -290,7 +296,7 @@ class GaRequestController extends Controller
             403
         );
 
-        $gaRequest->load(['items', 'branch', 'requestedBy']);
+        $gaRequest->load(['items', 'branch', 'branchLocation', 'requestedBy']);
 
         $pdf = Pdf::loadView('ga.requests.document-pdf', [
             'gaRequest' => $gaRequest,

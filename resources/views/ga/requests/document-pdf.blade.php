@@ -48,7 +48,7 @@
     <div class="title">
         <h1>General Affair Request (GAR)</h1>
         <div class="no">No : {{ $gaRequest->request_number }}</div>
-        <div class="outlet">{{ $gaRequest->branch?->name }}</div>
+        <div class="outlet">{{ $gaRequest->outletLabel() }}</div>
         <div class="date">{{ $gaRequest->created_at->translatedFormat('l, d F Y') }}</div>
     </div>
 

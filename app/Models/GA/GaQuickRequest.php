@@ -3,6 +3,7 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
+use App\Models\Concerns\HasBranchLocation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -14,9 +15,12 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class GaQuickRequest extends Model
 {
+    use HasBranchLocation;
+
     protected $fillable = [
         'requested_date',
         'branch_id',
+        'branch_location_id',
         'user_name',
         'pic_name',
         'urgency',
@@ -68,7 +72,7 @@ class GaQuickRequest extends Model
         $lines[] = '*GA Request*';
         $lines[] = '';
         $lines[] = 'Tanggal: '.$this->requested_date->translatedFormat('l, d F Y');
-        $lines[] = 'Outlet: '.($this->branch?->name ?? '-');
+        $lines[] = 'Outlet: '.($this->outletLabel() ?? '-');
         $lines[] = 'User: '.($this->user_name ?: '-');
         $lines[] = 'Person in charge: '.($this->pic_name ?: '-');
         $lines[] = 'Status Urgency: '.(self::urgencyLabels()[$this->urgency] ?? $this->urgency);

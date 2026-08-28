@@ -3,6 +3,7 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
+use App\Models\Concerns\HasBranchLocation;
 use App\Models\Division;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
@@ -12,10 +13,13 @@ use Illuminate\Support\Facades\DB;
 
 class GaRequest extends Model
 {
+    use HasBranchLocation;
+
     protected $fillable = [
         'request_number',
         'division_id',
         'branch_id',
+        'branch_location_id',
         'category',
         'priority',
         'description',

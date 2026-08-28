@@ -10,6 +10,9 @@
         x-data="{
             requested_date: '{{ now()->toDateString() }}',
             branch_id: '',
+            branch_location_id: '',
+            branchLocations: @js($branchLocations),
+            get availableBranchLocations() { return this.branchLocations[this.branch_id] || []; },
             user_name: '',
             pic_name: '',
             urgency: 'low',
@@ -18,6 +21,10 @@
             branchName(id) {
                 const map = { @foreach ($branches as $branch) {{ $branch->id }}: '{{ addslashes($branch->name) }}', @endforeach };
                 return map[id] || '-';
+            },
+            outletLabel() {
+                const loc = this.availableBranchLocations.find(l => l.id == this.branch_location_id);
+                return loc ? this.branchName(this.branch_id) + ' — ' + loc.name : this.branchName(this.branch_id);
             },
             urgencyLabel(v) {
                 return { low: 'Low', medium: 'Medium', high: 'High' }[v] || v;
@@ -29,7 +36,7 @@
                 lines.push('GA Request');
                 lines.push('');
                 lines.push('Tanggal: ' + dateStr);
-                lines.push('Outlet: ' + this.branchName(this.branch_id));
+                lines.push('Outlet: ' + this.outletLabel());
                 lines.push('User: ' + (this.user_name || '-'));
                 lines.push('Person in charge: ' + (this.pic_name || '-'));
                 lines.push('Status Urgency: ' + this.urgencyLabel(this.urgency));
@@ -74,12 +81,22 @@
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-                        <select name="branch_id" x-model="branch_id" required
+                        <select name="branch_id" x-model="branch_id" @change="branch_location_id = ''" required
                                 class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
                             <option value="">-- Pilih Outlet --</option>
                             @foreach ($branches as $branch)
                                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
                             @endforeach
+                        </select>
+                    </div>
+                    <div x-show="availableBranchLocations.length > 0" x-cloak>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Cabang</label>
+                        <select name="branch_location_id" x-model="branch_location_id"
+                                class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <option value="">-- Pilih Cabang --</option>
+                            <template x-for="loc in availableBranchLocations" :key="loc.id">
+                                <option :value="loc.id" x-text="loc.name"></option>
+                            </template>
                         </select>
                     </div>
                     <div>

@@ -4,6 +4,7 @@ namespace App\Http\Requests\GA;
 
 use App\Models\GA\GaRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Dipakai utk store() (create baru) & update() (lanjutkan draft) —
@@ -28,6 +29,12 @@ class StoreGaRequestRequest extends FormRequest
             'intent' => ['required', 'in:draft,submit'],
             'requester_name' => ['required', 'string', 'max:255'],
             'branch_id' => ['required', 'exists:branches,id'],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $this->input('branch_id'))->where('is_active', true)
+                ),
+            ],
             'category' => ['required', 'in:'.implode(',', array_keys(GaRequest::categoryLabels()))],
             'priority' => ['required', 'in:'.implode(',', array_keys(GaRequest::priorityLabels()))],
             'description' => ['required', 'string', 'max:2000'],

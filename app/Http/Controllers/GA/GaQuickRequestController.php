@@ -17,6 +17,7 @@ class GaQuickRequestController extends Controller
         $quickRequest = GaQuickRequest::create([
             'requested_date' => $validated['requested_date'],
             'branch_id' => $validated['branch_id'],
+            'branch_location_id' => $validated['branch_location_id'] ?? null,
             'user_name' => $validated['user_name'],
             'pic_name' => $validated['pic_name'],
             'urgency' => $validated['urgency'],
@@ -34,7 +35,7 @@ class GaQuickRequestController extends Controller
             ]);
         }
 
-        $quickRequest->load(['branch', 'items']);
+        $quickRequest->load(['branch', 'branchLocation', 'items']);
 
         $sent = $telegram->sendMessage($quickRequest->toTelegramText());
 

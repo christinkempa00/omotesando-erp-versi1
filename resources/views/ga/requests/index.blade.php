@@ -55,7 +55,7 @@
                                     <td class="px-4 py-3 text-gray-700">
                                         {{ \App\Models\GA\GaRequest::categoryLabels()[$req->category] ?? $req->category }}
                                     </td>
-                                    <td class="px-4 py-3 text-gray-600">{{ $req->branch?->name ?? '—' }}</td>
+                                    <td class="px-4 py-3 text-gray-600">{{ $req->outletLabel() ?? '—' }}</td>
                                     <td class="px-4 py-3 text-gray-600">{{ $req->requester_name ?: ($req->requestedBy?->name ?? '—') }}</td>
                                     <td class="px-4 py-3 text-right text-gray-700">
                                         Rp {{ number_format((float) $req->total_amount, 0, ',', '.') }}

@@ -55,7 +55,7 @@
                     </div>
                     <div>
                         <dt class="text-gray-500">Outlet</dt>
-                        <dd class="text-gray-800 font-medium">{{ $gaRequest->branch?->name ?? '—' }}</dd>
+                        <dd class="text-gray-800 font-medium">{{ $gaRequest->outletLabel() ?? '—' }}</dd>
                     </div>
                     <div>
                         <dt class="text-gray-500">Divisi</dt>

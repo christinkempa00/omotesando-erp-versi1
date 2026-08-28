@@ -4,6 +4,7 @@ namespace App\Http\Requests\GA;
 
 use App\Models\GA\GaQuickRequest;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreGaQuickRequestRequest extends FormRequest
 {
@@ -17,6 +18,12 @@ class StoreGaQuickRequestRequest extends FormRequest
         return [
             'requested_date' => ['required', 'date'],
             'branch_id' => ['required', 'exists:branches,id'],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $this->input('branch_id'))->where('is_active', true)
+                ),
+            ],
             'user_name' => ['required', 'string', 'max:255'],
             'pic_name' => ['required', 'string', 'max:255'],
             'urgency' => ['required', 'in:'.implode(',', array_keys(GaQuickRequest::urgencyLabels()))],
