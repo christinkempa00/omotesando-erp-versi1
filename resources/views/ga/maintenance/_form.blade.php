@@ -177,7 +177,7 @@
         </div>
         <button type="button" @click="items.push('')"
                 class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
-            + Tambah item checklist
+            Buat item checklist
         </button>
     </div>
 

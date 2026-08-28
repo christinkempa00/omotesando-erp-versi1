@@ -109,7 +109,7 @@
                             <p class="text-xs text-gray-400">Isi item, qty, satuan, notes, dan link/foto barang.</p>
                         </div>
                         <button type="button" @click="items.push({ item_name: '', qty: 1, unit: 'Pcs', notes: '', photo_link: '' })"
-                                class="px-3 py-1.5 bg-slate-800 text-white text-xs rounded-md hover:bg-slate-900">+ Tambah Item</button>
+                                class="px-3 py-1.5 bg-slate-800 text-white text-xs rounded-md hover:bg-slate-900">Buat Item</button>
                     </div>
 
                     <template x-for="(item, index) in items" :key="index">

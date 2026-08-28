@@ -7,7 +7,7 @@
             <div class="flex gap-2">
                 <a href="{{ route('ga.assets.create') }}"
                    class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                    + Aset Baru
+                    Buat Aset
                 </a>
             </div>
         </div>

@@ -6,7 +6,7 @@
             </h2>
             <a href="{{ route('ga.uniforms.records.create') }}"
                class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                + Serah Terima Baru
+                Buat Serah Terima
             </a>
         </div>
     </x-slot>

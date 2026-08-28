@@ -109,7 +109,7 @@
                         <div class="flex items-center justify-between mb-1">
                             <label class="block text-sm font-medium text-gray-700">Jumlah Stok per Ukuran *</label>
                             <button type="button" @click="addRow()" class="text-xs font-medium text-indigo-600 hover:text-indigo-800">
-                                + Tambah Ukuran
+                                Buat Ukuran
                             </button>
                         </div>
                         <p class="text-xs text-gray-400 mb-3">Isi ukuran &amp; jumlah stoknya — kosongkan/hapus baris kalau ukuran itu tidak ada. Bisa tambah ukuran apa saja.</p>

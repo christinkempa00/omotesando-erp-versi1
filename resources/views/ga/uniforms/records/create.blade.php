@@ -139,7 +139,7 @@
 
                             <button type="button" @click="addItem()"
                                     class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
-                                + Tambah Item
+                                Buat Item
                             </button>
                         </div>
 

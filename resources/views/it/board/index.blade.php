@@ -105,7 +105,7 @@
                         <div class="mt-2" x-data="{ adding: false, title: '' }">
                             <button type="button" x-show="!adding" @click="adding = true; $nextTick(() => $refs.newTaskInput?.focus())"
                                     class="w-full text-left text-xs text-gray-500 hover:text-gold-700 hover:bg-gold-500/10 rounded-md px-2 py-1.5 transition">
-                                + Tambah Task
+                                Buat Task
                             </button>
                             <form x-show="adding" x-cloak
                                   @submit.prevent="createTask(column.id, title); title = ''; adding = false"

@@ -150,7 +150,7 @@
 
         <button type="button" @click="items.push({ item_name: '', type: '', unit: 'Pcs', qty: 1, price_per_unit: 0, vendor_name: '' })"
                 class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
-            + Tambah item
+            Buat item
         </button>
         <p class="text-xs text-gray-400 mt-1">Harga Satuan tiap item wajib diisi saat "Kirim Pengajuan" (boleh 0 dulu utk semua item selama masih disimpan sbg draft).</p>
 
@@ -158,11 +158,11 @@
         <div class="mt-4 flex flex-wrap gap-2">
             <button type="button" @click="discountEnabled = true" x-show="!discountEnabled"
                     class="inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
-                + Tambah Diskon
+                Buat Diskon
             </button>
             <button type="button" @click="pphEnabled = true" x-show="!pphEnabled"
                     class="inline-flex items-center px-3 py-1.5 text-sm text-indigo-600 hover:bg-indigo-50 rounded-md">
-                + Tambah PPH
+                Buat PPH
             </button>
         </div>
 

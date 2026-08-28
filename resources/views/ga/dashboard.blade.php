@@ -77,7 +77,7 @@
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700">Jadwal Pemeliharaan Mendatang</h3>
-                    <a href="{{ route('ga.maintenance.create') }}" class="text-sm text-indigo-600 hover:text-indigo-800">+ Pemeliharaan</a>
+                    <a href="{{ route('ga.maintenance.create') }}" class="text-sm text-indigo-600 hover:text-indigo-800">Buat Pemeliharaan</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">

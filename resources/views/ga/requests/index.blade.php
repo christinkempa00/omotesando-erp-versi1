@@ -11,7 +11,7 @@
                 </button>
                 <a href="{{ route('ga.requests.create') }}"
                    class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                    + Buat Permintaan
+                    Buat Permintaan
                 </a>
 
                 @include('ga.requests._quick-request-modal')
