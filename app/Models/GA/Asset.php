@@ -3,6 +3,7 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
+use App\Models\Concerns\HasBranchLocation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,8 @@ use Illuminate\Support\Facades\DB;
 
 class Asset extends Model
 {
+    use HasBranchLocation;
+
     protected $fillable = [
         'asset_code',
         'name',
@@ -25,6 +28,7 @@ class Asset extends Model
         'status',
         'location',
         'branch_id',
+        'branch_location_id',
         'custodian_name',
         'description',
         'image_path',

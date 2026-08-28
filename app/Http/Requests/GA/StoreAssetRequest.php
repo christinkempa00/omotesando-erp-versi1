@@ -4,6 +4,7 @@ namespace App\Http\Requests\GA;
 
 use App\Models\GA\Asset;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreAssetRequest extends FormRequest
 {
@@ -35,6 +36,12 @@ class StoreAssetRequest extends FormRequest
             'status' => ['required', 'in:'.implode(',', array_keys(Asset::statusLabels()))],
             'location' => ['nullable', 'in:Kitchen,Floor,Bar,Lainnya'],
             'branch_id' => ['required', 'exists:branches,id'],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $this->input('branch_id'))->where('is_active', true)
+                ),
+            ],
             'custodian_name' => ['required', 'string', 'max:255'],
 
             'description' => ['nullable', 'string', 'max:2000'],

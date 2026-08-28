@@ -18,7 +18,7 @@ class AssetQrController extends Controller
      */
     public function show(Asset $asset): View
     {
-        $asset->load('branch');
+        $asset->load(['branch', 'branchLocation']);
 
         return view('ga.assets.qr-label', [
             'asset' => $asset,
@@ -33,7 +33,7 @@ class AssetQrController extends Controller
      */
     public function publicShow(Asset $asset): View
     {
-        $asset->load('branch');
+        $asset->load(['branch', 'branchLocation']);
 
         $maintenanceJobs = $asset->maintenanceJobs()
             ->orderByDesc('scheduled_date')
@@ -65,12 +65,12 @@ class AssetQrController extends Controller
     public function bulk(Request $request): View
     {
         if ($request->filled('ids')) {
-            $assets = Asset::with('branch')
+            $assets = Asset::with(['branch', 'branchLocation'])
                 ->whereIn('id', $request->input('ids'))
                 ->orderBy('asset_code')
                 ->get();
         } else {
-            $query = Asset::with('branch');
+            $query = Asset::with(['branch', 'branchLocation']);
 
             if ($status = $request->query('status')) {
                 $query->where('status', $status);

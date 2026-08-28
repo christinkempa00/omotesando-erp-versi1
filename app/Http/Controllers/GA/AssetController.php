@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GA;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreAssetRequest;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\GA\Asset;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
@@ -40,6 +41,7 @@ class AssetController extends Controller
         return view('ga.assets.create', [
             'statusLabels' => Asset::statusLabels(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
         ]);
     }
 
@@ -68,7 +70,7 @@ class AssetController extends Controller
 
     public function show(Asset $asset): View
     {
-        $asset->load(['branch', 'createdBy']);
+        $asset->load(['branch', 'branchLocation', 'createdBy']);
 
         return view('ga.assets.show', [
             'asset' => $asset,
@@ -82,6 +84,7 @@ class AssetController extends Controller
             'asset' => $asset,
             'statusLabels' => Asset::statusLabels(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS, $asset->branch?->name),
+            'branchLocations' => BranchLocation::groupedByBranch(),
         ]);
     }
 
@@ -191,7 +194,7 @@ class AssetController extends Controller
      */
     private function filteredQuery(Request $request)
     {
-        $query = Asset::with(['branch']);
+        $query = Asset::with(['branch', 'branchLocation']);
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);

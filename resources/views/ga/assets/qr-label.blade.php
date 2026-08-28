@@ -22,6 +22,9 @@
                 <div class="w-32 h-32 shrink-0 overflow-hidden [&>svg]:w-full [&>svg]:h-full">{!! $qrSvg !!}</div>
                 <div class="min-w-0">
                     <p class="font-bold text-xl text-gray-900 uppercase leading-tight truncate">{{ $asset->branch?->name }}</p>
+                    @if ($asset->branchLocation)
+                        <p class="font-medium text-sm text-gray-500 uppercase leading-tight truncate">{{ $asset->branchLocation->name }}</p>
+                    @endif
                     <p class="font-bold text-base text-gray-800 uppercase leading-tight truncate mt-1">{{ $asset->name }}</p>
                     @if ($asset->location)
                         <p class="font-bold text-sm text-gray-600 uppercase leading-tight truncate mt-1">{{ $asset->location }}</p>
@@ -49,6 +52,7 @@
             'serial' => $asset->serial_number,
             'name' => $asset->name,
             'branch' => optional($asset->branch)->name,
+            'cabang' => optional($asset->branchLocation)->name,
             'location' => $asset->location,
             'qr' => $qrPngDataUri,
         ]) !!};

@@ -78,18 +78,30 @@
             }
 
             const branchFont = Math.min(Math.max(Math.round(qrSide * 0.14), 10), 34);
+            const cabangFont = Math.min(Math.max(Math.round(qrSide * 0.10), 8), 24);
             const nameFont = Math.min(Math.max(Math.round(qrSide * 0.16), 10), 40);
             const locationFont = Math.min(Math.max(Math.round(qrSide * 0.11), 8), 28);
             const labelFont = Math.min(Math.max(Math.round(qrSide * 0.07), 8), 16);
             const serialFont = Math.min(Math.max(Math.round(qrSide * 0.17), 10), 42);
 
-            qrLabelFitText(ctx, asset.branch, textX, rowsTop + rowsH * 0.04, textW, branchFont, 8, 'bold', 'left');
-            qrLabelFitText(ctx, asset.name, textX, rowsTop + rowsH * 0.27, textW, nameFont, 8, 'bold', 'left');
+            // Baris disusun dinamis (bukan persentase tetap) supaya baris
+            // "Cabang" opsional (cuma ada utk sebagian kecil aset, mis. Ask
+            // for Patty) bisa disisipkan pas di bawah Outlet tanpa bikin baris
+            // di bawahnya (Nama, Lokasi, Nomor Serial) numpuk/tabrakan --
+            // qrLabelFitText() sudah balikin posisi Y berikutnya, tinggal
+            // dipakai berantai.
+            let y = rowsTop + rowsH * 0.04;
+            y = qrLabelFitText(ctx, asset.branch, textX, y, textW, branchFont, 8, 'bold', 'left');
+            if (asset.cabang) {
+                y = qrLabelFitText(ctx, asset.cabang, textX, y, textW, cabangFont, 7, 'normal', 'left');
+            }
+            y += Math.round(qrSide * 0.03);
+            y = qrLabelFitText(ctx, asset.name, textX, y, textW, nameFont, 8, 'bold', 'left');
             if (asset.location) {
-                qrLabelFitText(ctx, asset.location, textX, rowsTop + rowsH * 0.52, textW, locationFont, 8, 'normal', 'left');
+                y = qrLabelFitText(ctx, asset.location, textX, y, textW, locationFont, 8, 'normal', 'left');
             }
 
-            const dividerY = rowsTop + rowsH * 0.67;
+            const dividerY = y + Math.round(qrSide * 0.06);
             ctx.strokeStyle = '#e5e7eb';
             ctx.lineWidth = Math.max(1, Math.round(qrSide * 0.008));
             ctx.beginPath();
@@ -97,8 +109,9 @@
             ctx.lineTo(textX + textW, dividerY);
             ctx.stroke();
 
-            qrLabelFitText(ctx, 'NOMOR SERIAL', textX, rowsTop + rowsH * 0.73, textW, labelFont, 8, 'bold', 'left');
-            qrLabelFitText(ctx, asset.serial || asset.code, textX, rowsTop + rowsH * 0.81, textW, serialFont, 8, 'bold', 'left');
+            let y2 = dividerY + Math.round(qrSide * 0.06);
+            y2 = qrLabelFitText(ctx, 'NOMOR SERIAL', textX, y2, textW, labelFont, 8, 'bold', 'left');
+            qrLabelFitText(ctx, asset.serial || asset.code, textX, y2, textW, serialFont, 8, 'bold', 'left');
         }
 
         function buildQrLabelCanvas(asset, sizeKey) {

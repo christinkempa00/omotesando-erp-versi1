@@ -30,6 +30,9 @@
                             <div class="w-20 h-20 shrink-0 overflow-hidden [&>svg]:w-full [&>svg]:h-full">{!! $qrSvgs[$asset->id] !!}</div>
                             <div class="min-w-0 text-left">
                                 <p class="font-bold text-sm text-gray-900 uppercase leading-tight truncate">{{ $asset->branch?->name }}</p>
+                                @if ($asset->branchLocation)
+                                    <p class="font-medium text-[11px] text-gray-500 uppercase leading-tight truncate">{{ $asset->branchLocation->name }}</p>
+                                @endif
                                 <p class="font-bold text-xs text-gray-800 uppercase leading-tight truncate">{{ \Illuminate\Support\Str::limit($asset->name, 28) }}</p>
                                 @if ($asset->location)
                                     <p class="font-bold text-[11px] text-gray-600 uppercase leading-tight truncate">{{ $asset->location }}</p>
@@ -59,6 +62,7 @@
             'serial' => $a->serial_number,
             'name' => $a->name,
             'branch' => optional($a->branch)->name,
+            'cabang' => optional($a->branchLocation)->name,
             'location' => $a->location,
             'qr' => $qrPngDataUris[$a->id],
         ])->values()) !!};

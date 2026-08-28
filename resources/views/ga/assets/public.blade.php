@@ -31,7 +31,7 @@
         </div>
         <div>
             <dt class="text-gray-400 text-xs">Outlet</dt>
-            <dd class="font-medium text-gray-800">{{ $asset->branch?->name ?: '-' }}</dd>
+            <dd class="font-medium text-gray-800">{{ $asset->outletLabel() ?: '-' }}</dd>
         </div>
         <div>
             <dt class="text-gray-400 text-xs">PIC</dt>

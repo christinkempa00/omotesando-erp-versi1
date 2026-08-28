@@ -8,6 +8,10 @@
      x-data="{
         purchasePrice: {{ (float) old('purchase_price', $asset->purchase_price ?? 0) }},
         depreciationValue: {{ (float) old('depreciation_value', $asset->depreciation_value ?? 0) }},
+        branchId: '{{ old('branch_id', $asset->branch_id ?? '') }}',
+        branchLocationId: '{{ old('branch_location_id', $asset->branch_location_id ?? '') }}',
+        branchLocations: @js($branchLocations),
+        get availableBranchLocations() { return this.branchLocations[this.branchId] || []; },
         formatThousands(n) { return (Number(n) || 0).toLocaleString('id-ID'); },
         parseThousands(str) { return Number(String(str).replace(/[^\d]/g, '')) || 0; }
      }">
@@ -38,12 +42,24 @@
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
                 <select name="branch_id" id="branch_id" required
+                        x-model="branchId"
                         onchange="document.getElementById('summary-outlet').textContent = this.options[this.selectedIndex].text || '-'"
                         class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                     <option value="">-- Pilih Outlet --</option>
                     @foreach ($branches as $branch)
                         <option value="{{ $branch->id }}" @selected(old('branch_id', $asset->branch_id ?? '') == $branch->id)>{{ $branch->name }}</option>
                     @endforeach
+                </select>
+            </div>
+
+            <div x-show="availableBranchLocations.length > 0" x-cloak>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Cabang</label>
+                <select name="branch_location_id" x-model="branchLocationId"
+                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">-- Pilih Cabang --</option>
+                    <template x-for="loc in availableBranchLocations" :key="loc.id">
+                        <option :value="loc.id" x-text="loc.name"></option>
+                    </template>
                 </select>
             </div>
 
@@ -184,6 +200,10 @@
                 <div class="flex items-center justify-between">
                     <dt class="text-gray-500">Outlet</dt>
                     <dd id="summary-outlet" class="font-medium text-gray-800">{{ $asset->branch->name ?? '-' }}</dd>
+                </div>
+                <div class="flex items-center justify-between" x-show="availableBranchLocations.length > 0" x-cloak>
+                    <dt class="text-gray-500">Cabang</dt>
+                    <dd class="font-medium text-gray-800" x-text="(availableBranchLocations.find(l => l.id == branchLocationId)?.name) || '-'"></dd>
                 </div>
                 <div class="flex items-center justify-between">
                     <dt class="text-gray-500">Lokasi</dt>

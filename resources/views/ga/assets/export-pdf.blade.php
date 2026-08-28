@@ -42,7 +42,7 @@
                     <td>{{ $asset->asset_code }}</td>
                     <td>{{ $asset->name }}</td>
                     <td>{{ $asset->brand ?: '-' }}</td>
-                    <td>{{ $asset->branch?->name ?: '-' }}</td>
+                    <td>{{ $asset->outletLabel() ?: '-' }}</td>
                     <td>{{ $asset->location ?: '-' }}</td>
                     <td>{{ optional($asset->purchase_date)->format('d/m/y') ?: '-' }}</td>
                     <td>{{ $statusLabels[$asset->status] ?? $asset->status }}</td>

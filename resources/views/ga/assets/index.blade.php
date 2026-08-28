@@ -102,7 +102,7 @@
                                     <div class="text-xs text-gray-500">{{ $asset->brand ?: '-' }}</div>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    <div class="text-gray-900">{{ $asset->branch->name }}</div>
+                                    <div class="text-gray-900">{{ $asset->outletLabel() }}</div>
                                     <div class="text-xs text-gray-500">{{ $asset->location ?: '-' }}</div>
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ optional($asset->purchase_date)->format('d/m/y') ?: '-' }}</td>

@@ -64,7 +64,7 @@
                 <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm border-t border-gray-100 pt-6">
                     <div><dt class="text-gray-500">Merk</dt><dd class="font-medium text-gray-900">{{ $asset->brand ?: '-' }}</dd></div>
                     <div><dt class="text-gray-500">Nomor Serial</dt><dd class="font-medium text-gray-900">{{ $asset->serial_number ?: '-' }}</dd></div>
-                    <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $asset->branch->name }}</dd></div>
+                    <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $asset->outletLabel() }}</dd></div>
                     <div><dt class="text-gray-500">Lokasi</dt><dd class="font-medium text-gray-900">{{ $asset->location ?: '-' }}</dd></div>
                     <div><dt class="text-gray-500">Penanggung Jawab</dt><dd class="font-medium text-gray-900">{{ $asset->custodian_name ?: '-' }}</dd></div>
                     <div><dt class="text-gray-500">Jumlah</dt><dd class="font-medium text-gray-900">{{ $asset->quantity }}</dd></div>
