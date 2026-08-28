@@ -12,6 +12,7 @@ use App\Models\Division;
 use App\Models\Module;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -118,6 +119,35 @@ class UserManagementController extends Controller
 
         return redirect()->route('it.users.edit', $user)
             ->with('success', "Password {$user->name} berhasil direset — sampaikan password baru ke user secara manual.");
+    }
+
+    /**
+     * Hapus permanen — hanya berhasil kalau user belum pernah bikin record
+     * apa pun di modul lain (GA request/asset/maintenance/dll — kolom
+     * created_by/requested_by di tabel-tabel itu FK ke users TANPA
+     * nullOnDelete, jadi DB menolak hapusnya lewat QueryException). Untuk
+     * user yang sudah punya riwayat data, arahkan ke nonaktifkan (is_active)
+     * lewat form edit, bukan hapus permanen.
+     */
+    public function destroy(Request $request, User $user): RedirectResponse
+    {
+        if ($user->id === $request->user()->id) {
+            return redirect()->route('it.users.index')
+                ->with('error', 'Tidak bisa menghapus akun Anda sendiri.');
+        }
+
+        $name = $user->name;
+
+        try {
+            $user->delete();
+        } catch (QueryException) {
+            return redirect()->route('it.users.index')
+                ->with('error', "Akun {$name} tidak bisa dihapus karena masih punya riwayat data (mis. pernah membuat pengajuan/aset/dll). Nonaktifkan saja lewat form edit.");
+        }
+
+        ActivityLog::record($request->user(), 'user.deleted', $user, "Menghapus akun {$name}");
+
+        return redirect()->route('it.users.index')->with('success', "Akun {$name} berhasil dihapus.");
     }
 
     /**

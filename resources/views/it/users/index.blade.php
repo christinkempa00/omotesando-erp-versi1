@@ -18,6 +18,12 @@
                 </div>
             @endif
 
+            @if (session('error'))
+                <div class="bg-red-50 border border-red-200 text-red-800 text-sm rounded-lg px-4 py-3">
+                    {{ session('error') }}
+                </div>
+            @endif
+
             <div class="glass-panel overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
@@ -54,7 +60,17 @@
                                         @endif
                                     </td>
                                     <td class="px-4 py-3.5 text-right">
-                                        <a href="{{ route('it.users.edit', $user) }}" class="text-gold-600 hover:text-gold-800 font-medium text-xs">Edit</a>
+                                        <div class="flex items-center justify-end gap-3">
+                                            <a href="{{ route('it.users.edit', $user) }}" class="text-gold-600 hover:text-gold-800 font-medium text-xs">Edit</a>
+                                            @if ($user->id !== auth()->id())
+                                                <form method="POST" action="{{ route('it.users.destroy', $user) }}"
+                                                      onsubmit="return confirm('Hapus akun {{ $user->name }}? Tindakan ini permanen.')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-red-600 hover:text-red-800 font-medium text-xs">Hapus</button>
+                                                </form>
+                                            @endif
+                                        </div>
                                     </td>
                                 </tr>
                             @empty
