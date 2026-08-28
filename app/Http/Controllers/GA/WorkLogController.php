@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GA;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreWorkLogRequest;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\GA\WorkLog;
 use App\Models\GA\WorkLogAttachment;
 use Illuminate\Http\RedirectResponse;
@@ -16,7 +17,7 @@ class WorkLogController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = WorkLog::with(['branch', 'attachments']);
+        $query = WorkLog::with(['branch', 'branchLocation', 'attachments']);
 
         if ($branchId = $request->query('branch_id')) {
             $query->where('branch_id', $branchId);
@@ -72,6 +73,7 @@ class WorkLogController extends Controller
     {
         return view('ga.worklogs.create', [
             'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'categoryLabels' => WorkLog::categoryLabels(),
             'technicianOptions' => WorkLog::technicianOptions(),
         ]);
@@ -94,7 +96,7 @@ class WorkLogController extends Controller
 
     public function show(WorkLog $worklog): View
     {
-        $worklog->load(['branch', 'createdBy', 'attachments']);
+        $worklog->load(['branch', 'branchLocation', 'createdBy', 'attachments']);
 
         return view('ga.worklogs.show', [
             'workLog' => $worklog,
@@ -109,6 +111,7 @@ class WorkLogController extends Controller
         return view('ga.worklogs.edit', [
             'workLog' => $worklog,
             'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'categoryLabels' => WorkLog::categoryLabels(),
             'technicianOptions' => WorkLog::technicianOptions(),
         ]);

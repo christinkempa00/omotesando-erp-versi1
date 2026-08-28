@@ -88,7 +88,7 @@
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $workLog->branch->name }}</td>
+                                <td class="px-4 py-3 text-sm text-gray-600">{{ $workLog->outletLabel() }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-900">{{ $workLog->technician_in_charge }}</td>
                                 <td class="px-4 py-3 text-sm text-gray-600">{{ $workLog->technician_assist ?: '-' }}</td>
                                 <td class="px-4 py-3">

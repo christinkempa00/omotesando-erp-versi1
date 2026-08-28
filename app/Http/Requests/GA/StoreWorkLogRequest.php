@@ -25,6 +25,12 @@ class StoreWorkLogRequest extends FormRequest
                 'required',
                 Rule::exists('branches', 'id')->where(fn ($query) => $query->whereIn('name', Branch::WORK_LOG_OUTLETS)),
             ],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $this->input('branch_id'))->where('is_active', true)
+                ),
+            ],
 
             'technician_in_charge' => ['required', Rule::in(WorkLog::technicianOptions())],
             'technician_assist' => ['nullable', 'string', 'max:255'],

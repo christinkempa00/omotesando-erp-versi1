@@ -63,7 +63,7 @@
                         <div><dt class="text-gray-500">Waktu Berakhir</dt><dd class="font-medium text-gray-900">{{ $workLog->end_time ? substr($workLog->end_time, 0, 5) : '-' }}</dd></div>
                         <div><dt class="text-gray-500">Durasi</dt><dd class="font-medium text-gray-900">{{ $workLog->durationLabel() ?? '-' }}</dd></div>
                         <div><dt class="text-gray-500">Kategori Pengerjaan</dt><dd class="font-medium text-gray-900">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</dd></div>
-                        <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $workLog->branch->name }}</dd></div>
+                        <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $workLog->outletLabel() }}</dd></div>
                         <div><dt class="text-gray-500">Teknisi in Charge</dt><dd class="font-medium text-gray-900">{{ $workLog->technician_in_charge }}</dd></div>
                         <div><dt class="text-gray-500">Teknisi Assist</dt><dd class="font-medium text-gray-900">{{ $workLog->technician_assist ?: '-' }}</dd></div>
                     </dl>

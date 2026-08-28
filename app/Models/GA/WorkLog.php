@@ -3,6 +3,7 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
+use App\Models\Concerns\HasBranchLocation;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
@@ -16,12 +17,15 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  */
 class WorkLog extends Model
 {
+    use HasBranchLocation;
+
     protected $fillable = [
         'work_date',
         'start_time',
         'end_time',
         'category',
         'branch_id',
+        'branch_location_id',
         'technician_in_charge',
         'technician_assist',
         'work_detail',
