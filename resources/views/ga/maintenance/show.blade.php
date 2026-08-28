@@ -78,7 +78,7 @@
                     </div>
                     <div>
                         <dt class="text-gray-500">Lokasi</dt>
-                        <dd class="text-gray-800 font-medium">{{ $job->location ?: '—' }}{{ $job->branch ? ' · '.$job->branch->name : '' }}</dd>
+                        <dd class="text-gray-800 font-medium">{{ $job->location ?: '—' }}{{ $job->branch ? ' · '.$job->outletLabel() : '' }}</dd>
                     </div>
                     <div>
                         <dt class="text-gray-500">Estimasi Biaya</dt>

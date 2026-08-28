@@ -5,6 +5,7 @@ namespace App\Http\Controllers\GA;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreMaintenanceJobRequest;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\GA\Asset;
 use App\Models\GA\MaintenanceJob;
 use App\Services\TelegramNotifier;
@@ -17,7 +18,7 @@ class MaintenanceJobController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = MaintenanceJob::with(['asset', 'branch'])->latest('scheduled_date');
+        $query = MaintenanceJob::with(['asset', 'branch', 'branchLocation'])->latest('scheduled_date');
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
@@ -102,6 +103,7 @@ class MaintenanceJobController extends Controller
         return view('ga.maintenance.create', [
             'assets' => Asset::orderBy('name')->get(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'statusLabels' => MaintenanceJob::statusLabels(),
             'typeLabels' => MaintenanceJob::typeLabels(),
             'priorityLabels' => MaintenanceJob::priorityLabels(),
@@ -133,7 +135,7 @@ class MaintenanceJobController extends Controller
 
     public function show(MaintenanceJob $maintenance): View
     {
-        $maintenance->load(['asset', 'branch', 'createdBy']);
+        $maintenance->load(['asset', 'branch', 'branchLocation', 'createdBy']);
 
         return view('ga.maintenance.show', [
             'job' => $maintenance,
@@ -149,6 +151,7 @@ class MaintenanceJobController extends Controller
             'job' => $maintenance,
             'assets' => Asset::orderBy('name')->get(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS, $maintenance->branch?->name),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'statusLabels' => MaintenanceJob::statusLabels(),
             'typeLabels' => MaintenanceJob::typeLabels(),
             'priorityLabels' => MaintenanceJob::priorityLabels(),

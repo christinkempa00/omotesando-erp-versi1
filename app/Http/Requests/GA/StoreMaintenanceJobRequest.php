@@ -4,6 +4,7 @@ namespace App\Http\Requests\GA;
 
 use App\Models\GA\MaintenanceJob;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreMaintenanceJobRequest extends FormRequest
 {
@@ -41,6 +42,12 @@ class StoreMaintenanceJobRequest extends FormRequest
             'vendor_name' => ['nullable', 'string', 'max:255'],
             'location' => ['required', 'string', 'max:255'],
             'branch_id' => ['required', 'exists:branches,id'],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $this->input('branch_id'))->where('is_active', true)
+                ),
+            ],
 
             'cost' => ['nullable', 'numeric', 'min:0'],
 

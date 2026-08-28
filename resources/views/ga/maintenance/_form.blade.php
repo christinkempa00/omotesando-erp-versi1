@@ -16,6 +16,9 @@
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-5"
      x-data="{
         branchId: '{{ old('branch_id', $job->branch_id ?? '') }}',
+        branchLocationId: '{{ old('branch_location_id', $job->branch_location_id ?? '') }}',
+        branchLocations: @js($branchLocations),
+        get availableBranchLocations() { return this.branchLocations[this.branchId] || []; },
         location: '{{ old('location', $job->location ?? '') }}',
         assetId: '{{ old('asset_id', $job->asset_id ?? ($selectedAssetId ?? '')) }}',
         assets: {{ Illuminate\Support\Js::from($assetsData) }},
@@ -59,6 +62,17 @@
             @foreach ($branches as $branch)
                 <option value="{{ $branch->id }}">{{ $branch->name }}</option>
             @endforeach
+        </select>
+    </div>
+
+    <div x-show="availableBranchLocations.length > 0" x-cloak>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Cabang</label>
+        <select name="branch_location_id" x-model="branchLocationId"
+                class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            <option value="">-- Pilih Cabang --</option>
+            <template x-for="loc in availableBranchLocations" :key="loc.id">
+                <option :value="loc.id" x-text="loc.name"></option>
+            </template>
         </select>
     </div>
 
