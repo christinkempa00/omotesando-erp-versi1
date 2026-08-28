@@ -13,7 +13,7 @@ class UniformMovementController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = UniformMovement::with(['uniformStock.branch', 'createdBy']);
+        $query = UniformMovement::with(['uniformStock.branch', 'uniformStock.branchLocation', 'createdBy']);
 
         if ($stockId = $request->query('uniform_stock_id')) {
             $query->where('uniform_stock_id', $stockId);

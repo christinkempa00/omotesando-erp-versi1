@@ -88,7 +88,7 @@
                                     <div class="min-w-0">
                                         <p class="text-sm font-semibold text-gray-800 truncate">{{ $group->type }}</p>
                                         <p class="text-xs text-gray-400 truncate">
-                                            {{ $group->branch->name }}{{ $group->color ? ' / '.$group->color : '' }}
+                                            {{ $group->branch->name }}{{ $group->branchLocation ? ' — '.$group->branchLocation->name : '' }}{{ $group->color ? ' / '.$group->color : '' }}
                                         </p>
                                     </div>
                                 </div>
@@ -192,7 +192,7 @@
                                     {{ $movementTypeLabels[$movement->movement_type] ?? $movement->movement_type }}
                                 </span>
                                 <span class="text-gray-700 truncate">
-                                    {{ $movement->uniformStock->branch->name }} / {{ $movement->uniformStock->uniform_type }}
+                                    {{ $movement->uniformStock->outletLabel() }} / {{ $movement->uniformStock->uniform_type }}
                                     @if ($movement->uniformStock->size) / {{ $movement->uniformStock->size }} @endif
                                     @if ($movement->uniformStock->color) / {{ $movement->uniformStock->color }} @endif
                                 </span>

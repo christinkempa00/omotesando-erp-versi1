@@ -3,6 +3,7 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
+use App\Models\Concerns\HasBranchLocation;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,8 @@ use Illuminate\Support\Str;
 
 class UniformStock extends Model
 {
+    use HasBranchLocation;
+
     /**
      * Seragam cuma relevan di outlet berstaf — bukan gudang/kantor seperti
      * Head Office/Central Storage/Central Kitchen.
@@ -20,6 +23,7 @@ class UniformStock extends Model
     protected $fillable = [
         'stock_code',
         'branch_id',
+        'branch_location_id',
         'uniform_type',
         'size',
         'color',

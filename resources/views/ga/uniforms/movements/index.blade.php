@@ -57,7 +57,7 @@
                                         {{ $movement->uniformStock->stock_code }}
                                     </a>
                                 </td>
-                                <td class="px-4 py-3 text-gray-600">{{ $movement->uniformStock->branch->name ?? '-' }}</td>
+                                <td class="px-4 py-3 text-gray-600">{{ $movement->uniformStock->outletLabel() ?? '-' }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium {{ \App\Models\GA\UniformMovement::typeBadgeColor($movement->movement_type) }}">
                                         {{ $typeLabels[$movement->movement_type] ?? $movement->movement_type }}

@@ -34,7 +34,7 @@
                     <td>{{ $record->record_code }}</td>
                     <td>{{ $record->employee_name }}</td>
                     <td>{{ $record->summaryLabel() }}</td>
-                    <td>{{ $record->branch?->name ?: '-' }}</td>
+                    <td>{{ $record->outletLabel() ?: '-' }}</td>
                     <td>{{ $record->issue_date?->format('d/m/Y') ?: '-' }}</td>
                     <td>{{ $statusLabels[$record->status] ?? $record->status }}</td>
                     <td>{{ $record->return_date?->format('d/m/Y') ?: '-' }}</td>

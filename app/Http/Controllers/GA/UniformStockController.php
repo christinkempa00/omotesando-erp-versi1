@@ -7,6 +7,7 @@ use App\Http\Requests\GA\StoreUniformStockRequest;
 use App\Http\Requests\GA\UniformStockMovementRequest;
 use App\Http\Requests\GA\UpdateUniformStockRequest;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\GA\UniformMovement;
 use App\Models\GA\UniformRecord;
 use App\Models\GA\UniformStock;
@@ -16,6 +17,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
@@ -31,7 +33,7 @@ class UniformStockController extends Controller
 
         // --- Manajemen Stok: dikelompokkan per Tipe + Outlet + Warna, tiap
         //     grup ditampilkan sebagai satu kartu berisi baris per ukuran ---
-        $stockQuery = UniformStock::with('branch');
+        $stockQuery = UniformStock::with(['branch', 'branchLocation']);
 
         if ($branchId) {
             $stockQuery->where('branch_id', $branchId);
@@ -59,6 +61,7 @@ class UniformStockController extends Controller
                 return (object) [
                     'type' => $first->uniform_type,
                     'branch' => $first->branch,
+                    'branchLocation' => $first->branchLocation,
                     'color' => $first->color,
                     'photo_path' => $items->first(fn (UniformStock $i) => $i->stock_photo_path)?->stock_photo_path,
                     'items' => $items->sortBy(fn (UniformStock $i) => $sizeOrder[$i->size] ?? 99)->values(),
@@ -90,7 +93,7 @@ class UniformStockController extends Controller
         ];
 
         // --- Audit trail stok, ditampilkan langsung di halaman ini ---
-        $recentMovements = UniformMovement::with(['uniformStock.branch', 'createdBy'])
+        $recentMovements = UniformMovement::with(['uniformStock.branch', 'uniformStock.branchLocation', 'createdBy'])
             ->latest()
             ->limit(8)
             ->get();
@@ -144,6 +147,7 @@ class UniformStockController extends Controller
 
         return view('ga.uniforms.stocks.create', [
             'branches' => Branch::orderedOutlets(UniformStock::UNIFORM_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'statusLabels' => UniformStock::statusLabels(),
             'sizes' => StoreUniformStockRequest::SIZES,
             'prefill' => $prefill,
@@ -258,8 +262,9 @@ class UniformStockController extends Controller
         $created = [];
         $touchedIds = [];
 
-        $applyMetadata = function (UniformStock $stock) use ($threshold, $photoPath) {
+        $applyMetadata = function (UniformStock $stock) use ($threshold, $photoPath, $validated) {
             $stock->low_stock_threshold = $threshold;
+            $stock->branch_location_id = $validated['branch_location_id'] ?? null;
             if ($photoPath && $stock->stock_photo_path && $stock->stock_photo_path !== $photoPath) {
                 Storage::disk('public')->delete($stock->stock_photo_path);
             }
@@ -359,7 +364,7 @@ class UniformStockController extends Controller
 
     public function show(UniformStock $stock): View
     {
-        $stock->load('branch');
+        $stock->load(['branch', 'branchLocation']);
 
         $movements = $stock->movements()
             ->with('createdBy')
@@ -379,6 +384,7 @@ class UniformStockController extends Controller
         return view('ga.uniforms.stocks.edit', [
             'stock' => $stock,
             'branches' => Branch::orderedOutlets(UniformStock::UNIFORM_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'statusLabels' => UniformStock::statusLabels(),
         ]);
     }
@@ -498,7 +504,7 @@ class UniformStockController extends Controller
             'color' => ['nullable', 'string'],
         ]);
 
-        $items = UniformStock::with('branch')
+        $items = UniformStock::with(['branch', 'branchLocation'])
             ->where('uniform_type', $validated['uniform_type'])
             ->where('branch_id', $validated['branch_id'])
             ->where('color', $validated['color'] ?? null)
@@ -544,6 +550,7 @@ class UniformStockController extends Controller
             'items' => $items,
             'first' => $items->first(),
             'branches' => Branch::orderedOutlets(UniformStock::UNIFORM_OUTLETS),
+            'branchLocations' => BranchLocation::groupedByBranch(),
         ]);
     }
 
@@ -556,6 +563,12 @@ class UniformStockController extends Controller
 
             'uniform_type' => ['required', 'string', 'max:255'],
             'branch_id' => ['required', 'exists:branches,id'],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $request->input('branch_id'))->where('is_active', true)
+                ),
+            ],
             'color' => ['required', 'string', 'max:100'],
             'low_stock_threshold' => ['nullable', 'integer', 'min:0'],
             'stock_photo' => ['nullable', 'image', 'max:4096'],
@@ -608,6 +621,7 @@ class UniformStockController extends Controller
 
                     $item->uniform_type = $validated['uniform_type'];
                     $item->branch_id = $newBranch->id;
+                    $item->branch_location_id = $validated['branch_location_id'] ?? null;
                     $item->color = $validated['color'];
                     $item->low_stock_threshold = $threshold;
                     if ($photoPath) {

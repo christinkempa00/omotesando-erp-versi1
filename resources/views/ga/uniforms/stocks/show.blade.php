@@ -57,7 +57,7 @@
                     <dl class="grid grid-cols-2 gap-4 text-sm">
                         <div><dt class="text-gray-500">Ukuran</dt><dd class="font-medium text-gray-900">{{ $stock->size ?: '-' }}</dd></div>
                         <div><dt class="text-gray-500">Warna</dt><dd class="font-medium text-gray-900">{{ $stock->color ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $stock->branch->name }}</dd></div>
+                        <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $stock->outletLabel() }}</dd></div>
                         <div><dt class="text-gray-500">Ambang Low Stock</dt><dd class="font-medium text-gray-900">{{ $stock->low_stock_threshold }}</dd></div>
                         <div><dt class="text-gray-500">Stok Tersedia</dt><dd class="font-bold text-green-600 text-lg">{{ $stock->available_stock }}</dd></div>
                         <div><dt class="text-gray-500">Stok Rusak</dt><dd class="font-bold text-red-600 text-lg">{{ $stock->unusable_stock }}</dd></div>

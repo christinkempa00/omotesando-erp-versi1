@@ -3,6 +3,7 @@
 namespace App\Http\Requests\GA;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class StoreUniformRecordRequest extends FormRequest
 {
@@ -17,6 +18,12 @@ class StoreUniformRecordRequest extends FormRequest
             'employee_name' => ['required', 'string', 'max:255'],
             'issued_by_name' => ['required', 'string', 'max:255'],
             'branch_id' => ['required', 'exists:branches,id'],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $this->input('branch_id'))->where('is_active', true)
+                ),
+            ],
             'issue_date' => ['required', 'date'],
             'issue_photo' => ['required', 'image', 'max:4096'],
             'signature_data' => ['nullable', 'string'],

@@ -54,7 +54,7 @@
                     <div><dt class="text-gray-500">Seragam</dt>
                         <dd class="font-medium text-gray-900">{{ $record->summaryLabel() }}</dd>
                     </div>
-                    <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $record->branch->name }}</dd></div>
+                    <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $record->outletLabel() }}</dd></div>
                     <div><dt class="text-gray-500">Nama Penyerah</dt><dd class="font-medium text-gray-900">{{ $record->issued_by_name ?: '—' }}</dd></div>
                     <div><dt class="text-gray-500">Tanggal Serah</dt><dd class="font-medium text-gray-900">{{ $record->issue_date->format('d M Y') }}</dd></div>
                     @if (! $record->isItemized())

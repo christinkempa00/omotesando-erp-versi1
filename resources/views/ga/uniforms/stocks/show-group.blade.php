@@ -5,7 +5,7 @@
                 <x-back-link :href="route('ga.uniforms.stocks.index')" />
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     {{ $first->uniform_type }}
-                    <span class="ml-2 text-sm text-gray-400 font-normal">{{ $first->branch->name }}{{ $first->color ? ' / '.$first->color : '' }}</span>
+                    <span class="ml-2 text-sm text-gray-400 font-normal">{{ $first->outletLabel() }}{{ $first->color ? ' / '.$first->color : '' }}</span>
                 </h2>
             </div>
             <div class="flex flex-wrap items-center gap-2">
@@ -45,7 +45,7 @@
                 <div class="sm:col-span-2">
                     <dl class="grid grid-cols-2 gap-4 text-sm">
                         <div><dt class="text-gray-500">Warna</dt><dd class="font-medium text-gray-900">{{ $first->color ?: '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $first->branch->name }}</dd></div>
+                        <div><dt class="text-gray-500">Outlet</dt><dd class="font-medium text-gray-900">{{ $first->outletLabel() }}</dd></div>
                         <div><dt class="text-gray-500">Ambang Low Stock</dt><dd class="font-medium text-gray-900">{{ $first->low_stock_threshold }}</dd></div>
                         <div><dt class="text-gray-500">Jumlah Ukuran</dt><dd class="font-medium text-gray-900">{{ $items->count() }}</dd></div>
                         <div><dt class="text-gray-500">Total Tersedia</dt><dd class="font-bold text-green-600 text-lg">{{ $totalAvailable }}</dd></div>

@@ -3,6 +3,7 @@
 namespace App\Models\GA;
 
 use App\Models\Branch;
+use App\Models\Concerns\HasBranchLocation;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,11 +12,14 @@ use Illuminate\Support\Facades\DB;
 
 class UniformRecord extends Model
 {
+    use HasBranchLocation;
+
     protected $fillable = [
         'record_code',
         'employee_name',
         'issued_by_name',
         'branch_id',
+        'branch_location_id',
         'uniform_type',
         'size',
         'color',

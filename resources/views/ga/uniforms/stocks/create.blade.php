@@ -23,6 +23,9 @@
                       x-data="{
                           uniformType: {{ Illuminate\Support\Js::from(old('uniform_type', $prefill['uniform_type'] ?? '')) }},
                           branchId: {{ Illuminate\Support\Js::from((string) old('branch_id', $prefill['branch_id'] ?? '')) }},
+                          branchLocationId: '{{ old('branch_location_id', '') }}',
+                          branchLocations: @js($branchLocations),
+                          get availableBranchLocations() { return this.branchLocations[this.branchId] || []; },
                           typesByBranch: {{ Illuminate\Support\Js::from($typesByBranch) }},
                           get isDuplicateType() {
                               if (! this.uniformType || ! this.branchId) return false;
@@ -43,11 +46,21 @@
 
                         <div>
                             <label class="block text-sm font-medium text-gray-700 mb-1">Outlet *</label>
-                            <select name="branch_id" required @change="branchId = $event.target.value" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select name="branch_id" required @change="branchId = $event.target.value; branchLocationId = ''" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
                                 <option value="">-- Pilih Outlet --</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}" @selected(old('branch_id', $prefill['branch_id']) == $branch->id)>{{ $branch->name }}</option>
                                 @endforeach
+                            </select>
+                        </div>
+
+                        <div x-show="availableBranchLocations.length > 0" x-cloak>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Cabang</label>
+                            <select name="branch_location_id" x-model="branchLocationId" class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                <option value="">-- Pilih Cabang --</option>
+                                <template x-for="loc in availableBranchLocations" :key="loc.id">
+                                    <option :value="loc.id" x-text="loc.name"></option>
+                                </template>
                             </select>
                         </div>
 

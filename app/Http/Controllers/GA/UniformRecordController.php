@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\ReturnUniformRecordRequest;
 use App\Http\Requests\GA\StoreUniformRecordRequest;
 use App\Models\Branch;
+use App\Models\BranchLocation;
 use App\Models\GA\UniformMovement;
 use App\Models\GA\UniformRecord;
 use App\Models\GA\UniformRecordItem;
@@ -63,7 +64,7 @@ class UniformRecordController extends Controller
                 $record->record_code,
                 $record->employee_name,
                 $record->summaryLabel(),
-                $record->branch?->name,
+                $record->outletLabel(),
                 $record->issue_date?->format('d/m/Y'),
                 $statusLabels[$record->status] ?? $record->status,
                 $record->return_date?->format('d/m/Y'),
@@ -105,7 +106,7 @@ class UniformRecordController extends Controller
      */
     private function filteredQuery(Request $request)
     {
-        $query = UniformRecord::with(['branch', 'uniformStock', 'items']);
+        $query = UniformRecord::with(['branch', 'branchLocation', 'uniformStock', 'items']);
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
@@ -152,6 +153,7 @@ class UniformRecordController extends Controller
 
         return view('ga.uniforms.records.create', [
             'branches' => $branches,
+            'branchLocations' => BranchLocation::groupedByBranch(),
             'stockTree' => $stockTree,
         ]);
     }
@@ -191,6 +193,7 @@ class UniformRecordController extends Controller
                 'employee_name' => $validated['employee_name'],
                 'issued_by_name' => $validated['issued_by_name'],
                 'branch_id' => $validated['branch_id'],
+                'branch_location_id' => $validated['branch_location_id'] ?? null,
                 // Cache "item pertama" — kompatibilitas kolom lama, lihat
                 // catatan di UniformRecord::summaryLabel()/isItemized().
                 'uniform_type' => $firstStock->uniform_type,
@@ -259,7 +262,7 @@ class UniformRecordController extends Controller
 
     public function show(UniformRecord $record): View
     {
-        $record->load(['branch', 'uniformStock', 'createdBy', 'items.uniformStock']);
+        $record->load(['branch', 'branchLocation', 'uniformStock', 'createdBy', 'items.uniformStock']);
 
         return view('ga.uniforms.records.show', [
             'record' => $record,
@@ -274,7 +277,7 @@ class UniformRecordController extends Controller
      */
     public function document(UniformRecord $record): Response
     {
-        $record->load(['branch', 'createdBy', 'items']);
+        $record->load(['branch', 'branchLocation', 'createdBy', 'items']);
 
         $pdf = Pdf::loadView('ga.uniforms.records.document-pdf', [
             'record' => $record,
@@ -293,7 +296,7 @@ class UniformRecordController extends Controller
     {
         abort_unless($record->status === UniformRecord::STATUS_RETURNED, 404);
 
-        $record->load(['branch', 'createdBy']);
+        $record->load(['branch', 'branchLocation', 'createdBy']);
 
         $pdf = Pdf::loadView('ga.uniforms.records.return-document-pdf', [
             'record' => $record,

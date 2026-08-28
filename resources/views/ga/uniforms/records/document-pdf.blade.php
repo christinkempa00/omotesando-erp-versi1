@@ -83,7 +83,7 @@
     <div class="title">
         <h1>Serah Terima Barang</h1>
         <div class="no">No : {{ $record->record_code }}</div>
-        <div class="outlet">{{ $record->branch?->name }}</div>
+        <div class="outlet">{{ $record->outletLabel() }}</div>
     </div>
 
     <table class="info">

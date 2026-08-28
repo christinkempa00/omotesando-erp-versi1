@@ -4,6 +4,7 @@ namespace App\Http\Requests\GA;
 
 use App\Models\GA\UniformStock;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 /**
  * Dipakai khusus untuk edit satu varian yang sudah ada (metadata saja).
@@ -20,6 +21,12 @@ class UpdateUniformStockRequest extends FormRequest
     {
         return [
             'branch_id' => ['required', 'exists:branches,id'],
+            'branch_location_id' => [
+                'nullable',
+                Rule::exists('branch_locations', 'id')->where(
+                    fn ($q) => $q->where('branch_id', $this->input('branch_id'))->where('is_active', true)
+                ),
+            ],
             'uniform_type' => ['required', 'string', 'max:255'],
             'size' => ['nullable', 'string', 'max:50'],
             'color' => ['required', 'string', 'max:100'],
