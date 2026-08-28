@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\IT;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\IT\ResetUserPasswordRequest;
 use App\Http\Requests\IT\StoreUserRequest;
 use App\Http\Requests\IT\UpdateUserRequest;
 use App\Models\ActivityLog;
@@ -98,27 +97,6 @@ class UserManagementController extends Controller
         ]);
 
         return redirect()->route('it.users.edit', $user)->with('success', "Perubahan akun {$user->name} disimpan.");
-    }
-
-    /**
-     * Password baru dikirim dari form (hasil generate acak di klien atau
-     * ketik manual — widget sama seperti di halaman create), bukan
-     * dibuat server-side, supaya IT bisa lihat & salin persis nilai yang
-     * akan disampaikan ke user SEBELUM submit.
-     */
-    public function resetPassword(ResetUserPasswordRequest $request, User $user): RedirectResponse
-    {
-        $validated = $request->validated();
-
-        $user->update([
-            'password' => Hash::make($validated['password']),
-            'password_must_change' => true,
-        ]);
-
-        ActivityLog::record($request->user(), 'user.password_reset', $user, "Reset password akun {$user->name}");
-
-        return redirect()->route('it.users.edit', $user)
-            ->with('success', "Password {$user->name} berhasil direset — sampaikan password baru ke user secara manual.");
     }
 
     /**

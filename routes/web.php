@@ -227,7 +227,6 @@ Route::middleware(['auth', 'role:IT'])
         Route::post('users', [UserManagementController::class, 'store'])->name('users.store');
         Route::get('users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
         Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
-        Route::post('users/{user}/reset-password', [UserManagementController::class, 'resetPassword'])->name('users.reset-password');
         Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
     });
 

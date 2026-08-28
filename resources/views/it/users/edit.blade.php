@@ -57,24 +57,6 @@
                 </div>
             </form>
 
-            {{-- Form terpisah (BUKAN nested di dalam form update di atas) —
-                 reset password adalah aksi independen dari data profil user. --}}
-            <div class="glass-panel p-6 border-amber-200">
-                <h3 class="text-sm font-semibold text-gray-700 mb-1">Reset Password</h3>
-                <p class="text-xs text-gray-500 mb-4">
-                    Set password baru untuk user ini — user akan wajib ganti password sendiri lagi saat login berikutnya.
-                </p>
-                <form method="POST" action="{{ route('it.users.reset-password', $user) }}" class="space-y-4">
-                    @csrf
-                    @include('it.users._password-generator', ['label' => 'Password Baru'])
-                    <div class="flex justify-end">
-                        <button type="submit" class="px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white text-sm font-medium rounded-lg shadow-[0_4px_12px_-2px_rgba(245,158,11,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(245,158,11,0.5)] transition">
-                            Simpan Password Baru
-                        </button>
-                    </div>
-                </form>
-            </div>
-
         </div>
     </div>
 </x-app-layout>
