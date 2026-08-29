@@ -7,6 +7,7 @@ use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -82,5 +83,26 @@ class User extends Authenticatable
     public function modules(): BelongsToMany
     {
         return $this->belongsToMany(Module::class, 'module_user');
+    }
+
+    public function pagePermissions(): HasMany
+    {
+        return $this->hasMany(UserPagePermission::class);
+    }
+
+    /**
+     * Tier akses (view/edit) user ini ke satu halaman GA (lihat konstanta
+     * UserPagePermission::PAGE_*). Tidak ada baris utk halaman itu = default
+     * 'edit' (behavior lama, sebelum tier ini ada). Admin selalu lolos.
+     */
+    public function canEdit(string $pageKey): bool
+    {
+        if ($this->hasRole(Role::ADMIN)) {
+            return true;
+        }
+
+        $level = $this->pagePermissions()->where('page_key', $pageKey)->value('access_level');
+
+        return ($level ?? UserPagePermission::ACCESS_EDIT) === UserPagePermission::ACCESS_EDIT;
     }
 }
