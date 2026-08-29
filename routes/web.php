@@ -29,6 +29,7 @@ use App\Http\Controllers\IT\ItTaskChecklistController;
 use App\Http\Controllers\IT\ItTaskCommentController;
 use App\Http\Controllers\IT\ItTaskLabelController;
 use App\Http\Controllers\IT\UserManagementController;
+use App\Http\Controllers\Outlet\OutletController;
 
 // Dulu langsung view('welcome') bawaan Laravel (halaman dev "Let's get
 // started" tidak dibranding) — sekarang diarahkan spt /login yg sudah
@@ -188,6 +189,53 @@ Route::middleware(['auth', 'role:Head'])
             Route::get('maintenance', [HeadMaintenanceController::class, 'index'])->name('maintenance.index');
         });
 
+    });
+
+// Portal Outlet — terpisah total dari grup ga./head. di atas (sidebar &
+// view sendiri, pola sama grup head.), TAPI menunjuk ke controller CLASS
+// YANG SAMA persis dengan grup ga. (bukan controller baru) — supaya query/
+// validasi/CRUD tidak diduplikasi, dan supaya kalau nanti ada user GA yang
+// di-set tier "Lihat saja", guard tier di controller yang sama juga berlaku
+// utknya (lihat User::canEdit(), UserPagePermission). Branch di-hard-scope
+// otomatis di controller berdasar $user->branch (bukan filter opsional
+// seperti grup head.) — lihat masing2 controller GA.
+Route::middleware(['auth', 'role:Outlet', 'outlet.branch'])
+    ->prefix('outlet')
+    ->name('outlet.')
+    ->group(function () {
+        Route::get('dashboard', [OutletController::class, 'dashboard'])->name('dashboard');
+
+        Route::middleware(['module:'.Module::REQUESTS, 'module.maintenance:'.SystemModule::GA_REQUESTS])->group(function () {
+            Route::resource('requests', GaRequestController::class)
+                ->only(['index', 'create', 'store', 'show', 'edit', 'update'])
+                ->parameter('requests', 'gaRequest');
+            Route::get('requests/{gaRequest}/document', [GaRequestController::class, 'document'])->name('requests.document');
+            Route::post('requests/quick', [GaQuickRequestController::class, 'store'])->name('requests.quick.store');
+        });
+
+        Route::middleware(['module:'.Module::ASSETS, 'module.maintenance:'.SystemModule::GA_ASSETS])->group(function () {
+            Route::resource('assets', AssetController::class)->only(['index', 'show']);
+        });
+
+        Route::middleware(['module:'.Module::UNIFORMS, 'module.maintenance:'.SystemModule::GA_UNIFORMS])->group(function () {
+            Route::resource('uniforms/stocks', UniformStockController::class)
+                ->parameters(['stocks' => 'stock'])
+                ->only(['index', 'show'])
+                ->names('uniforms.stocks');
+            Route::resource('uniforms/records', UniformRecordController::class)
+                ->parameters(['records' => 'record'])
+                ->only(['index', 'create', 'store', 'show'])
+                ->names('uniforms.records');
+            Route::post('uniforms/records/{record}/return', [UniformRecordController::class, 'markReturned'])->name('uniforms.records.return');
+        });
+
+        Route::middleware(['module:'.Module::MAINTENANCE, 'module.maintenance:'.SystemModule::GA_MAINTENANCE])->group(function () {
+            Route::resource('maintenance', MaintenanceJobController::class)->only(['index', 'show']);
+        });
+
+        Route::middleware(['module:'.Module::WORK_LOG, 'module.maintenance:'.SystemModule::GA_WORKLOG])->group(function () {
+            Route::resource('worklogs', WorkLogController::class)->only(['index', 'show']);
+        });
     });
 
 // Kontrol Akses & Mode Pemeliharaan — khusus role IT, terpisah total dari

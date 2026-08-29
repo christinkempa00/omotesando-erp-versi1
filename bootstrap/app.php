@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\CheckModuleMaintenance;
+use App\Http\Middleware\EnsureOutletHasBranch;
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\ModuleAccessMiddleware;
 use App\Http\Middleware\PreventBackHistoryCache;
@@ -37,6 +38,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'role' => RoleMiddleware::class,
             'module' => ModuleAccessMiddleware::class,
             'module.maintenance' => CheckModuleMaintenance::class,
+            'outlet.branch' => EnsureOutletHasBranch::class,
         ]);
 
         // Global di semua route 'web' — user yang wajib ganti password

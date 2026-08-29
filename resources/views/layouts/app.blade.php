@@ -19,11 +19,13 @@
             $moduleLabel = match ($sidebar) {
                 'head' => 'Head Office',
                 'it' => 'IT Support',
+                'outlet' => 'Outlet',
                 default => 'General Affairs',
             };
             $sidebarPartial = match ($sidebar) {
                 'head' => 'head.partials.sidebar',
                 'it' => 'it.partials.sidebar',
+                'outlet' => 'outlet.partials.sidebar',
                 default => 'layouts.sidebar',
             };
         @endphp

@@ -13,9 +13,9 @@ use App\Models\User;
  * halamannya sendiri, bukan selalu ke /dashboard (yang dibatasi
  * role:GA,Admin — 403 utk IT/Head).
  *
- * Outlet belum punya halaman "rumah" sendiri (Monitoring Outlet — Fase B-2,
- * belum dibangun), jadi jatuh ke profile.edit (satu2nya halaman yg PASTI
- * bisa diakses siapa pun yang berhasil login, apa pun role yang dimiliki).
+ * Role tanpa cabang di atas (belum ada role lain saat ini) jatuh ke
+ * profile.edit (satu2nya halaman yg PASTI bisa diakses siapa pun yang
+ * berhasil login, apa pun role yang dimiliki).
  */
 class RoleHomeResolver
 {
@@ -31,6 +31,10 @@ class RoleHomeResolver
 
         if ($user->hasRole(Role::GA, Role::ADMIN)) {
             return 'dashboard';
+        }
+
+        if ($user->hasRole(Role::OUTLET)) {
+            return 'outlet.dashboard';
         }
 
         return 'profile.edit';
