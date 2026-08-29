@@ -26,6 +26,8 @@ class UpdateUserRequest extends FormRequest
             'roles.*' => ['exists:roles,id'],
             'modules' => ['sometimes', 'array'],
             'modules.*' => ['exists:modules,id'],
+            'page_access' => ['sometimes', 'array'],
+            'page_access.*' => ['in:view,edit'],
         ];
     }
 }

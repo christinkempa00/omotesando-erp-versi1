@@ -11,6 +11,7 @@ use App\Models\Division;
 use App\Models\Module;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserPagePermission;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -58,6 +59,7 @@ class UserManagementController extends Controller
 
         $user->roles()->sync($validated['roles']);
         $user->modules()->sync($validated['modules'] ?? []);
+        $this->syncPageAccess($user, $validated['page_access'] ?? []);
 
         ActivityLog::record($request->user(), 'user.created', $user, "Membuat akun baru {$user->name} ({$user->email})", [
             'roles' => Role::whereIn('id', $validated['roles'])->pluck('name')->all(),
@@ -70,7 +72,7 @@ class UserManagementController extends Controller
 
     public function edit(User $user): View
     {
-        $user->load(['roles', 'modules']);
+        $user->load(['roles', 'modules', 'pagePermissions']);
 
         return view('it.users.edit', $this->formData() + ['user' => $user]);
     }
@@ -89,6 +91,7 @@ class UserManagementController extends Controller
 
         $user->roles()->sync($validated['roles']);
         $user->modules()->sync($validated['modules'] ?? []);
+        $this->syncPageAccess($user, $validated['page_access'] ?? []);
 
         ActivityLog::record($request->user(), 'user.updated', $user, "Memperbarui akun {$user->name}", [
             'roles' => Role::whereIn('id', $validated['roles'])->pluck('name')->all(),
@@ -129,6 +132,20 @@ class UserManagementController extends Controller
     }
 
     /**
+     * @param  array<string, string>  $pageAccess  page_key => 'view'|'edit'
+     */
+    private function syncPageAccess(User $user, array $pageAccess): void
+    {
+        foreach ($pageAccess as $pageKey => $level) {
+            if (! in_array($level, [UserPagePermission::ACCESS_VIEW, UserPagePermission::ACCESS_EDIT], true)) {
+                continue;
+            }
+
+            $user->pagePermissions()->updateOrCreate(['page_key' => $pageKey], ['access_level' => $level]);
+        }
+    }
+
+    /**
      * @return array{roles: \Illuminate\Support\Collection, divisions: \Illuminate\Support\Collection, branches: \Illuminate\Support\Collection, modules: \Illuminate\Support\Collection, roleModuleDefaults: \Illuminate\Support\Collection}
      */
     private function formData(): array
@@ -150,6 +167,8 @@ class UserManagementController extends Controller
             'branches' => Branch::orderedOutlets(),
             'modules' => Module::orderBy('label')->get(),
             'roleModuleDefaults' => $roleModuleDefaults,
+            'pagesByModuleKey' => UserPagePermission::pagesByModuleKey(),
+            'outletRoleId' => Role::where('name', Role::OUTLET)->value('id'),
         ];
     }
 }
