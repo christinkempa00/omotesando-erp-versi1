@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\BranchLocation;
 use App\Models\GA\WorkLog;
 use App\Models\GA\WorkLogAttachment;
+use App\Models\UserPagePermission;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -18,6 +19,10 @@ class WorkLogController extends Controller
     public function index(Request $request): View
     {
         $query = WorkLog::with(['branch', 'branchLocation', 'attachments']);
+
+        if ($userBranch = $request->user()->branch) {
+            $query->where('branch_id', $userBranch->id);
+        }
 
         if ($branchId = $request->query('branch_id')) {
             $query->where('branch_id', $branchId);
@@ -54,7 +59,7 @@ class WorkLogController extends Controller
 
         $workLogs = $query->latest('work_date')->latest('start_time')->paginate(15)->withQueryString();
 
-        return view('ga.worklogs.index', [
+        return $this->viewFor('worklogs.index', [
             'workLogs' => $workLogs,
             'branches' => Branch::orderedOutlets(Branch::WORK_LOG_OUTLETS),
             'categoryLabels' => WorkLog::categoryLabels(),
@@ -81,10 +86,17 @@ class WorkLogController extends Controller
 
     public function store(StoreWorkLogRequest $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_WORKLOGS), 403);
+
         $validated = $request->validated();
 
         $workLog = new WorkLog($validated);
         $workLog->created_by = $request->user()->id;
+
+        if ($userBranch = $request->user()->branch) {
+            $workLog->branch_id = $userBranch->id;
+        }
+
         $workLog->save();
 
         $this->storeAttachments($request, $workLog);
@@ -94,11 +106,15 @@ class WorkLogController extends Controller
             ->with('success', 'Work Log berhasil ditambahkan.');
     }
 
-    public function show(WorkLog $worklog): View
+    public function show(Request $request, WorkLog $worklog): View
     {
+        if ($branch = $request->user()->branch) {
+            abort_unless($worklog->branch_id === $branch->id, 404);
+        }
+
         $worklog->load(['branch', 'branchLocation', 'createdBy', 'attachments']);
 
-        return view('ga.worklogs.show', [
+        return $this->viewFor('worklogs.show', [
             'workLog' => $worklog,
             'categoryLabels' => WorkLog::categoryLabels(),
         ]);
@@ -119,6 +135,8 @@ class WorkLogController extends Controller
 
     public function update(StoreWorkLogRequest $request, WorkLog $worklog): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_WORKLOGS), 403);
+
         $validated = $request->validated();
 
         $worklog->fill($validated);
@@ -133,8 +151,10 @@ class WorkLogController extends Controller
             ->with('success', 'Work Log berhasil diperbarui.');
     }
 
-    public function destroy(WorkLog $worklog): RedirectResponse
+    public function destroy(Request $request, WorkLog $worklog): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_WORKLOGS), 403);
+
         foreach ($worklog->attachments as $attachment) {
             Storage::disk('public')->delete($attachment->photo_path);
         }
@@ -146,8 +166,9 @@ class WorkLogController extends Controller
             ->with('success', 'Work Log berhasil dihapus.');
     }
 
-    public function destroyAttachment(WorkLog $worklog, WorkLogAttachment $attachment): RedirectResponse
+    public function destroyAttachment(Request $request, WorkLog $worklog, WorkLogAttachment $attachment): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_WORKLOGS), 403);
         abort_unless($attachment->work_log_id === $worklog->id, 404);
 
         Storage::disk('public')->delete($attachment->photo_path);

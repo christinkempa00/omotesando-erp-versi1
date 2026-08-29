@@ -11,6 +11,7 @@ use App\Models\GA\UniformMovement;
 use App\Models\GA\UniformRecord;
 use App\Models\GA\UniformRecordItem;
 use App\Models\GA\UniformStock;
+use App\Models\UserPagePermission;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class UniformRecordController extends Controller
 
         $records = $this->filteredQuery($request)->latest()->paginate(15)->withQueryString();
 
-        return view('ga.uniforms.records.index', [
+        return $this->viewFor('uniforms.records.index', [
             'records' => $records,
             'statusLabels' => UniformRecord::statusLabels(),
             'branches' => Branch::orderedOutlets(UniformStock::UNIFORM_OUTLETS),
@@ -108,6 +109,10 @@ class UniformRecordController extends Controller
     {
         $query = UniformRecord::with(['branch', 'branchLocation', 'uniformStock', 'items']);
 
+        if ($userBranch = $request->user()->branch) {
+            $query->where('branch_id', $userBranch->id);
+        }
+
         if ($status = $request->query('status')) {
             $query->where('status', $status);
         }
@@ -128,9 +133,15 @@ class UniformRecordController extends Controller
         return $query;
     }
 
-    public function create(): View
+    public function create(Request $request): View
     {
-        $stocks = UniformStock::with('branch')->where('available_stock', '>', 0)->orderBy('uniform_type')->get();
+        $stocksQuery = UniformStock::with('branch')->where('available_stock', '>', 0);
+
+        if ($userBranch = $request->user()->branch) {
+            $stocksQuery->where('branch_id', $userBranch->id);
+        }
+
+        $stocks = $stocksQuery->orderBy('uniform_type')->get();
 
         // --- Pohon Outlet -> Jenis Seragam -> Warna -> Ukuran, dipakai Alpine
         //     utk dropdown berjenjang supaya user tidak perlu menelusuri satu
@@ -151,7 +162,7 @@ class UniformRecordController extends Controller
             ->filter(fn (Branch $branch) => $stockTree->has($branch->id))
             ->values();
 
-        return view('ga.uniforms.records.create', [
+        return $this->viewFor('uniforms.records.create', [
             'branches' => $branches,
             'branchLocations' => BranchLocation::groupedByBranch(),
             'stockTree' => $stockTree,
@@ -160,7 +171,23 @@ class UniformRecordController extends Controller
 
     public function store(StoreUniformRecordRequest $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_RECORDS), 403);
+
         $validated = $request->validated();
+
+        // Branch = identitas user, dipaksa terlepas dari tier/input form —
+        // lihat prinsip di plan "Tier akses per halaman". Kalau branch_location
+        // yang tervalidasi ternyata bukan milik branch yang dipaksa ini
+        // (mis. payload dimanipulasi), buang saja (nullable).
+        if ($userBranch = $request->user()->branch) {
+            $validated['branch_id'] = $userBranch->id;
+            if (
+                ($validated['branch_location_id'] ?? null)
+                && ! BranchLocation::where('id', $validated['branch_location_id'])->where('branch_id', $userBranch->id)->exists()
+            ) {
+                $validated['branch_location_id'] = null;
+            }
+        }
 
         $stocks = UniformStock::whereIn('id', collect($validated['items'])->pluck('uniform_stock_id'))
             ->get()
@@ -256,15 +283,19 @@ class UniformRecordController extends Controller
         });
 
         return redirect()
-            ->route('ga.uniforms.records.show', $record)
+            ->route($this->routeFor('uniforms.records.show'), $record)
             ->with('success', "Serah-terima {$record->record_code} berhasil dicatat.");
     }
 
-    public function show(UniformRecord $record): View
+    public function show(Request $request, UniformRecord $record): View
     {
+        if ($branch = $request->user()->branch) {
+            abort_unless($record->branch_id === $branch->id, 404);
+        }
+
         $record->load(['branch', 'branchLocation', 'uniformStock', 'createdBy', 'items.uniformStock']);
 
-        return view('ga.uniforms.records.show', [
+        return $this->viewFor('uniforms.records.show', [
             'record' => $record,
             'statusLabels' => UniformRecord::statusLabels(),
             'conditionLabels' => UniformRecord::conditionLabels(),
@@ -328,8 +359,10 @@ class UniformRecordController extends Controller
         return $path;
     }
 
-    public function edit(UniformRecord $record): View
+    public function edit(Request $request, UniformRecord $record): View
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_RECORDS), 403);
+
         return view('ga.uniforms.records.edit', [
             'record' => $record,
         ]);
@@ -337,6 +370,8 @@ class UniformRecordController extends Controller
 
     public function update(Request $request, UniformRecord $record): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_RECORDS), 403);
+
         $validated = $request->validate([
             'employee_name' => ['required', 'string', 'max:255'],
             'issued_by_name' => ['required', 'string', 'max:255'],
@@ -348,12 +383,14 @@ class UniformRecordController extends Controller
         $record->save();
 
         return redirect()
-            ->route('ga.uniforms.records.show', $record)
+            ->route($this->routeFor('uniforms.records.show'), $record)
             ->with('success', "Serah-terima {$record->record_code} berhasil diperbarui.");
     }
 
-    public function destroy(UniformRecord $record): RedirectResponse
+    public function destroy(Request $request, UniformRecord $record): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_RECORDS), 403);
+
         if ($record->issue_photo_path) {
             Storage::disk('public')->delete($record->issue_photo_path);
         }
@@ -379,6 +416,12 @@ class UniformRecordController extends Controller
 
     public function markReturned(ReturnUniformRecordRequest $request, UniformRecord $record): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_RECORDS), 403);
+
+        if ($branch = $request->user()->branch) {
+            abort_unless($record->branch_id === $branch->id, 404);
+        }
+
         if ($record->status === UniformRecord::STATUS_RETURNED) {
             return back()->withErrors(['status' => 'Seragam ini sudah ditandai dikembalikan.']);
         }
@@ -449,7 +492,7 @@ class UniformRecordController extends Controller
         });
 
         return redirect()
-            ->route('ga.uniforms.records.show', $record)
+            ->route($this->routeFor('uniforms.records.show'), $record)
             ->with('success', "Seragam dari {$record->employee_name} berhasil ditandai dikembalikan.");
     }
 }

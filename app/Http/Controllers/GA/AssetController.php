@@ -7,6 +7,7 @@ use App\Http\Requests\GA\StoreAssetRequest;
 use App\Models\Branch;
 use App\Models\BranchLocation;
 use App\Models\GA\Asset;
+use App\Models\UserPagePermission;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -24,7 +25,7 @@ class AssetController extends Controller
 
         $assets = $query->latest()->paginate(15)->withQueryString();
 
-        return view('ga.assets.index', [
+        return $this->viewFor('assets.index', [
             'assets' => $assets,
             'statusLabels' => Asset::statusLabels(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
@@ -47,11 +48,17 @@ class AssetController extends Controller
 
     public function store(StoreAssetRequest $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_ASSETS), 403);
+
         $validated = $request->validated();
 
         $asset = new Asset($validated);
         $asset->asset_code = Asset::generateAssetCode();
         $asset->created_by = $request->user()->id;
+
+        if ($branch = $request->user()->branch) {
+            $asset->branch_id = $branch->id;
+        }
 
         if ($request->hasFile('image')) {
             $asset->image_path = $request->file('image')->store('assets/photos', 'public');
@@ -68,11 +75,15 @@ class AssetController extends Controller
             ->with('success', "Aset {$asset->asset_code} berhasil ditambahkan.");
     }
 
-    public function show(Asset $asset): View
+    public function show(Request $request, Asset $asset): View
     {
+        if ($branch = $request->user()->branch) {
+            abort_unless($asset->branch_id === $branch->id, 404);
+        }
+
         $asset->load(['branch', 'branchLocation', 'createdBy']);
 
-        return view('ga.assets.show', [
+        return $this->viewFor('assets.show', [
             'asset' => $asset,
             'statusLabels' => Asset::statusLabels(),
         ]);
@@ -90,6 +101,8 @@ class AssetController extends Controller
 
     public function update(StoreAssetRequest $request, Asset $asset): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_ASSETS), 403);
+
         $validated = $request->validated();
 
         $asset->fill($validated);
@@ -117,6 +130,8 @@ class AssetController extends Controller
 
     public function destroy(Request $request, Asset $asset): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_ASSETS), 403);
+
         if ($asset->image_path) {
             Storage::disk('public')->delete($asset->image_path);
         }
@@ -195,6 +210,10 @@ class AssetController extends Controller
     private function filteredQuery(Request $request)
     {
         $query = Asset::with(['branch', 'branchLocation']);
+
+        if ($branch = $request->user()->branch) {
+            $query->where('branch_id', $branch->id);
+        }
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);

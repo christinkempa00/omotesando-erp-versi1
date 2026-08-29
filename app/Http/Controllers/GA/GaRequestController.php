@@ -10,6 +10,7 @@ use App\Models\Division;
 use App\Models\GA\GaRequest;
 use App\Models\Role;
 use App\Models\User;
+use App\Models\UserPagePermission;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -50,7 +51,7 @@ class GaRequestController extends Controller
 
         $requests = $query->paginate(15)->withQueryString();
 
-        return view('ga.requests.index', [
+        return $this->viewFor('requests.index', [
             'requests' => $requests,
             'statusLabels' => GaRequest::statusLabels(),
             'selectedStatus' => $status,
@@ -62,10 +63,15 @@ class GaRequestController extends Controller
 
     public function create(Request $request): View
     {
-        return view('ga.requests.create', [
+        $branches = Branch::orderedOutlets(Branch::GA_OUTLETS);
+        if ($userBranch = $request->user()->branch) {
+            $branches = $branches->filter(fn (Branch $b) => $b->id === $userBranch->id)->values();
+        }
+
+        return $this->viewFor('requests.create', [
             'categoryLabels' => GaRequest::categoryLabels(),
             'priorityLabels' => GaRequest::priorityLabels(),
-            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
+            'branches' => $branches,
             'branchLocations' => BranchLocation::groupedByBranch(),
             'savedSignatureUrl' => $this->savedSignatureUrl($request->user()),
         ]);
@@ -73,10 +79,24 @@ class GaRequestController extends Controller
 
     public function store(StoreGaRequestRequest $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_REQUESTS), 403);
+
         $user = $request->user();
         $validated = $request->validated();
         $intent = $validated['intent'];
         $requesterSignaturePath = $this->resolveRequesterSignaturePath($request, $validated);
+
+        // Branch = identitas user, dipaksa terlepas dari input form (lihat
+        // prinsip di plan "Tier akses per halaman").
+        if ($userBranch = $user->branch) {
+            $validated['branch_id'] = $userBranch->id;
+            if (
+                ($validated['branch_location_id'] ?? null)
+                && ! BranchLocation::where('id', $validated['branch_location_id'])->where('branch_id', $userBranch->id)->exists()
+            ) {
+                $validated['branch_location_id'] = null;
+            }
+        }
 
         $gaRequest = DB::transaction(function () use ($validated, $user, $requesterSignaturePath, $intent) {
             $gaRequest = GaRequest::create([
@@ -109,7 +129,7 @@ class GaRequestController extends Controller
         $this->storeAttachments($request, $gaRequest);
 
         return redirect()
-            ->route('ga.requests.show', $gaRequest)
+            ->route($this->routeFor('requests.show'), $gaRequest)
             ->with('success', $this->statusMessage($gaRequest, $intent));
     }
 
@@ -129,11 +149,16 @@ class GaRequestController extends Controller
 
         $gaRequest->load(['items', 'attachments']);
 
-        return view('ga.requests.edit', [
+        $branches = Branch::orderedOutlets(Branch::GA_OUTLETS);
+        if ($userBranch = $user->branch) {
+            $branches = $branches->filter(fn (Branch $b) => $b->id === $userBranch->id)->values();
+        }
+
+        return $this->viewFor('requests.edit', [
             'gaRequest' => $gaRequest,
             'categoryLabels' => GaRequest::categoryLabels(),
             'priorityLabels' => GaRequest::priorityLabels(),
-            'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
+            'branches' => $branches,
             'branchLocations' => BranchLocation::groupedByBranch(),
             'savedSignatureUrl' => $this->savedSignatureUrl($user),
         ]);
@@ -147,10 +172,21 @@ class GaRequestController extends Controller
             $gaRequest->status === GaRequest::STATUS_DRAFT && $gaRequest->requested_by === $user->id,
             403
         );
+        abort_unless($user->canEdit(UserPagePermission::PAGE_REQUESTS), 403);
 
         $validated = $request->validated();
         $intent = $validated['intent'];
         $requesterSignaturePath = $this->resolveRequesterSignaturePath($request, $validated);
+
+        if ($userBranch = $user->branch) {
+            $validated['branch_id'] = $userBranch->id;
+            if (
+                ($validated['branch_location_id'] ?? null)
+                && ! BranchLocation::where('id', $validated['branch_location_id'])->where('branch_id', $userBranch->id)->exists()
+            ) {
+                $validated['branch_location_id'] = null;
+            }
+        }
 
         DB::transaction(function () use ($gaRequest, $validated, $intent, $requesterSignaturePath) {
             $gaRequest->update([
@@ -174,7 +210,7 @@ class GaRequestController extends Controller
         $this->storeAttachments($request, $gaRequest);
 
         return redirect()
-            ->route('ga.requests.show', $gaRequest)
+            ->route($this->routeFor('requests.show'), $gaRequest)
             ->with('success', $this->statusMessage($gaRequest, $intent));
     }
 
@@ -276,7 +312,7 @@ class GaRequestController extends Controller
 
         $gaRequest->load(['items', 'branch', 'branchLocation', 'division', 'requestedBy', 'attachments']);
 
-        return view('ga.requests.show', [
+        return $this->viewFor('requests.show', [
             'gaRequest' => $gaRequest,
             'categoryLabels' => GaRequest::categoryLabels(),
             'priorityLabels' => GaRequest::priorityLabels(),
@@ -319,6 +355,7 @@ class GaRequestController extends Controller
             $user->hasRole(Role::ADMIN) || $gaRequest->requested_by === $user->id,
             403
         );
+        abort_unless($user->canEdit(UserPagePermission::PAGE_REQUESTS), 403);
 
         foreach ($gaRequest->attachments as $attachment) {
             Storage::disk('public')->delete($attachment->photo_path);

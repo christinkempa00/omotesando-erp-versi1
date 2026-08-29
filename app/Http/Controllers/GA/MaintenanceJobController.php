@@ -8,6 +8,7 @@ use App\Models\Branch;
 use App\Models\BranchLocation;
 use App\Models\GA\Asset;
 use App\Models\GA\MaintenanceJob;
+use App\Models\UserPagePermission;
 use App\Services\TelegramNotifier;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,6 +20,10 @@ class MaintenanceJobController extends Controller
     public function index(Request $request): View
     {
         $query = MaintenanceJob::with(['asset', 'branch', 'branchLocation'])->latest('scheduled_date');
+
+        if ($userBranch = $request->user()->branch) {
+            $query->where('branch_id', $userBranch->id);
+        }
 
         if ($status = $request->query('status')) {
             $query->where('status', $status);
@@ -43,12 +48,13 @@ class MaintenanceJobController extends Controller
 
         $jobs = $query->paginate(15)->withQueryString();
 
-        // Ringkasan kartu status
+        // Ringkasan kartu status — scoped ke branch user kalau ada (Outlet dkk)
+        $summaryQuery = fn () => $userBranch ? MaintenanceJob::where('branch_id', $userBranch->id) : MaintenanceJob::query();
         $summary = [
-            'scheduled' => MaintenanceJob::where('status', MaintenanceJob::STATUS_SCHEDULED)->count(),
-            'in_progress' => MaintenanceJob::where('status', MaintenanceJob::STATUS_IN_PROGRESS)->count(),
-            'completed' => MaintenanceJob::where('status', MaintenanceJob::STATUS_COMPLETED)->count(),
-            'overdue' => MaintenanceJob::whereIn('status', [
+            'scheduled' => $summaryQuery()->where('status', MaintenanceJob::STATUS_SCHEDULED)->count(),
+            'in_progress' => $summaryQuery()->where('status', MaintenanceJob::STATUS_IN_PROGRESS)->count(),
+            'completed' => $summaryQuery()->where('status', MaintenanceJob::STATUS_COMPLETED)->count(),
+            'overdue' => $summaryQuery()->whereIn('status', [
                 MaintenanceJob::STATUS_SCHEDULED,
                 MaintenanceJob::STATUS_IN_PROGRESS,
             ])->whereDate('scheduled_date', '<', now()->toDateString())->count(),
@@ -65,25 +71,31 @@ class MaintenanceJobController extends Controller
         $gridStart = $calendarMonth->copy()->startOfMonth()->startOfWeek(Carbon::MONDAY);
         $gridEnd = $calendarMonth->copy()->endOfMonth()->endOfWeek(Carbon::SUNDAY);
 
-        $calendarJobs = MaintenanceJob::with('asset')
+        $calendarJobsQuery = MaintenanceJob::with('asset')
             ->whereBetween('scheduled_date', [$gridStart->toDateString(), $gridEnd->toDateString()])
-            ->orderBy('scheduled_time')
-            ->get();
+            ->orderBy('scheduled_time');
+        if ($userBranch) {
+            $calendarJobsQuery->where('branch_id', $userBranch->id);
+        }
+        $calendarJobs = $calendarJobsQuery->get();
 
         $jobIdsByDate = $calendarJobs
             ->groupBy(fn (MaintenanceJob $job) => $job->scheduled_date->toDateString())
             ->map(fn ($jobs) => $jobs->pluck('id')->values());
 
         // --- Jadwal mendatang (list ringkas, mirip "upcoming appointment") ---
-        $upcomingJobs = MaintenanceJob::with('asset')
+        $upcomingJobsQuery = MaintenanceJob::with('asset')
             ->whereIn('status', [MaintenanceJob::STATUS_SCHEDULED, MaintenanceJob::STATUS_IN_PROGRESS])
             ->where('scheduled_date', '>=', now()->toDateString())
             ->orderBy('scheduled_date')
             ->orderBy('scheduled_time')
-            ->limit(5)
-            ->get();
+            ->limit(5);
+        if ($userBranch) {
+            $upcomingJobsQuery->where('branch_id', $userBranch->id);
+        }
+        $upcomingJobs = $upcomingJobsQuery->get();
 
-        return view('ga.maintenance.index', [
+        return $this->viewFor('maintenance.index', [
             'jobs' => $jobs,
             'summary' => $summary,
             'statusLabels' => MaintenanceJob::statusLabels(),
@@ -113,6 +125,8 @@ class MaintenanceJobController extends Controller
 
     public function store(StoreMaintenanceJobRequest $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_MAINTENANCE), 403);
+
         $validated = $request->validated();
 
         $job = new MaintenanceJob($validated);
@@ -133,11 +147,15 @@ class MaintenanceJobController extends Controller
             ->with('success', "Pekerjaan {$job->job_code} berhasil dijadwalkan.");
     }
 
-    public function show(MaintenanceJob $maintenance): View
+    public function show(Request $request, MaintenanceJob $maintenance): View
     {
+        if ($branch = $request->user()->branch) {
+            abort_unless($maintenance->branch_id === $branch->id, 404);
+        }
+
         $maintenance->load(['asset', 'branch', 'branchLocation', 'createdBy']);
 
-        return view('ga.maintenance.show', [
+        return $this->viewFor('maintenance.show', [
             'job' => $maintenance,
             'statusLabels' => MaintenanceJob::statusLabels(),
             'typeLabels' => MaintenanceJob::typeLabels(),
@@ -160,6 +178,8 @@ class MaintenanceJobController extends Controller
 
     public function update(StoreMaintenanceJobRequest $request, MaintenanceJob $maintenance): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_MAINTENANCE), 403);
+
         $validated = $request->validated();
 
         $maintenance->fill($validated);
@@ -186,6 +206,8 @@ class MaintenanceJobController extends Controller
 
     public function destroy(Request $request, MaintenanceJob $maintenance): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_MAINTENANCE), 403);
+
         app(TelegramNotifier::class)->sendMessage($maintenance->telegramText('deleted', $request->user()));
 
         $maintenance->delete();
@@ -200,6 +222,8 @@ class MaintenanceJobController extends Controller
      */
     public function complete(Request $request, MaintenanceJob $maintenance): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_MAINTENANCE), 403);
+
         $request->validate([
             'completion_notes' => ['nullable', 'string', 'max:2000'],
         ]);

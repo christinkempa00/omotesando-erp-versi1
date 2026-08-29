@@ -11,6 +11,7 @@ use App\Models\BranchLocation;
 use App\Models\GA\UniformMovement;
 use App\Models\GA\UniformRecord;
 use App\Models\GA\UniformStock;
+use App\Models\UserPagePermission;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -34,6 +35,10 @@ class UniformStockController extends Controller
         // --- Manajemen Stok: dikelompokkan per Tipe + Outlet + Warna, tiap
         //     grup ditampilkan sebagai satu kartu berisi baris per ukuran ---
         $stockQuery = UniformStock::with(['branch', 'branchLocation']);
+
+        if ($userBranch = $request->user()->branch) {
+            $stockQuery->where('branch_id', $userBranch->id);
+        }
 
         if ($branchId) {
             $stockQuery->where('branch_id', $branchId);
@@ -98,7 +103,7 @@ class UniformStockController extends Controller
             ->limit(8)
             ->get();
 
-        return view('ga.uniforms.stocks.index', [
+        return $this->viewFor('uniforms.stocks.index', [
             'stockGroups' => $stockGroups,
             'summary' => $summary,
             'branches' => Branch::orderedOutlets(UniformStock::UNIFORM_OUTLETS),
@@ -241,6 +246,8 @@ class UniformStockController extends Controller
 
     public function store(StoreUniformStockRequest $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         $validated = $request->validated();
         $branch = Branch::findOrFail($validated['branch_id']);
         $threshold = $validated['low_stock_threshold'] ?? 0;
@@ -362,8 +369,12 @@ class UniformStockController extends Controller
             ->with('success', count($created)." varian '{$validated['uniform_type']}' berhasil disimpan (ukuran: {$sizesAdded}).");
     }
 
-    public function show(UniformStock $stock): View
+    public function show(Request $request, UniformStock $stock): View
     {
+        if ($branch = $request->user()->branch) {
+            abort_unless($stock->branch_id === $branch->id, 404);
+        }
+
         $stock->load(['branch', 'branchLocation']);
 
         $movements = $stock->movements()
@@ -372,7 +383,7 @@ class UniformStockController extends Controller
             ->paginate(10)
             ->withQueryString();
 
-        return view('ga.uniforms.stocks.show', [
+        return $this->viewFor('uniforms.stocks.show', [
             'stock' => $stock,
             'movements' => $movements,
             'typeLabels' => UniformMovement::typeLabels(),
@@ -391,6 +402,8 @@ class UniformStockController extends Controller
 
     public function update(UpdateUniformStockRequest $request, UniformStock $stock): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         $validated = $request->validated();
         $validated['low_stock_threshold'] ??= 0;
         $branch = Branch::findOrFail($validated['branch_id']);
@@ -447,8 +460,10 @@ class UniformStockController extends Controller
             ->with('success', "Varian seragam {$stock->stock_code} berhasil diperbarui.");
     }
 
-    public function destroy(UniformStock $stock): RedirectResponse
+    public function destroy(Request $request, UniformStock $stock): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         if ($stock->stock_photo_path) {
             Storage::disk('public')->delete($stock->stock_photo_path);
         }
@@ -466,6 +481,8 @@ class UniformStockController extends Controller
      */
     public function destroyGroup(Request $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         $validated = $request->validate([
             'uniform_type' => ['required', 'string'],
             'branch_id' => ['required', 'exists:branches,id'],
@@ -504,6 +521,10 @@ class UniformStockController extends Controller
             'color' => ['nullable', 'string'],
         ]);
 
+        if ($userBranch = $request->user()->branch) {
+            abort_unless((int) $validated['branch_id'] === $userBranch->id, 404);
+        }
+
         $items = UniformStock::with(['branch', 'branchLocation'])
             ->where('uniform_type', $validated['uniform_type'])
             ->where('branch_id', $validated['branch_id'])
@@ -515,7 +536,7 @@ class UniformStockController extends Controller
         $sizeOrder = array_flip(StoreUniformStockRequest::SIZES);
         $items = $items->sortBy(fn (UniformStock $i) => $sizeOrder[$i->size] ?? 99)->values();
 
-        return view('ga.uniforms.stocks.show-group', [
+        return $this->viewFor('uniforms.stocks.show-group', [
             'items' => $items,
             'first' => $items->first(),
             'totalAvailable' => $items->sum('available_stock'),
@@ -532,6 +553,8 @@ class UniformStockController extends Controller
      */
     public function editGroup(Request $request): View
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         $validated = $request->validate([
             'uniform_type' => ['required', 'string'],
             'branch_id' => ['required', 'exists:branches,id'],
@@ -556,6 +579,8 @@ class UniformStockController extends Controller
 
     public function updateGroup(Request $request): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         $validated = $request->validate([
             'old_uniform_type' => ['required', 'string'],
             'old_branch_id' => ['required', 'exists:branches,id'],
@@ -646,6 +671,8 @@ class UniformStockController extends Controller
 
     public function restock(UniformStockMovementRequest $request, UniformStock $stock): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         $quantity = (int) $request->validated('quantity');
 
         $stock->available_stock += $quantity;

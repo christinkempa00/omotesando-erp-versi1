@@ -250,7 +250,7 @@
     </div>
 
     <div class="mt-6 flex items-center justify-end gap-3">
-        <a href="{{ route('ga.requests.index') }}"
+        <a href="{{ route(str_starts_with(request()->route()->getName(), 'outlet.') ? 'outlet.requests.index' : 'ga.requests.index') }}"
            class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
         <button type="submit" name="intent" value="draft"
                 class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">

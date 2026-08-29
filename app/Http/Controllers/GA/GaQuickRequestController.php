@@ -4,7 +4,9 @@ namespace App\Http\Controllers\GA;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreGaQuickRequestRequest;
+use App\Models\BranchLocation;
 use App\Models\GA\GaQuickRequest;
+use App\Models\UserPagePermission;
 use App\Services\TelegramNotifier;
 use Illuminate\Http\RedirectResponse;
 
@@ -12,7 +14,19 @@ class GaQuickRequestController extends Controller
 {
     public function store(StoreGaQuickRequestRequest $request, TelegramNotifier $telegram): RedirectResponse
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_REQUESTS), 403);
+
         $validated = $request->validated();
+
+        if ($userBranch = $request->user()->branch) {
+            $validated['branch_id'] = $userBranch->id;
+            if (
+                ($validated['branch_location_id'] ?? null)
+                && ! BranchLocation::where('id', $validated['branch_location_id'])->where('branch_id', $userBranch->id)->exists()
+            ) {
+                $validated['branch_location_id'] = null;
+            }
+        }
 
         $quickRequest = GaQuickRequest::create([
             'requested_date' => $validated['requested_date'],
@@ -43,12 +57,12 @@ class GaQuickRequestController extends Controller
             $quickRequest->update(['sent_at' => now()]);
 
             return redirect()
-                ->route('ga.requests.index')
+                ->route($this->routeFor('requests.index'))
                 ->with('success', 'Permintaan cepat berhasil dikirim ke Telegram.');
         }
 
         return redirect()
-            ->route('ga.requests.index')
+            ->route($this->routeFor('requests.index'))
             ->with('success', 'Permintaan cepat tersimpan. Pengiriman ke Telegram belum aktif — hubungkan bot Telegram di pengaturan untuk mengaktifkan pengiriman otomatis.');
     }
 }
