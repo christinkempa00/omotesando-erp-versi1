@@ -46,7 +46,7 @@
 
             <div class="flex-1 flex flex-col min-w-0">
                 <!-- Topbar -->
-                <div class="sticky top-0 z-20 {{ $sidebar === 'it' ? 'bg-white/80 backdrop-blur-md border-b border-gold-500/20' : 'bg-white border-b border-hairline' }} lg:hidden">
+                <div class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gold-500/20 lg:hidden">
                     <div class="flex items-center px-4 py-3">
                         <button @click="sidebarOpen = true" class="text-ink-muted hover:text-ink">
                             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
@@ -112,7 +112,7 @@
                     @endif
 
                     <button @click="open = false" type="button"
-                            class="mt-6 px-4 py-2 rounded-md bg-indigo-600 text-white text-sm font-medium hover:bg-indigo-700">
+                            class="mt-6 px-4 py-2 rounded-md bg-gold-600 text-white text-sm font-medium hover:bg-gold-700">
                         Tutup
                     </button>
                 </div>
