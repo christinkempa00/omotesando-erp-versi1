@@ -74,20 +74,20 @@
 @endphp
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-gradient-to-b from-gold-950 to-gold-900 border-r border-gold-500/20 shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
+    class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-white border-r border-gold-500/15 shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
-    <div class="h-16 shrink-0 flex items-center justify-between px-5 border-b border-white/10">
+    <div class="h-16 shrink-0 flex items-center justify-between px-5 border-b border-gold-500/10">
         <a href="{{ route('dashboard') }}" class="flex items-center gap-2 min-w-0">
-            <span class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 overflow-hidden p-0.5">
+            <span class="w-9 h-9 rounded-lg bg-white border border-gold-500/15 flex items-center justify-center shrink-0 overflow-hidden p-0.5">
                 <img src="{{ asset('images/allez-logo.jpg') }}" alt="Allez Group" class="w-full h-full object-contain">
             </span>
             <span class="min-w-0">
-                <span class="block text-white font-semibold text-sm truncate">Allez Group</span>
-                <span class="block text-gold-300 text-[11px] truncate">General Affairs</span>
+                <span class="block text-ink font-semibold text-sm truncate">Allez Group</span>
+                <span class="block text-slate-400 text-[11px] truncate">General Affairs</span>
             </span>
         </a>
-        <button @click="sidebarOpen = false" class="lg:hidden text-gold-300 hover:text-white shrink-0">
+        <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-ink shrink-0">
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 6l12 12M18 6 6 18" />
             </svg>
@@ -123,7 +123,7 @@
                         <span class="flex-1">{{ $item['label'] }}</span>
                         @if ($underMaintenance)
                             <span title="Sedang dalam mode pemeliharaan"
-                                  class="inline-flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-400/20 text-amber-400">
+                                  class="inline-flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700">
                                 <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M14.5 6.5a4 4 0 0 0-5.6 4.9L4 16.3V20h3.7l4.9-4.9a4 4 0 0 0 4.9-5.6l-2.6 2.6-2-2 2.6-2.6Z" />
                                 </svg>
@@ -132,7 +132,7 @@
                     </a>
                     @if ($visibleChildren->isNotEmpty())
                         <button type="button" @click="open = !open"
-                                class="px-2 rounded-lg text-gold-300/70 hover:bg-gold-500/10 hover:text-white transition">
+                                class="px-2 rounded-lg text-slate-400 hover:bg-gold-50 hover:text-ink transition">
                             <svg class="w-4 h-4 shrink-0 transition-transform" :class="open ? 'rotate-90' : ''"
                                  viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                 {!! $icons['chevron'] !!}
@@ -150,7 +150,7 @@
                                 <span class="flex-1">{{ $child['label'] }}</span>
                                 @if ($childUnderMaintenance)
                                     <span title="Sedang dalam mode pemeliharaan"
-                                          class="inline-flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-400/20 text-amber-400">
+                                          class="inline-flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700">
                                         <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                             <path d="M14.5 6.5a4 4 0 0 0-5.6 4.9L4 16.3V20h3.7l4.9-4.9a4 4 0 0 0 4.9-5.6l-2.6 2.6-2-2 2.6-2.6Z" />
                                         </svg>
@@ -167,7 +167,7 @@
             $visibleOperationalSupport = collect($navOperationalSupport)->filter(fn ($c) => ($moduleActiveByKey[$c['module']] ?? true) && $hasModuleAccess($c['module']))->values();
         @endphp
         @if ($visibleOperationalSupport->isNotEmpty())
-            <p class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-gold-400/70">Operational Support</p>
+            <p class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">Operational Support</p>
             @foreach ($visibleOperationalSupport as $item)
                 @php $underMaintenance = $maintenanceByKey[$item['system_module']] ?? false; @endphp
                 <a href="{{ route($item['route']) }}" @click="sidebarOpen = false"
@@ -178,7 +178,7 @@
                     <span class="flex-1">{{ $item['label'] }}</span>
                     @if ($underMaintenance)
                         <span title="Sedang dalam mode pemeliharaan"
-                              class="inline-flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-400/20 text-amber-400">
+                              class="inline-flex items-center gap-1 shrink-0 px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-amber-100 text-amber-700">
                             <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M14.5 6.5a4 4 0 0 0-5.6 4.9L4 16.3V20h3.7l4.9-4.9a4 4 0 0 0 4.9-5.6l-2.6 2.6-2-2 2.6-2.6Z" />
                             </svg>
@@ -189,21 +189,21 @@
         @endif
     </nav>
 
-    <div class="shrink-0 border-t border-white/10 p-3 space-y-1">
+    <div class="shrink-0 border-t border-gold-500/12 p-3 space-y-1">
         <a href="{{ route('profile.edit') }}"
-           class="flex items-center gap-3 px-2 py-2 rounded-lg transition {{ request()->routeIs('profile.edit') ? 'bg-white/5' : 'hover:bg-white/5' }}">
+           class="flex items-center gap-3 px-2 py-2 rounded-lg transition {{ request()->routeIs('profile.edit') ? 'bg-gold-50' : 'hover:bg-gold-50' }}">
             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
                 {{ $initials }}
             </div>
             <div class="flex-1 min-w-0 text-left">
-                <p class="text-sm font-medium text-white truncate">{{ Auth::user()->name }}</p>
-                <p class="text-xs text-gold-300/80 truncate">{{ Auth::user()->email }}</p>
+                <p class="text-sm font-medium text-ink truncate">{{ Auth::user()->name }}</p>
+                <p class="text-xs text-slate-400 truncate">{{ Auth::user()->email }}</p>
             </div>
         </a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
-                    class="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gold-300/80 hover:bg-white/5 hover:text-white transition">
+                    class="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-slate-500 hover:bg-gold-50 hover:text-ink transition">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                     <path d="M10 17l5-5-5-5" />

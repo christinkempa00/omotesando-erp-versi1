@@ -79,12 +79,21 @@
     }
 
     /* Item nav sidebar — pola gold/glass dipromosikan jadi komponen bersama
-       (Fase 1 restyle shell), meniru active-state yang sudah ada di
-       it/partials/sidebar.blade.php. */
+       (Fase 1 restyle shell). KOREKSI ARAH (dikonfirmasi CC): sidebar jadi
+       PUTIH seragam (bukan gelap) — idle = slate di atas putih, active tetap
+       gradient gold (cuma sekitarnya yang berubah gelap->putih). Ikon
+       mengikuti warna teks item induknya lewat selector turunan di bawah,
+       supaya markup <svg> di tiap file TIDAK perlu disentuh satu-satu. */
     .sidebar-nav-item {
-        @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition text-gold-200/80 hover:bg-gold-500/10;
+        @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition text-slate-600 hover:bg-gold-50;
+    }
+    .sidebar-nav-item svg {
+        @apply text-slate-400;
     }
     .sidebar-nav-item-active {
-        @apply bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_0_12px_rgba(212,175,55,0.4)];
+        @apply bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_3px_10px_rgba(200,155,44,0.3)];
+    }
+    .sidebar-nav-item-active svg {
+        @apply text-white;
     }
 }
