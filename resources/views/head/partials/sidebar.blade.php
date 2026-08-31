@@ -43,20 +43,20 @@
 @endphp
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-slate-900 transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
+    class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-gradient-to-b from-gold-950 to-gold-900 border-r border-gold-500/20 shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
-    <div class="h-16 shrink-0 flex items-center justify-between px-5 border-b border-slate-800">
+    <div class="h-16 shrink-0 flex items-center justify-between px-5 border-b border-white/10">
         <a href="{{ route('head.dashboard') }}" class="flex items-center gap-2 min-w-0">
-            <span class="w-9 h-9 rounded-md bg-white flex items-center justify-center shrink-0 overflow-hidden p-0.5">
+            <span class="w-9 h-9 rounded-lg bg-white flex items-center justify-center shrink-0 overflow-hidden p-0.5">
                 <img src="{{ asset('images/allez-logo.jpg') }}" alt="Allez Group" class="w-full h-full object-contain">
             </span>
             <span class="min-w-0">
                 <span class="block text-white font-semibold text-sm truncate">Allez Group</span>
-                <span class="block text-slate-400 text-[11px] truncate">Head Office</span>
+                <span class="block text-gold-300 text-[11px] truncate">Head Office</span>
             </span>
         </a>
-        <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white shrink-0">
+        <button @click="sidebarOpen = false" class="lg:hidden text-gold-300 hover:text-white shrink-0">
             <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M6 6l12 12M18 6 6 18" />
             </svg>
@@ -66,8 +66,7 @@
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         @foreach ($navItems as $item)
             <a href="{{ route($item['route']) }}" @click="sidebarOpen = false"
-               class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
-                      {{ request()->routeIs(...$item['pattern']) ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+               class="sidebar-nav-item {{ request()->routeIs(...$item['pattern']) ? 'sidebar-nav-item-active' : '' }}">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     {!! $icons[$item['icon']] !!}
                 </svg>
@@ -89,7 +88,7 @@
         <div x-data="{ open: {{ $gaActive ? 'true' : 'false' }} }">
             <button type="button" @click="open = !open"
                     class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
-                           {{ $gaActive ? 'bg-slate-800 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+                           {{ $gaActive ? 'bg-gold-500/10 text-white' : 'text-gold-200/80 hover:bg-gold-500/10' }}">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     {!! $icons['folder'] !!}
                 </svg>
@@ -100,11 +99,10 @@
                 </svg>
             </button>
             <div x-show="open" x-cloak x-transition
-                 class="mt-1 ml-4 pl-3 border-l border-slate-800 space-y-1" style="display:none;">
+                 class="mt-1 ml-4 pl-3 border-l border-gold-500/10 space-y-1" style="display:none;">
                 @foreach ($gaSubItems as $item)
                     <a href="{{ route($item['route']) }}" @click="sidebarOpen = false"
-                       class="flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm transition
-                              {{ request()->routeIs(...$item['pattern']) ? 'bg-indigo-600 text-white' : 'text-slate-400 hover:bg-slate-800 hover:text-white' }}">
+                       class="sidebar-nav-item {{ request()->routeIs(...$item['pattern']) ? 'sidebar-nav-item-active' : '' }}">
                         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                             {!! $icons[$item['icon']] !!}
                         </svg>
@@ -124,8 +122,7 @@
 
         @foreach ($bottomItems as $item)
             <a href="{{ route($item['route']) }}" @click="sidebarOpen = false"
-               class="flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition
-                      {{ request()->routeIs(...$item['pattern']) ? 'bg-indigo-600 text-white' : 'text-slate-300 hover:bg-slate-800 hover:text-white' }}">
+               class="sidebar-nav-item {{ request()->routeIs(...$item['pattern']) ? 'sidebar-nav-item-active' : '' }}">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     {!! $icons[$item['icon']] !!}
                 </svg>
@@ -142,21 +139,21 @@
         @endforeach
     </nav>
 
-    <div class="shrink-0 border-t border-slate-800 p-3 space-y-1">
+    <div class="shrink-0 border-t border-white/10 p-3 space-y-1">
         <a href="{{ route('profile.edit') }}"
-           class="flex items-center gap-3 px-2 py-2 rounded-lg transition {{ request()->routeIs('profile.edit') ? 'bg-slate-800' : 'hover:bg-slate-800' }}">
-            <div class="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
+           class="flex items-center gap-3 px-2 py-2 rounded-lg transition {{ request()->routeIs('profile.edit') ? 'bg-white/5' : 'hover:bg-white/5' }}">
+            <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
                 {{ $initials }}
             </div>
             <div class="flex-1 min-w-0 text-left">
                 <p class="text-sm font-medium text-white truncate">{{ Auth::user()->name }}</p>
-                <p class="text-xs text-slate-400 truncate">{{ Auth::user()->email }}</p>
+                <p class="text-xs text-gold-300/80 truncate">{{ Auth::user()->email }}</p>
             </div>
         </a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
-                    class="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-slate-400 hover:bg-slate-800 hover:text-white transition">
+                    class="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gold-300/80 hover:bg-white/5 hover:text-white transition">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                     <path d="M10 17l5-5-5-5" />
