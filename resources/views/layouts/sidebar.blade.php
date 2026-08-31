@@ -39,6 +39,17 @@
     // supaya menu tidak berantakan.
     $moduleActiveByKey = \App\Models\Module::pluck('is_active', 'key');
 
+    // Akses PER USER (module_user, diatur IT lewat Manajemen User) — beda
+    // dari moduleActiveByKey di atas yang cuma status aktif/nonaktif GLOBAL.
+    // Tanpa cek ini, sidebar tampilkan semua modul yg aktif secara global
+    // walau user ybs tidak dicentang IT sama sekali (link tetap ada, cuma
+    // 403 saat diklik) — insiden nyata: akun GA yg cuma dicentang Inventaris
+    // Seragam tetap lihat link Asset/Request/Work Log di sidebar. Admin
+    // selalu lolos (konsisten dgn ModuleAccessMiddleware).
+    $isAdmin = Auth::user()->hasRole(\App\Models\Role::ADMIN);
+    $userModuleKeys = $isAdmin ? [] : Auth::user()->modules()->pluck('key')->all();
+    $hasModuleAccess = fn (string $key) => $isAdmin || in_array($key, $userModuleKeys, true);
+
     // Status mode pemeliharaan per halaman (dikontrol IT) — beda dari
     // moduleActiveByKey di atas: ini cuma badge peringatan, menu tetap bisa
     // diklik supaya user tahu dari awal sebelum masuk, bukan disembunyikan.
@@ -96,11 +107,11 @@
         @endforeach
 
         @foreach ($navGa as $item)
-            @continue(! ($moduleActiveByKey[$item['module']] ?? true))
+            @continue(! ($moduleActiveByKey[$item['module']] ?? true) || ! $hasModuleAccess($item['module']))
             @php
                 $underMaintenance = $maintenanceByKey[$item['system_module']] ?? false;
                 $children = $item['children'] ?? [];
-                $visibleChildren = collect($children)->filter(fn ($c) => $moduleActiveByKey[$c['module']] ?? true)->values();
+                $visibleChildren = collect($children)->filter(fn ($c) => ($moduleActiveByKey[$c['module']] ?? true) && $hasModuleAccess($c['module']))->values();
                 $childActive = $visibleChildren->contains(fn ($c) => request()->routeIs(...(array) $c['pattern']));
             @endphp
             <div @if ($visibleChildren->isNotEmpty()) x-data="{ open: {{ (request()->routeIs($item['pattern']) || $childActive) ? 'true' : 'false' }} }" @endif>
@@ -156,7 +167,7 @@
         @endforeach
 
         @php
-            $visibleOperationalSupport = collect($navOperationalSupport)->filter(fn ($c) => $moduleActiveByKey[$c['module']] ?? true)->values();
+            $visibleOperationalSupport = collect($navOperationalSupport)->filter(fn ($c) => ($moduleActiveByKey[$c['module']] ?? true) && $hasModuleAccess($c['module']))->values();
         @endphp
         @if ($visibleOperationalSupport->isNotEmpty())
             <p class="px-3 pt-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-ink-muted/70">Operational Support</p>

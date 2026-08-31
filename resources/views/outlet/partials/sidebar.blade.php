@@ -6,18 +6,30 @@
         ->join('');
 
     $navItems = [
-        ['route' => 'outlet.dashboard', 'pattern' => ['outlet.dashboard'], 'label' => 'Dashboard', 'icon' => 'home', 'system_module' => null],
-        ['route' => 'outlet.requests.index', 'pattern' => ['outlet.requests.*'], 'label' => 'Pengajuan', 'icon' => 'list', 'system_module' => \App\Models\SystemModule::GA_REQUESTS],
-        ['route' => 'outlet.assets.index', 'pattern' => ['outlet.assets.*'], 'label' => 'Aset', 'icon' => 'archive', 'system_module' => \App\Models\SystemModule::GA_ASSETS],
-        ['route' => 'outlet.uniforms.stocks.index', 'pattern' => ['outlet.uniforms.stocks.*'], 'label' => 'Seragam — Stok', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS],
-        ['route' => 'outlet.uniforms.records.index', 'pattern' => ['outlet.uniforms.records.*'], 'label' => 'Seragam — Serah Terima', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS],
-        ['route' => 'outlet.maintenance.index', 'pattern' => ['outlet.maintenance.*'], 'label' => 'Jadwal Pemeliharaan', 'icon' => 'wrench', 'system_module' => \App\Models\SystemModule::GA_MAINTENANCE],
-        ['route' => 'outlet.worklogs.index', 'pattern' => ['outlet.worklogs.*'], 'label' => 'Work Log', 'icon' => 'clipboard', 'system_module' => \App\Models\SystemModule::GA_WORKLOG],
+        ['route' => 'outlet.dashboard', 'pattern' => ['outlet.dashboard'], 'label' => 'Dashboard', 'icon' => 'home', 'system_module' => null, 'module' => null],
+        ['route' => 'outlet.requests.index', 'pattern' => ['outlet.requests.*'], 'label' => 'Pengajuan', 'icon' => 'list', 'system_module' => \App\Models\SystemModule::GA_REQUESTS, 'module' => \App\Models\Module::REQUESTS],
+        ['route' => 'outlet.assets.index', 'pattern' => ['outlet.assets.*'], 'label' => 'Aset', 'icon' => 'archive', 'system_module' => \App\Models\SystemModule::GA_ASSETS, 'module' => \App\Models\Module::ASSETS],
+        ['route' => 'outlet.uniforms.stocks.index', 'pattern' => ['outlet.uniforms.stocks.*'], 'label' => 'Seragam — Stok', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS, 'module' => \App\Models\Module::UNIFORMS],
+        ['route' => 'outlet.uniforms.records.index', 'pattern' => ['outlet.uniforms.records.*'], 'label' => 'Seragam — Serah Terima', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS, 'module' => \App\Models\Module::UNIFORMS],
+        ['route' => 'outlet.maintenance.index', 'pattern' => ['outlet.maintenance.*'], 'label' => 'Jadwal Pemeliharaan', 'icon' => 'wrench', 'system_module' => \App\Models\SystemModule::GA_MAINTENANCE, 'module' => \App\Models\Module::MAINTENANCE],
+        ['route' => 'outlet.worklogs.index', 'pattern' => ['outlet.worklogs.*'], 'label' => 'Work Log', 'icon' => 'clipboard', 'system_module' => \App\Models\SystemModule::GA_WORKLOG, 'module' => \App\Models\Module::WORK_LOG],
     ];
 
     // Status mode pemeliharaan per halaman — sama key dgn grup ga. (toggle
     // dibagi bersama, bukan key outlet.* terpisah, lihat routes/web.php).
     $maintenanceByKey = \App\Models\SystemModule::pluck('is_under_maintenance', 'key');
+
+    // Sama seperti sidebar GA — filter per akses PER USER (module_user),
+    // bukan cuma status aktif/nonaktif global. Tanpa ini, akun Outlet yg
+    // cuma dicentang IT utk 1 modul tetap lihat semua menu di sidebar.
+    $moduleActiveByKey = \App\Models\Module::pluck('is_active', 'key');
+    $isAdmin = Auth::user()->hasRole(\App\Models\Role::ADMIN);
+    $userModuleKeys = $isAdmin ? [] : Auth::user()->modules()->pluck('key')->all();
+    $hasModuleAccess = fn (?string $key) => $key === null || $isAdmin || in_array($key, $userModuleKeys, true);
+    $navItems = collect($navItems)
+        ->filter(fn ($item) => ($item['module'] === null || ($moduleActiveByKey[$item['module']] ?? true)) && $hasModuleAccess($item['module']))
+        ->values()
+        ->all();
 
     $icons = [
         'home' => '<path d="M4 10.5 12 4l8 6.5" /><path d="M6 9.5V19a1 1 0 0 0 1 1h4v-5a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v5h4a1 1 0 0 0 1-1V9.5" />',
