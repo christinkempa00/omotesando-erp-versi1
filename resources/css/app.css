@@ -11,10 +11,71 @@
 
 @layer components {
     /* Kartu "gold/glass" — dulu IT-module-only, sekarang dipakai global
-       (Fase 1 restyle shell). Menggantikan pola literal bg-white rounded-xl
-       shadow-[...] yang diulang di tiap file. */
+       (Fase 1 restyle shell). Versi kaya (Fase 1, lanjutan) — acuan
+       wonderland-system (sudah dikonfirmasi CC): gradient kartu + shadow
+       emas berlapis + hover lift. Dipakai luas di view IT yang sudah ada —
+       menaikkan definisi ini otomatis menaikkan semua kartu itu sekaligus,
+       itu memang tujuannya. Kelas TIDAK di-rename. */
     .glass-panel {
-        @apply bg-white/80 backdrop-blur-md border border-gold-500/20 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)];
+        @apply rounded-2xl border transition-all duration-300;
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,248,236,0.9) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-color: rgba(200,155,44,0.15);
+        box-shadow: 0 4px 6px -1px rgba(200,155,44,0.1),
+                    0 10px 20px -5px rgba(200,155,44,0.15),
+                    0 0 0 1px rgba(255,255,255,0.5) inset;
+    }
+    .glass-panel:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 15px -3px rgba(200,155,44,0.15),
+                    0 20px 40px -10px rgba(200,155,44,0.2),
+                    0 0 0 1px rgba(255,255,255,0.6) inset;
+    }
+    /* Sama seperti .glass-panel tapi tanpa hover-lift — utk kartu di dalam
+       modal/konteks lain yang tidak boleh "melayang" saat di-hover. */
+    .glass-panel-static {
+        @apply rounded-2xl border;
+        background: linear-gradient(135deg, rgba(255,255,255,0.95) 0%, rgba(253,248,236,0.9) 100%);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-color: rgba(200,155,44,0.15);
+        box-shadow: 0 4px 6px -1px rgba(200,155,44,0.1),
+                    0 10px 20px -5px rgba(200,155,44,0.15),
+                    0 0 0 1px rgba(255,255,255,0.5) inset;
+    }
+
+    /* Tombol gradient gold (acuan wonderland .btn-primary). */
+    .btn-gold {
+        @apply inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg
+               text-sm font-medium text-white border-0 cursor-pointer transition-all duration-150;
+        background: linear-gradient(135deg, theme('colors.gold.500') 0%, theme('colors.gold.600') 100%);
+        box-shadow: 0 4px 12px rgba(200,155,44,0.3);
+    }
+    .btn-gold:hover:not(:disabled) {
+        background: linear-gradient(135deg, theme('colors.gold.600') 0%, theme('colors.gold.700') 100%);
+        box-shadow: 0 6px 16px rgba(200,155,44,0.4);
+        transform: translateY(-1px);
+    }
+
+    /* Kartu ringkasan dashboard (stat/KPI) — acuan wonderland. */
+    .stat-card {
+        @apply glass-panel flex items-start gap-4 p-6;
+    }
+    .stat-icon {
+        @apply w-14 h-14 rounded-xl flex items-center justify-center text-white text-2xl shrink-0;
+        background: linear-gradient(135deg, theme('colors.gold.500') 0%, theme('colors.gold.600') 100%);
+    }
+    /* Varian ikon status opsional — pakai token status yang sudah ada
+       (bukan gold), supaya makna semantiknya tidak tertukar dgn aksen. */
+    .stat-icon.is-success {
+        background: theme('colors.status.approved.fg');
+    }
+    .stat-icon.is-warning {
+        background: theme('colors.status.pending.fg');
+    }
+    .stat-icon.is-danger {
+        background: theme('colors.status.rejected.fg');
     }
 
     /* Item nav sidebar — pola gold/glass dipromosikan jadi komponen bersama
