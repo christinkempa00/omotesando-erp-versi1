@@ -118,6 +118,8 @@ class UniformStockController extends Controller
 
     public function create(Request $request): View
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         $prefill = [
             'uniform_type' => $request->query('uniform_type'),
             'branch_id' => $request->query('branch_id'),
@@ -390,8 +392,10 @@ class UniformStockController extends Controller
         ]);
     }
 
-    public function edit(UniformStock $stock): View
+    public function edit(Request $request, UniformStock $stock): View
     {
+        abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_STOCKS), 403);
+
         return view('ga.uniforms.stocks.edit', [
             'stock' => $stock,
             'branches' => Branch::orderedOutlets(UniformStock::UNIFORM_OUTLETS),

@@ -7,12 +7,14 @@
                     Manajemen Stok
                 </h2>
             </div>
-            <div class="flex flex-wrap gap-2">
-                <a href="{{ route('ga.uniforms.stocks.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
-                    Buat Varian
-                </a>
-            </div>
+            @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('ga.uniforms.stocks.create') }}"
+                       class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                        Buat Varian
+                    </a>
+                </div>
+            @endif
         </div>
     </x-slot>
 
@@ -92,37 +94,39 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
-                                    <a href="{{ route('ga.uniforms.stocks.create', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
-                                       title="Tambah ukuran baru untuk grup ini"
-                                       class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M12 5v14M5 12h14" />
-                                        </svg>
-                                    </a>
-                                    <a href="{{ route('ga.uniforms.stocks.edit-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
-                                       title="Edit grup ini (Tipe Seragam/Outlet/Warna, dll — semua ukuran sekaligus)"
-                                       class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">
-                                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                                            <path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
-                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" />
-                                        </svg>
-                                    </a>
-                                    <form method="POST" action="{{ route('ga.uniforms.stocks.destroy-group') }}"
-                                          onsubmit="return confirm('Hapus seluruh grup {{ $group->type }} ({{ $group->branch->name }}{{ $group->color ? ' / '.$group->color : '' }})?');">
-                                        @csrf
-                                        @method('DELETE')
-                                        <input type="hidden" name="uniform_type" value="{{ $group->type }}">
-                                        <input type="hidden" name="branch_id" value="{{ $group->branch->id }}">
-                                        <input type="hidden" name="color" value="{{ $group->color }}">
-                                        <button type="submit" title="Hapus grup ini"
-                                                class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:bg-red-50 hover:text-red-600">
+                                @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                                    <div class="flex items-center gap-1 shrink-0" onclick="event.stopPropagation()">
+                                        <a href="{{ route('ga.uniforms.stocks.create', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
+                                           title="Tambah ukuran baru untuk grup ini"
+                                           class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">
                                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                                                <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14M4 6h16M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                                <path d="M12 5v14M5 12h14" />
                                             </svg>
-                                        </button>
-                                    </form>
-                                </div>
+                                        </a>
+                                        <a href="{{ route('ga.uniforms.stocks.edit-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
+                                           title="Edit grup ini (Tipe Seragam/Outlet/Warna, dll — semua ukuran sekaligus)"
+                                           class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">
+                                            <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />
+                                                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5Z" />
+                                            </svg>
+                                        </a>
+                                        <form method="POST" action="{{ route('ga.uniforms.stocks.destroy-group') }}"
+                                              onsubmit="return confirm('Hapus seluruh grup {{ $group->type }} ({{ $group->branch->name }}{{ $group->color ? ' / '.$group->color : '' }})?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <input type="hidden" name="uniform_type" value="{{ $group->type }}">
+                                            <input type="hidden" name="branch_id" value="{{ $group->branch->id }}">
+                                            <input type="hidden" name="color" value="{{ $group->color }}">
+                                            <button type="submit" title="Hapus grup ini"
+                                                    class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-400 hover:bg-red-50 hover:text-red-600">
+                                                <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M6 6l1 14a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2l1-14M4 6h16M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @endif
                             </div>
 
                             <div class="grid grid-cols-2 gap-3 mt-2 pb-2 border-b border-gray-100 text-xs">

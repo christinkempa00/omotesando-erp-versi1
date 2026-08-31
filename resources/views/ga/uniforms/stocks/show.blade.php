@@ -8,16 +8,18 @@
                     <span class="ml-2 font-mono text-sm text-gray-400">{{ $stock->stock_code }}</span>
                 </h2>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('ga.uniforms.stocks.edit', $stock) }}"
-                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Edit</a>
-                <form method="POST" action="{{ route('ga.uniforms.stocks.destroy', $stock) }}"
-                      onsubmit="return confirm('Hapus varian ini? Semua riwayat movement ikut terhapus.')">
-                    @csrf
-                    @method('DELETE')
-                    <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-medium rounded-md hover:bg-red-100">Hapus</button>
-                </form>
-            </div>
+            @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ route('ga.uniforms.stocks.edit', $stock) }}"
+                       class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Edit</a>
+                    <form method="POST" action="{{ route('ga.uniforms.stocks.destroy', $stock) }}"
+                          onsubmit="return confirm('Hapus varian ini? Semua riwayat movement ikut terhapus.')">
+                        @csrf
+                        @method('DELETE')
+                        <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-medium rounded-md hover:bg-red-100">Hapus</button>
+                    </form>
+                </div>
+            @endif
         </div>
     </x-slot>
 
@@ -65,22 +67,23 @@
                 </div>
             </div>
 
-            {{-- Aksi cepat --}}
-            <div class="max-w-sm">
-                <div class="bg-white shadow-sm rounded-lg p-5">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Restock (+)</h3>
-                    <form method="POST" action="{{ route('ga.uniforms.stocks.restock', $stock) }}" class="space-y-2">
-                        @csrf
-                        <input type="number" name="quantity" min="1" required placeholder="Jumlah"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <input type="text" name="notes" placeholder="Catatan (opsional)"
-                               class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
-                        <button type="submit" class="w-full px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
-                            Tambah Stok
-                        </button>
-                    </form>
+            @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                <div class="max-w-sm">
+                    <div class="bg-white shadow-sm rounded-lg p-5">
+                        <h3 class="text-sm font-semibold text-gray-700 mb-3">Restock (+)</h3>
+                        <form method="POST" action="{{ route('ga.uniforms.stocks.restock', $stock) }}" class="space-y-2">
+                            @csrf
+                            <input type="number" name="quantity" min="1" required placeholder="Jumlah"
+                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <input type="text" name="notes" placeholder="Catatan (opsional)"
+                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <button type="submit" class="w-full px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
+                                Tambah Stok
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </div>
+            @endif
 
             {{-- Riwayat movement --}}
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">

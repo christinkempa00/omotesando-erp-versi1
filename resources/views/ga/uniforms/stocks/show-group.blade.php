@@ -8,19 +8,21 @@
                     <span class="ml-2 text-sm text-gray-400 font-normal">{{ $first->outletLabel() }}{{ $first->color ? ' / '.$first->color : '' }}</span>
                 </h2>
             </div>
-            <div class="flex flex-wrap items-center gap-2">
-                <a href="{{ route('ga.uniforms.stocks.edit-group', ['uniform_type' => $first->uniform_type, 'branch_id' => $first->branch_id, 'color' => $first->color]) }}"
-                   class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Edit Grup</a>
-                <form method="POST" action="{{ route('ga.uniforms.stocks.destroy-group') }}"
-                      onsubmit="return confirm('Hapus seluruh grup {{ $first->uniform_type }} ({{ $first->branch->name }}{{ $first->color ? ' / '.$first->color : '' }})? Semua ukuran &amp; riwayat movement-nya ikut terhapus.');">
-                    @csrf
-                    @method('DELETE')
-                    <input type="hidden" name="uniform_type" value="{{ $first->uniform_type }}">
-                    <input type="hidden" name="branch_id" value="{{ $first->branch_id }}">
-                    <input type="hidden" name="color" value="{{ $first->color }}">
-                    <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-medium rounded-md hover:bg-red-100">Hapus Grup</button>
-                </form>
-            </div>
+            @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                <div class="flex flex-wrap items-center gap-2">
+                    <a href="{{ route('ga.uniforms.stocks.edit-group', ['uniform_type' => $first->uniform_type, 'branch_id' => $first->branch_id, 'color' => $first->color]) }}"
+                       class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">Edit Grup</a>
+                    <form method="POST" action="{{ route('ga.uniforms.stocks.destroy-group') }}"
+                          onsubmit="return confirm('Hapus seluruh grup {{ $first->uniform_type }} ({{ $first->branch->name }}{{ $first->color ? ' / '.$first->color : '' }})? Semua ukuran &amp; riwayat movement-nya ikut terhapus.');">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" name="uniform_type" value="{{ $first->uniform_type }}">
+                        <input type="hidden" name="branch_id" value="{{ $first->branch_id }}">
+                        <input type="hidden" name="color" value="{{ $first->color }}">
+                        <button type="submit" class="px-4 py-2 bg-red-50 text-red-600 text-sm font-medium rounded-md hover:bg-red-100">Hapus Grup</button>
+                    </form>
+                </div>
+            @endif
         </div>
     </x-slot>
 
