@@ -18,15 +18,6 @@
     ];
 @endphp
 
-{{-- Font Inter khusus modul IT (scoped lewat kelas `font-it`, lihat
-     tailwind.config.js) — file ini satu-satunya partial IT yang pasti
-     ke-load di setiap halaman IT, jadi @import diletakkan di sini supaya
-     tidak perlu menyentuh <head> di layouts/app.blade.php yang dipakai
-     bersama modul lain. --}}
-<style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-</style>
-
 <aside
     class="font-it fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-gradient-to-b from-gold-950 to-gold-900 border-r border-gold-500/20 shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"

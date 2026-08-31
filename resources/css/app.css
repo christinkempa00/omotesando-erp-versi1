@@ -1,13 +1,29 @@
+/* Fase 1 restyle shell (restyle-shell) — Inter dulu di-load lewat @import
+   di it/partials/sidebar.blade.php (scoped ke modul IT). Sekarang font-sans
+   global = Inter (lihat tailwind.config.js), jadi @import dipindah ke sini
+   supaya ke-load di SEMUA halaman, bukan cuma IT. @import CSS wajib di
+   baris paling atas file, sebelum aturan lain apa pun (termasuk @tailwind). */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer components {
-    /* Kartu "gold/glass" modul IT (Kontrol Modul, Papan Kerja, Manajemen
-       User, dst) -- menggantikan pola literal bg-white rounded-xl
-       shadow-[...] yang diulang di tiap file. Cuma dipakai di
-       resources/views/it/**, tidak menimpa styling kartu modul lain. */
+    /* Kartu "gold/glass" — dulu IT-module-only, sekarang dipakai global
+       (Fase 1 restyle shell). Menggantikan pola literal bg-white rounded-xl
+       shadow-[...] yang diulang di tiap file. */
     .glass-panel {
         @apply bg-white/80 backdrop-blur-md border border-gold-500/20 rounded-xl shadow-[0_2px_8px_rgba(0,0,0,0.08)];
+    }
+
+    /* Item nav sidebar — pola gold/glass dipromosikan jadi komponen bersama
+       (Fase 1 restyle shell), meniru active-state yang sudah ada di
+       it/partials/sidebar.blade.php. */
+    .sidebar-nav-item {
+        @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition text-gold-200/80 hover:bg-gold-500/10;
+    }
+    .sidebar-nav-item-active {
+        @apply bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_0_12px_rgba(212,175,55,0.4)];
     }
 }
