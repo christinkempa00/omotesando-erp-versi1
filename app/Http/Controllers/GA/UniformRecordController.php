@@ -109,7 +109,7 @@ class UniformRecordController extends Controller
     {
         $query = UniformRecord::with(['branch', 'branchLocation', 'uniformStock', 'items']);
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $query->where('branch_id', $userBranch->id);
         }
 
@@ -137,7 +137,7 @@ class UniformRecordController extends Controller
     {
         $stocksQuery = UniformStock::with('branch')->where('available_stock', '>', 0);
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $stocksQuery->where('branch_id', $userBranch->id);
         }
 
@@ -179,7 +179,7 @@ class UniformRecordController extends Controller
         // lihat prinsip di plan "Tier akses per halaman". Kalau branch_location
         // yang tervalidasi ternyata bukan milik branch yang dipaksa ini
         // (mis. payload dimanipulasi), buang saja (nullable).
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $validated['branch_id'] = $userBranch->id;
             if (
                 ($validated['branch_location_id'] ?? null)
@@ -289,7 +289,7 @@ class UniformRecordController extends Controller
 
     public function show(Request $request, UniformRecord $record): View
     {
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             abort_unless($record->branch_id === $branch->id, 404);
         }
 
@@ -418,7 +418,7 @@ class UniformRecordController extends Controller
     {
         abort_unless($request->user()->canEdit(UserPagePermission::PAGE_UNIFORMS_RECORDS), 403);
 
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             abort_unless($record->branch_id === $branch->id, 404);
         }
 

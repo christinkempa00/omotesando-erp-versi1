@@ -59,6 +59,21 @@ class User extends Authenticatable
         return $this->belongsTo(Branch::class);
     }
 
+    /**
+     * Branch yang MEMBATASI data operasional user ini — cuma berlaku utk
+     * role Outlet. Staff role lain (GA/Head/dll) bisa saja py branch_id
+     * terisi (mis. penempatan kantor administratif), tapi itu BUKAN berarti
+     * data yang mereka lihat harus dibatasi ke branch itu — insiden nyata:
+     * staff GA dgn branch_id="Head Office" jadi cuma lihat data Head Office
+     * (nyaris kosong) begitu branch auto-scope diperkenalkan sblm guard
+     * role ini ada. Semua query branch-scoping HARUS lewat method ini,
+     * BUKAN langsung ->branch, supaya kasus ini tidak terulang.
+     */
+    public function scopingBranch(): ?Branch
+    {
+        return $this->hasRole(Role::OUTLET) ? $this->branch : null;
+    }
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'role_user');

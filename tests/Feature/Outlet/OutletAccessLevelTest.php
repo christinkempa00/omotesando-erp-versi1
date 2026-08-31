@@ -149,4 +149,34 @@ class OutletAccessLevelTest extends TestCase
         $gaRequest = GaRequest::firstOrFail();
         $this->assertSame($this->ownBranch->id, $gaRequest->branch_id);
     }
+
+    /**
+     * Regresi nyata di production: staff GA (Amanda) py branch_id terisi
+     * (penempatan kantor administratif "Head Office", BUKAN pembatasan
+     * operasional) — begitu branch auto-scope diperkenalkan tanpa cek role,
+     * dia jadi cuma lihat 0 dari 43 baris stok krn di-scope ke branch yg
+     * bukan outlet operasional. Fix: User::scopingBranch() cuma aktif utk
+     * role Outlet. Test ini mengunci supaya tidak terulang utk role lain.
+     */
+    public function test_ga_user_with_branch_id_still_sees_all_branches_data(): void
+    {
+        $ga = User::factory()->create(['branch_id' => $this->ownBranch->id]);
+        $ga->roles()->attach(Role::firstOrCreate(['name' => Role::GA]));
+        $ga->modules()->attach(Module::whereIn('key', [Module::ASSETS])->pluck('id'));
+
+        Asset::create([
+            'asset_code' => 'AST-OWN', 'name' => 'Aset Branch Sendiri', 'branch_id' => $this->ownBranch->id,
+            'status' => Asset::STATUS_BAGUS, 'quantity' => 1, 'created_by' => $ga->id,
+        ]);
+        Asset::create([
+            'asset_code' => 'AST-OTHER', 'name' => 'Aset Branch Lain', 'branch_id' => $this->otherBranch->id,
+            'status' => Asset::STATUS_BAGUS, 'quantity' => 1, 'created_by' => $ga->id,
+        ]);
+
+        $response = $this->actingAs($ga)->get('/ga/assets');
+
+        $response->assertOk();
+        $response->assertSee('Aset Branch Sendiri');
+        $response->assertSee('Aset Branch Lain');
+    }
 }

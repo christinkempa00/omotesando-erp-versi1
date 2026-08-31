@@ -20,7 +20,7 @@ class WorkLogController extends Controller
     {
         $query = WorkLog::with(['branch', 'branchLocation', 'attachments']);
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $query->where('branch_id', $userBranch->id);
         }
 
@@ -93,7 +93,7 @@ class WorkLogController extends Controller
         $workLog = new WorkLog($validated);
         $workLog->created_by = $request->user()->id;
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $workLog->branch_id = $userBranch->id;
         }
 
@@ -108,7 +108,7 @@ class WorkLogController extends Controller
 
     public function show(Request $request, WorkLog $worklog): View
     {
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             abort_unless($worklog->branch_id === $branch->id, 404);
         }
 

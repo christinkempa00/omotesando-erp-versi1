@@ -15,7 +15,7 @@ class OutletController extends Controller
     {
         // outlet.branch middleware sudah menjamin user->branch ada di
         // titik ini — lihat EnsureOutletHasBranch.
-        $branch = $request->user()->branch;
+        $branch = $request->user()->scopingBranch();
 
         return view('outlet.dashboard', [
             'branch' => $branch,

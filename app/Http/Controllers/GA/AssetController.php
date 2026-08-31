@@ -56,7 +56,7 @@ class AssetController extends Controller
         $asset->asset_code = Asset::generateAssetCode();
         $asset->created_by = $request->user()->id;
 
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             $asset->branch_id = $branch->id;
         }
 
@@ -77,7 +77,7 @@ class AssetController extends Controller
 
     public function show(Request $request, Asset $asset): View
     {
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             abort_unless($asset->branch_id === $branch->id, 404);
         }
 
@@ -211,7 +211,7 @@ class AssetController extends Controller
     {
         $query = Asset::with(['branch', 'branchLocation']);
 
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             $query->where('branch_id', $branch->id);
         }
 

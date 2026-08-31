@@ -18,7 +18,7 @@ class GaQuickRequestController extends Controller
 
         $validated = $request->validated();
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $validated['branch_id'] = $userBranch->id;
             if (
                 ($validated['branch_location_id'] ?? null)

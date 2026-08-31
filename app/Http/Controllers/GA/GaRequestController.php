@@ -64,7 +64,7 @@ class GaRequestController extends Controller
     public function create(Request $request): View
     {
         $branches = Branch::orderedOutlets(Branch::GA_OUTLETS);
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $branches = $branches->filter(fn (Branch $b) => $b->id === $userBranch->id)->values();
         }
 
@@ -88,7 +88,7 @@ class GaRequestController extends Controller
 
         // Branch = identitas user, dipaksa terlepas dari input form (lihat
         // prinsip di plan "Tier akses per halaman").
-        if ($userBranch = $user->branch) {
+        if ($userBranch = $user->scopingBranch()) {
             $validated['branch_id'] = $userBranch->id;
             if (
                 ($validated['branch_location_id'] ?? null)
@@ -150,7 +150,7 @@ class GaRequestController extends Controller
         $gaRequest->load(['items', 'attachments']);
 
         $branches = Branch::orderedOutlets(Branch::GA_OUTLETS);
-        if ($userBranch = $user->branch) {
+        if ($userBranch = $user->scopingBranch()) {
             $branches = $branches->filter(fn (Branch $b) => $b->id === $userBranch->id)->values();
         }
 
@@ -178,7 +178,7 @@ class GaRequestController extends Controller
         $intent = $validated['intent'];
         $requesterSignaturePath = $this->resolveRequesterSignaturePath($request, $validated);
 
-        if ($userBranch = $user->branch) {
+        if ($userBranch = $user->scopingBranch()) {
             $validated['branch_id'] = $userBranch->id;
             if (
                 ($validated['branch_location_id'] ?? null)

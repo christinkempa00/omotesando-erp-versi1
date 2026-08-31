@@ -36,7 +36,7 @@ class UniformStockController extends Controller
         //     grup ditampilkan sebagai satu kartu berisi baris per ukuran ---
         $stockQuery = UniformStock::with(['branch', 'branchLocation']);
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $stockQuery->where('branch_id', $userBranch->id);
         }
 
@@ -371,7 +371,7 @@ class UniformStockController extends Controller
 
     public function show(Request $request, UniformStock $stock): View
     {
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             abort_unless($stock->branch_id === $branch->id, 404);
         }
 
@@ -521,7 +521,7 @@ class UniformStockController extends Controller
             'color' => ['nullable', 'string'],
         ]);
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             abort_unless((int) $validated['branch_id'] === $userBranch->id, 404);
         }
 

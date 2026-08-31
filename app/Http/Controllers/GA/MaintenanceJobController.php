@@ -21,7 +21,7 @@ class MaintenanceJobController extends Controller
     {
         $query = MaintenanceJob::with(['asset', 'branch', 'branchLocation'])->latest('scheduled_date');
 
-        if ($userBranch = $request->user()->branch) {
+        if ($userBranch = $request->user()->scopingBranch()) {
             $query->where('branch_id', $userBranch->id);
         }
 
@@ -149,7 +149,7 @@ class MaintenanceJobController extends Controller
 
     public function show(Request $request, MaintenanceJob $maintenance): View
     {
-        if ($branch = $request->user()->branch) {
+        if ($branch = $request->user()->scopingBranch()) {
             abort_unless($maintenance->branch_id === $branch->id, 404);
         }
 

@@ -8,17 +8,19 @@ use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Guard khusus grup route outlet.* — controller yang dipakai bersama GA
- * (lihat routes/web.php) cuma scoping query ke branch KALAU user->branch
- * ada (no-op utk staff GA/HQ yang memang tidak punya branch_id). Tanpa
- * guard ini, akun Outlet yang lupa di-set branch_id oleh IT akan lolos
- * middleware role:Outlet lalu diam-diam melihat data SEMUA outlet (branch
- * scoping-nya jadi no-op juga) — bukan 403, bukan kosong, tapi bocor.
+ * (lihat routes/web.php) cuma scoping query ke branch KALAU
+ * User::scopingBranch() ada (no-op utk role lain, termasuk GA/Head yang
+ * kebetulan py branch_id terisi utk keperluan lain — lihat docblock method
+ * itu). Tanpa guard ini, akun Outlet yang lupa di-set branch_id oleh IT
+ * akan lolos middleware role:Outlet lalu diam-diam melihat data SEMUA
+ * outlet (branch scoping-nya jadi no-op juga) — bukan 403, bukan kosong,
+ * tapi bocor.
  */
 class EnsureOutletHasBranch
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (! $request->user()?->branch) {
+        if (! $request->user()?->scopingBranch()) {
             abort(403, 'Akun Anda belum terhubung ke outlet manapun. Hubungi IT untuk mengatur ini.');
         }
 
