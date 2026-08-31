@@ -25,7 +25,7 @@ class StoreUniformRecordRequest extends FormRequest
                 ),
             ],
             'issue_date' => ['required', 'date'],
-            'issue_photo' => ['required', 'image', 'max:4096'],
+            'issue_photo' => ['nullable', 'image', 'max:4096'],
             'signature_data' => ['nullable', 'string'],
             'issued_by_signature_data' => ['nullable', 'string'],
             'issue_notes' => ['nullable', 'string', 'max:1000'],
@@ -40,7 +40,6 @@ class StoreUniformRecordRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'issue_photo.required' => 'Foto serah terima wajib diunggah sebagai bukti pengambilan barang.',
             'issue_photo.image' => 'Foto serah terima harus berupa file gambar.',
             'items.required' => 'Minimal harus ada 1 item.',
             'items.min' => 'Minimal harus ada 1 item.',
