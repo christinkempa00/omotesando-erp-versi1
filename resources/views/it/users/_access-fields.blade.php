@@ -40,19 +40,10 @@
 
         <div>
             <h3 class="text-sm font-semibold text-gray-700 mb-1">Akses Modul <span class="text-red-500">*</span></h3>
-            <p class="text-xs text-gray-400 mb-3">
-                Bebas diubah, tidak harus ikut role — centang role di kiri dulu supaya modulnya muncul di sini, atau
-                cari langsung kalau modul yang dicari belum tampil. Untuk halaman yang punya tier, pilih "Lihat saja"
-                (tanpa tombol tambah/edit/hapus) atau "Bisa edit".
-            </p>
-            <label class="flex items-center gap-2 mb-3 text-xs text-gray-500">
-                <input type="checkbox" x-model="showAllModules" class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
-                Tampilkan semua modul (jangan filter per role)
-            </label>
             <div class="space-y-3">
                 @foreach ($modules as $module)
                     @php $pages = $pagesByModuleKey[$module->key] ?? []; @endphp
-                    <div x-show="showAllModules || moduleVisible('{{ $module->id }}')" x-cloak>
+                    <div x-show="moduleVisible('{{ $module->id }}')" x-cloak>
                         <label class="flex items-center gap-2 text-sm text-gray-700">
                             <input type="checkbox" name="modules[]" value="{{ $module->id }}"
                                    :checked="modules.includes('{{ $module->id }}')"
@@ -116,7 +107,6 @@
                 pageAccess: { ...pageAccess },
                 pageKeysByModuleId: pageKeysByModuleId,
                 outletRoleId: outletRoleId,
-                showAllModules: false,
                 /**
                  * Modul tampil kalau: (a) jadi default salah satu role yang
                  * SEDANG dicentang, ATAU (b) modul ini sudah tercentang utk
