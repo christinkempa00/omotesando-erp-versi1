@@ -18,6 +18,7 @@ class UserManagementStoreTest extends TestCase
     {
         $it = User::factory()->create();
         $it->roles()->attach(Role::create(['name' => Role::IT]));
+        $it->modules()->attach(Module::firstOrCreate(['key' => Module::IT_USER_MANAGEMENT], ['label' => 'Manajemen User', 'is_active' => true]));
 
         $gudangRole = Role::create(['name' => 'Gudang']);
 
@@ -59,6 +60,7 @@ class UserManagementStoreTest extends TestCase
     {
         $it = User::factory()->create();
         $it->roles()->attach(Role::create(['name' => Role::IT]));
+        $it->modules()->attach(Module::firstOrCreate(['key' => Module::IT_USER_MANAGEMENT], ['label' => 'Manajemen User', 'is_active' => true]));
 
         $outletRole = Role::create(['name' => Role::OUTLET]);
         $requestsModule = Module::create(['key' => Module::REQUESTS, 'label' => 'Pengajuan', 'is_active' => true]);

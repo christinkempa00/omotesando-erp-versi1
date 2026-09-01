@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\IT;
 
+use App\Models\Module;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -11,11 +12,23 @@ class UserManagementAccessTest extends TestCase
 {
     use RefreshDatabase;
 
+    /**
+     * Manajemen User sekarang ikut digerbang module_user (lihat migration
+     * 2026_09_01_000001_add_it_modules_and_backfill_access) di atas role:IT
+     * yang sudah ada — user IT "provisioned dgn benar" di test ini juga
+     * dikasih modulnya, supaya test tetap mensimulasikan akun IT nyata.
+     */
     private function makeUserWithRole(string $roleName): User
     {
         $role = Role::create(['name' => $roleName]);
         $user = User::factory()->create();
         $user->roles()->attach($role);
+
+        $module = Module::firstOrCreate(
+            ['key' => Module::IT_USER_MANAGEMENT],
+            ['label' => 'Manajemen User', 'is_active' => true]
+        );
+        $user->modules()->attach($module);
 
         return $user;
     }

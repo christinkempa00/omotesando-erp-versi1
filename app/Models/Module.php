@@ -29,6 +29,16 @@ class Module extends Model
     public const WORK_LOG = 'work_log';
     public const OUTLET_MONITORING = 'outlet';
 
+    /**
+     * Halaman khusus IT (bukan modul GA) — ikut sistem toggle module_user
+     * yang sama supaya bisa diatur per-user lewat form Manajemen User,
+     * persis seperti modul GA/Head/Outlet. Lihat migration
+     * 2026_09_01_000001_add_it_modules.php utk seed & backfill akun IT lama.
+     */
+    public const IT_BOARD = 'it_board';
+    public const IT_MODULE_CONTROL = 'it_module_control';
+    public const IT_USER_MANAGEMENT = 'it_user_management';
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'module_role');

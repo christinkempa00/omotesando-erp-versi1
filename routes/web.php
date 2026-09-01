@@ -29,6 +29,7 @@ use App\Http\Controllers\IT\ItTaskChecklistController;
 use App\Http\Controllers\IT\ItTaskCommentController;
 use App\Http\Controllers\IT\ItTaskLabelController;
 use App\Http\Controllers\IT\UserManagementController;
+use App\Http\Controllers\IT\QuickCreateController;
 use App\Http\Controllers\Outlet\OutletController;
 
 // Dulu langsung view('welcome') bawaan Laravel (halaman dev "Let's get
@@ -245,37 +246,54 @@ Route::middleware(['auth', 'role:IT'])
     ->prefix('it')
     ->name('it.')
     ->group(function () {
-        Route::get('modules', [ModuleControlController::class, 'index'])->name('modules.index');
-        Route::post('modules/{systemModule}/toggle', [ModuleControlController::class, 'toggle'])->name('modules.toggle');
+        // Sama seperti modul GA/Head/Outlet: role:IT di induk grup cuma
+        // syarat MINIMAL, akses per halaman tetap ditentukan module_user
+        // (lihat ModuleAccessMiddleware) supaya form Manajemen User bisa
+        // benar-benar mengatur halaman IT mana yang boleh diakses per akun,
+        // termasuk Manajemen User itu sendiri (lihat guard self-lockout di
+        // UserManagementController::update()).
+        Route::middleware('module:'.Module::IT_MODULE_CONTROL)->group(function () {
+            Route::get('modules', [ModuleControlController::class, 'index'])->name('modules.index');
+            Route::post('modules/{systemModule}/toggle', [ModuleControlController::class, 'toggle'])->name('modules.toggle');
+        });
 
         // Papan Kerja Kanban — bug fix, pengembangan fitur, dst (lihat
         // ItBoardController). Semua endpoint task/checklist/comment JSON,
         // dipanggil via fetch dari board Kanban (drag & drop + modal detail).
-        Route::get('board', [ItBoardController::class, 'index'])->name('board.index');
+        Route::middleware('module:'.Module::IT_BOARD)->group(function () {
+            Route::get('board', [ItBoardController::class, 'index'])->name('board.index');
 
-        Route::post('tasks', [ItTaskController::class, 'store'])->name('tasks.store');
-        Route::get('tasks/{itTask}', [ItTaskController::class, 'show'])->name('tasks.show');
-        Route::patch('tasks/{itTask}', [ItTaskController::class, 'update'])->name('tasks.update');
-        Route::delete('tasks/{itTask}', [ItTaskController::class, 'destroy'])->name('tasks.destroy');
+            Route::post('tasks', [ItTaskController::class, 'store'])->name('tasks.store');
+            Route::get('tasks/{itTask}', [ItTaskController::class, 'show'])->name('tasks.show');
+            Route::patch('tasks/{itTask}', [ItTaskController::class, 'update'])->name('tasks.update');
+            Route::delete('tasks/{itTask}', [ItTaskController::class, 'destroy'])->name('tasks.destroy');
 
-        Route::post('tasks/{itTask}/checklist', [ItTaskChecklistController::class, 'store'])->name('tasks.checklist.store');
-        Route::patch('tasks/{itTask}/checklist/{item}', [ItTaskChecklistController::class, 'update'])->name('tasks.checklist.update');
-        Route::delete('tasks/{itTask}/checklist/{item}', [ItTaskChecklistController::class, 'destroy'])->name('tasks.checklist.destroy');
+            Route::post('tasks/{itTask}/checklist', [ItTaskChecklistController::class, 'store'])->name('tasks.checklist.store');
+            Route::patch('tasks/{itTask}/checklist/{item}', [ItTaskChecklistController::class, 'update'])->name('tasks.checklist.update');
+            Route::delete('tasks/{itTask}/checklist/{item}', [ItTaskChecklistController::class, 'destroy'])->name('tasks.checklist.destroy');
 
-        Route::post('tasks/{itTask}/comments', [ItTaskCommentController::class, 'store'])->name('tasks.comments.store');
+            Route::post('tasks/{itTask}/comments', [ItTaskCommentController::class, 'store'])->name('tasks.comments.store');
 
-        Route::get('labels', [ItTaskLabelController::class, 'index'])->name('labels.index');
-        Route::post('labels', [ItTaskLabelController::class, 'store'])->name('labels.store');
+            Route::get('labels', [ItTaskLabelController::class, 'index'])->name('labels.index');
+            Route::post('labels', [ItTaskLabelController::class, 'store'])->name('labels.store');
+        });
 
         // Manajemen User — satu-satunya jalur bikin akun baru (/register
         // publik sudah dihapus, lihat routes/auth.php). Lihat
         // UserManagementController utk detail module_user vs module_role.
-        Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
-        Route::get('users/create', [UserManagementController::class, 'create'])->name('users.create');
-        Route::post('users', [UserManagementController::class, 'store'])->name('users.store');
-        Route::get('users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
-        Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
-        Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+        // Quick-create Divisi/Branch (dropdown form user) ikut digrup sini,
+        // karena cuma dipakai dari form ini.
+        Route::middleware('module:'.Module::IT_USER_MANAGEMENT)->group(function () {
+            Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
+            Route::get('users/create', [UserManagementController::class, 'create'])->name('users.create');
+            Route::post('users', [UserManagementController::class, 'store'])->name('users.store');
+            Route::get('users/{user}/edit', [UserManagementController::class, 'edit'])->name('users.edit');
+            Route::put('users/{user}', [UserManagementController::class, 'update'])->name('users.update');
+            Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+
+            Route::post('divisions', [QuickCreateController::class, 'division'])->name('divisions.store');
+            Route::post('branches', [QuickCreateController::class, 'branch'])->name('branches.store');
+        });
     });
 
 require __DIR__.'/auth.php';

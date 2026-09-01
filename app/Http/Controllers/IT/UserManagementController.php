@@ -90,7 +90,7 @@ class UserManagementController extends Controller
         ]);
 
         $user->roles()->sync($validated['roles']);
-        $user->modules()->sync($validated['modules'] ?? []);
+        $user->modules()->sync($this->moduleIdsGuardingSelfLockout($request, $user, $validated['modules'] ?? []));
         $this->syncPageAccess($user, $validated['page_access'] ?? []);
 
         ActivityLog::record($request->user(), 'user.updated', $user, "Memperbarui akun {$user->name}", [
@@ -132,6 +132,32 @@ class UserManagementController extends Controller
     }
 
     /**
+     * Manajemen User ikut ditoggle spt modul lain (lihat migration
+     * 2026_09_01_000001_add_it_modules_and_backfill_access), termasuk untuk
+     * akun sendiri — supaya IT tidak bisa tidak sengaja mencabut akses ke
+     * satu-satunya halaman yang bisa memperbaikinya, form edit akun SENDIRI
+     * selalu memaksa modul ini tetap tercentang apa pun yang dikirim.
+     * Akun lain tidak kena aturan ini, bebas sepenuhnya sesuai pilihan IT.
+     *
+     * @param  array<int, int|string>  $moduleIds
+     * @return array<int, int|string>
+     */
+    private function moduleIdsGuardingSelfLockout(Request $request, User $user, array $moduleIds): array
+    {
+        if ($user->id !== $request->user()->id) {
+            return $moduleIds;
+        }
+
+        $userManagementId = Module::where('key', Module::IT_USER_MANAGEMENT)->value('id');
+
+        if ($userManagementId !== null && ! in_array((string) $userManagementId, array_map('strval', $moduleIds), true)) {
+            $moduleIds[] = $userManagementId;
+        }
+
+        return $moduleIds;
+    }
+
+    /**
      * @param  array<string, string>  $pageAccess  page_key => 'view'|'edit'
      */
     private function syncPageAccess(User $user, array $pageAccess): void
@@ -164,7 +190,11 @@ class UserManagementController extends Controller
         return [
             'roles' => Role::orderBy('name')->get(),
             'divisions' => Division::orderBy('name')->get(),
-            'branches' => Branch::orderedOutlets(),
+            // SEMUA branch aktif (bukan Branch::orderedOutlets() yang dikurasi
+            // utk form operasional GA) — form ini administratif, dan branch
+            // baru yang ditambah IT lewat quick-create (lihat
+            // QuickCreateController) tidak akan pernah masuk daftar kurasi itu.
+            'branches' => Branch::where('is_active', true)->orderBy('name')->get(),
             'modules' => Module::orderBy('label')->get(),
             'roleModuleDefaults' => $roleModuleDefaults,
             'pagesByModuleKey' => UserPagePermission::pagesByModuleKey(),
