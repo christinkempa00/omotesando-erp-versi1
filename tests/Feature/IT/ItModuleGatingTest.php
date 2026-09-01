@@ -172,4 +172,31 @@ class ItModuleGatingTest extends TestCase
         $branch = Branch::where('name', 'Zodiac Baru')->firstOrFail();
         $this->assertSame('ZODIACBARU1', $branch->code);
     }
+
+    /**
+     * Migrasi 2026_09_01_000002_link_head_outlet_roles_to_ga_modules —
+     * sebelum ini, module_role cuma menghubungkan GA/Admin ke 5 modul GA,
+     * padahal Head & Outlet SAMA-SAMA butuh (dipakai form Manajemen User
+     * utk memfilter tampilan Akses Modul per role yg dicentang).
+     */
+    public function test_head_and_outlet_roles_are_linked_to_ga_modules(): void
+    {
+        $head = Role::create(['name' => Role::HEAD]);
+        $outlet = Role::create(['name' => Role::OUTLET]);
+
+        $gaModuleKeys = [Module::REQUESTS, Module::ASSETS, Module::UNIFORMS, Module::MAINTENANCE, Module::WORK_LOG];
+        foreach ($gaModuleKeys as $key) {
+            Module::firstOrCreate(['key' => $key], ['label' => $key, 'is_active' => true]);
+        }
+
+        $migration = require database_path('migrations/2026_09_01_000002_link_head_outlet_roles_to_ga_modules.php');
+        $migration->up();
+
+        $moduleIds = Module::whereIn('key', $gaModuleKeys)->pluck('id');
+
+        foreach ([$head, $outlet] as $role) {
+            $linked = DB::table('module_role')->where('role_id', $role->id)->pluck('module_id');
+            $this->assertEqualsCanonicalizing($moduleIds->all(), $linked->all());
+        }
+    }
 }

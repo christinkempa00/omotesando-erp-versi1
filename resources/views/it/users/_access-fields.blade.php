@@ -23,7 +23,7 @@
         <div>
             <h3 class="text-sm font-semibold text-gray-700 mb-1">Role <span class="text-red-500">*</span></h3>
             <p class="text-xs text-gray-400 mb-3">
-                Dipakai untuk approval (tidak berubah). Memilih role akan menyarankan modul default di sebelah kanan.
+                Dipakai untuk approval (tidak berubah). Modul di sebelah kanan menyesuaikan otomatis dgn role yang dicentang di sini.
             </p>
             <div class="space-y-2">
                 @foreach ($roles as $role)
@@ -41,13 +41,18 @@
         <div>
             <h3 class="text-sm font-semibold text-gray-700 mb-1">Akses Modul <span class="text-red-500">*</span></h3>
             <p class="text-xs text-gray-400 mb-3">
-                Ini yang menentukan menu/halaman yang muncul untuk user ini, bebas diubah, tidak harus ikut role.
-                Untuk halaman yang punya tier, pilih "Lihat saja" (tanpa tombol tambah/edit/hapus) atau "Bisa edit".
+                Bebas diubah, tidak harus ikut role — centang role di kiri dulu supaya modulnya muncul di sini, atau
+                cari langsung kalau modul yang dicari belum tampil. Untuk halaman yang punya tier, pilih "Lihat saja"
+                (tanpa tombol tambah/edit/hapus) atau "Bisa edit".
             </p>
+            <label class="flex items-center gap-2 mb-3 text-xs text-gray-500">
+                <input type="checkbox" x-model="showAllModules" class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                Tampilkan semua modul (jangan filter per role)
+            </label>
             <div class="space-y-3">
                 @foreach ($modules as $module)
                     @php $pages = $pagesByModuleKey[$module->key] ?? []; @endphp
-                    <div>
+                    <div x-show="showAllModules || moduleVisible('{{ $module->id }}')" x-cloak>
                         <label class="flex items-center gap-2 text-sm text-gray-700">
                             <input type="checkbox" name="modules[]" value="{{ $module->id }}"
                                    :checked="modules.includes('{{ $module->id }}')"
@@ -111,6 +116,20 @@
                 pageAccess: { ...pageAccess },
                 pageKeysByModuleId: pageKeysByModuleId,
                 outletRoleId: outletRoleId,
+                showAllModules: false,
+                /**
+                 * Modul tampil kalau: (a) jadi default salah satu role yang
+                 * SEDANG dicentang, ATAU (b) modul ini sudah tercentang utk
+                 * user ini (supaya modul yang sengaja diberi manual di luar
+                 * role tidak "hilang" dari tampilan pas buka form edit).
+                 */
+                moduleVisible(moduleId) {
+                    moduleId = String(moduleId);
+                    if (this.modules.includes(moduleId)) {
+                        return true;
+                    }
+                    return this.roles.some((roleId) => (this.defaults[roleId] || []).map(String).includes(moduleId));
+                },
                 toggleRole(roleId) {
                     roleId = String(roleId);
                     const idx = this.roles.indexOf(roleId);
