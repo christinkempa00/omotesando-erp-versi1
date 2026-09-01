@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-ink leading-tight">
                 Work Log
             </h2>
             <a href="{{ route('ga.worklogs.create') }}"
-               class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+               class="inline-flex items-center btn-gold">
                 Buat Work Log
             </a>
         </div>
@@ -24,7 +24,7 @@
             <x-filter-bar :action="route('ga.worklogs.index')" :search-value="$search" search-placeholder="Nama teknisi..." :reset-url="route('ga.worklogs.index')">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         <option value="">Semua Outlet</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>
@@ -40,20 +40,20 @@
                     <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Tanggal Pengerjaan</p>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="date" name="date_from" value="{{ $dateFrom }}" placeholder="Dari"
-                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         <input type="date" name="date_to" value="{{ $dateTo }}" placeholder="Sampai"
-                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                     </div>
                 </div>
             </x-filter-bar>
 
-            <div class="bg-white shadow-sm rounded-lg p-6">
+            <div class="glass-panel p-6">
                 <h3 class="text-sm font-semibold text-gray-700">Distribusi Pekerjaan per Teknisi</h3>
                 <p class="text-xs text-gray-400 mb-4">Berdasarkan filter yang diterapkan di atas.</p>
                 <x-donut-chart :data="$technicianByCount" :labels="$technicianLabels" :total="$technicianTotal" size="w-28 h-28" />
             </div>
 
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div class="overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-200">
                     <thead class="bg-gray-50">
@@ -100,7 +100,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm" onclick="event.stopPropagation()">
                                     <div class="flex items-center justify-end gap-3">
-                                        <a href="{{ route('ga.worklogs.edit', $workLog) }}" title="Edit" class="text-indigo-600 hover:text-indigo-900">
+                                        <a href="{{ route('ga.worklogs.edit', $workLog) }}" title="Edit" class="text-gold-600 hover:text-gold-700">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7"/>
                                                 <path d="M18.5 2.5a1.71 1.71 0 0 1 2 2L12 13l-4 1 1-4Z"/>
