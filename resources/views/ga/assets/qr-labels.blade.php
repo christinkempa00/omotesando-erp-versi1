@@ -3,12 +3,12 @@
         <div class="flex items-start justify-between">
             <div>
                 <x-back-link :href="route('ga.assets.index')" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-ink leading-tight">
                     Cetak Label QR ({{ $assets->count() }} aset)
                 </h2>
             </div>
             <div class="print:hidden flex items-center gap-3">
-                <select id="qr-size-select" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></select>
+                <select id="qr-size-select" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500"></select>
                 <button type="button" id="qr-download-all-btn" class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-emerald-700">
                     Download Semua (PNG)
                 </button>
@@ -20,7 +20,7 @@
     <div class="py-8 print:py-0">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 print:max-w-none print:px-0">
             @if ($assets->isEmpty())
-                <div class="bg-white shadow-sm rounded-lg p-8 text-center text-gray-400">
+                <div class="glass-panel p-8 text-center text-gray-400">
                     Tidak ada aset yang cocok untuk dicetak labelnya.
                 </div>
             @else
