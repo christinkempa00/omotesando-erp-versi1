@@ -26,20 +26,16 @@ export default {
     theme: {
         extend: {
             fontFamily: {
-                sans: ['Plus Jakarta Sans', ...defaultTheme.fontFamily.sans],
+                // Fase 1 restyle shell (restyle-shell) — Inter dipromosikan
+                // jadi font-sans GLOBAL (dulu Plus Jakarta Sans, gold/glass
+                // scoped ke modul IT lewat font-it). `font-it` dipensiunkan
+                // di sini — Inter sudah global, tidak perlu class terpisah.
+                sans: ['Inter', ...defaultTheme.fontFamily.sans],
                 mono: ['JetBrains Mono', ...defaultTheme.fontFamily.mono],
-                // Scoped to the IT module only (`font-it`) — mirrors the
-                // look of the native PHP IT system. Loaded via @import in
-                // it/partials/sidebar.blade.php since the shared
-                // layouts/app.blade.php <head> can't be touched for this.
-                // Global `font-sans` above stays Plus Jakarta Sans.
-                it: ['Inter', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                // IT-module-only accent ("gold/glass" look ported from the
-                // native PHP IT system) — additive alongside ink/accent
-                // above, not a replacement. Only used inside
-                // resources/views/it/**.
+                // Fase 1 restyle shell — gold/glass dipromosikan jadi token
+                // GLOBAL (dulu IT-module-only, skala 50-950 tidak berubah).
                 gold: {
                     50: '#fdf8ec',
                     100: '#faefd0',
@@ -62,6 +58,10 @@ export default {
                     DEFAULT: oklch('23%', '0.02', '75'),
                     muted: oklch('50%', '0.02', '75'),
                 },
+                // LEGACY (Fase 1 restyle shell, restyle-shell) — accent/brass
+                // digantikan gold sebagai aksen global. Belum dihapus krn
+                // masih dirujuk di view lama yang belum di-restyle per modul
+                // (Fase 2+). Pensiunkan bertahap seiring tiap modul selesai.
                 accent: {
                     DEFAULT: oklch('58%', '0.14', '40'),
                     dark: oklch('48%', '0.13', '40'),

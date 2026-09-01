@@ -12,17 +12,38 @@
                  buat dilihat sekilas (bukan breakdown kondisi/status, itu
                  sudah ada di section detail di bawah). --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
-                <div class="bg-white border border-hairline rounded-xl p-4 flex flex-col">
-                    <p class="text-xs font-semibold text-ink-muted">Total Aset</p>
-                    <p class="text-2xl font-extrabold font-mono text-ink mt-auto">{{ $assetTotal }}</p>
+                <div class="stat-card">
+                    <span class="stat-icon">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="7" width="16" height="13" rx="1.5" /><path d="M4 7l2-3h12l2 3" /><path d="M10 11h4" />
+                        </svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold text-ink-muted">Total Aset</p>
+                        <p class="text-2xl font-extrabold font-mono text-ink">{{ $assetTotal }}</p>
+                    </div>
                 </div>
-                <div class="bg-white border border-hairline rounded-xl p-4 flex flex-col">
-                    <p class="text-xs font-semibold text-ink-muted">Total Pengajuan</p>
-                    <p class="text-2xl font-extrabold font-mono text-ink mt-auto">{{ $gaRequestTotal }}</p>
+                <div class="stat-card">
+                    <span class="stat-icon">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="6" y="4" width="12" height="16" rx="2" /><path d="M9 4V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v1" /><path d="M9 10h6M9 14h6M9 18h3" />
+                        </svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold text-ink-muted">Total Pengajuan</p>
+                        <p class="text-2xl font-extrabold font-mono text-ink">{{ $gaRequestTotal }}</p>
+                    </div>
                 </div>
-                <div class="bg-white border border-hairline rounded-xl p-4 flex flex-col">
-                    <p class="text-xs font-semibold text-ink-muted">Total Biaya Pemeliharaan</p>
-                    <p class="text-xl font-extrabold font-mono text-ink mt-auto">Rp {{ number_format($totalMaintenanceCost, 0, ',', '.') }}</p>
+                <div class="stat-card">
+                    <span class="stat-icon">
+                        <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 6.5a4 4 0 0 0-5.6 4.9L4 16.3V20h3.7l4.9-4.9a4 4 0 0 0 4.9-5.6l-2.6 2.6-2-2 2.6-2.6Z" />
+                        </svg>
+                    </span>
+                    <div class="min-w-0">
+                        <p class="text-xs font-semibold text-ink-muted">Total Biaya Pemeliharaan</p>
+                        <p class="text-xl font-extrabold font-mono text-ink">Rp {{ number_format($totalMaintenanceCost, 0, ',', '.') }}</p>
+                    </div>
                 </div>
             </div>
 
@@ -77,7 +98,7 @@
             <div class="bg-white shadow-sm rounded-lg overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700">Jadwal Pemeliharaan Mendatang</h3>
-                    <a href="{{ route('ga.maintenance.create') }}" class="text-sm text-indigo-600 hover:text-indigo-800">Buat Pemeliharaan</a>
+                    <a href="{{ route('ga.maintenance.create') }}" class="btn-gold">Buat Pemeliharaan</a>
                 </div>
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
