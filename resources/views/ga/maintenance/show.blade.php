@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div>
                 <x-back-link :href="route('ga.maintenance.index')" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-ink leading-tight">
                     {{ $job->title }}
                     <span class="ml-2 font-mono text-sm text-gray-400">{{ $job->job_code }}</span>
                 </h2>
@@ -31,7 +31,7 @@
             @endif
 
             {{-- Ringkasan status --}}
-            <div class="bg-white shadow-sm rounded-lg p-6">
+            <div class="glass-panel p-6">
                 <div class="flex flex-wrap items-center gap-3 mb-4">
                     <span class="inline-flex px-3 py-1 rounded-full text-sm font-medium {{ \App\Models\GA\MaintenanceJob::statusBadgeColor($job->status) }}">
                         {{ $statusLabels[$job->status] ?? $job->status }}
@@ -50,7 +50,7 @@
                         <dt class="text-gray-500">Aset</dt>
                         <dd class="text-gray-800 font-medium">
                             @if ($job->asset)
-                                <a href="{{ route('ga.assets.show', $job->asset) }}" class="text-indigo-600 hover:underline">
+                                <a href="{{ route('ga.assets.show', $job->asset) }}" class="text-gold-600 hover:underline">
                                     {{ $job->asset->asset_code }} — {{ $job->asset->name }}
                                 </a>
                             @else — @endif
@@ -96,7 +96,7 @@
 
             {{-- Checklist --}}
             @if (!empty($job->checklist))
-                <div class="bg-white shadow-sm rounded-lg p-6">
+                <div class="glass-panel p-6">
                     <div class="flex items-center justify-between mb-3">
                         <h3 class="font-medium text-gray-800">Checklist</h3>
                         <span class="text-sm text-gray-500">{{ $job->checklistProgress() }}% selesai</span>
@@ -131,12 +131,12 @@
                     @endif
                 </div>
             @else
-                <div class="bg-white shadow-sm rounded-lg p-6">
+                <div class="glass-panel p-6">
                     <h3 class="font-medium text-gray-800 mb-3">Tandai Selesai</h3>
                     <form method="POST" action="{{ route('ga.maintenance.complete', $job) }}">
                         @csrf
                         <textarea name="completion_notes" rows="2" placeholder="Catatan penyelesaian (opsional)"
-                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 text-sm mb-3"></textarea>
+                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm mb-3"></textarea>
                         <button type="submit"
                                 class="inline-flex items-center px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                             Selesai (Complete)
