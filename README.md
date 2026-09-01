@@ -10,6 +10,15 @@ Catatan perubahan per tanggal — detail lengkap tiap fitur tetap ada di
 "Daftar Modul" & "Alur Kerja per Modul" di bawah, bagian ini cuma ringkasan
 kapan sesuatu berubah.
 
+- **01/09/2026** — **Role "Admin" dihapus dari sistem** — bukan role bisnis
+  nyata spt GA/Head/IT/Outlet (tidak py portal/dashboard sendiri), cuma
+  flag "bypass semua" teknis yang ditempel di banyak tempat inti
+  (ModuleAccessMiddleware, `User::canEdit()`, CheckModuleMaintenance,
+  `GaRequestController`, RoleHomeResolver, route `/dashboard` & `ga.*`).
+  Dihapus atas permintaan eksplisit setelah dikonfirmasi tidak dipakai
+  staf mana pun. Sisa role skrg: **GA, Head, IT, Outlet**. Akun seed test
+  `admin@omotesando.test` ikut dihapus (scaffolding, bukan staf sungguhan)
+  — role/akun GA tidak tersentuh sama sekali.
 - **01/09/2026** — **Polish Manajemen User (IT) + identitas Divisi per akun**
   — (1) **Halaman khusus IT ikut sistem module_user**: Papan Kerja Kanban,
   Kontrol Modul, dan Manajemen User sendiri sekarang digerbang per-user
