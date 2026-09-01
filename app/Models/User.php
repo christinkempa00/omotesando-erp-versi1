@@ -120,4 +120,24 @@ class User extends Authenticatable
 
         return ($level ?? UserPagePermission::ACCESS_EDIT) === UserPagePermission::ACCESS_EDIT;
     }
+
+    /**
+     * Teks identitas akun ini, ditampilkan di kiri-atas sidebar & topbar
+     * mobile (lihat layouts/app.blade.php & partials/sidebar.blade.php tiap
+     * portal). Divisi (diatur IT lewat Manajemen User) jadi sumber utama;
+     * kalau kosong, jatuh ke nama branch utk role Outlet (perilaku lama yang
+     * dipertahankan), lalu ke nama role sbg fallback terakhir.
+     */
+    public function identityLabel(): string
+    {
+        if ($this->division) {
+            return $this->division->name;
+        }
+
+        if ($this->hasRole(Role::OUTLET) && $this->branch) {
+            return $this->branch->name;
+        }
+
+        return $this->roles->pluck('name')->join(' & ') ?: 'User';
+    }
 }

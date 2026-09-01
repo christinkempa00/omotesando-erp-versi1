@@ -14,8 +14,18 @@
                autocomplete="new-password"
                class="flex-1 px-3.5 py-2.5 border border-gray-300 rounded-lg focus:border-gold-500 focus:ring-2 focus:ring-gold-500 font-mono text-sm">
         <button type="button" @click="visible = !visible"
-                class="px-3 py-2 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                x-text="visible ? 'Sembunyikan' : 'Lihat'"></button>
+                class="px-3 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                :aria-label="visible ? 'Sembunyikan password' : 'Lihat password'"
+                :title="visible ? 'Sembunyikan password' : 'Lihat password'">
+            <svg x-show="!visible" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" />
+            </svg>
+            <svg x-show="visible" x-cloak class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M3 3l18 18" /><path d="M10.58 10.58a2 2 0 0 0 2.83 2.83" />
+                <path d="M9.88 4.24A9.1 9.1 0 0 1 12 4c6.5 0 10 7 10 7a13.2 13.2 0 0 1-1.67 2.68" />
+                <path d="M6.61 6.61A13.5 13.5 0 0 0 2 11s3.5 7 10 7a9.1 9.1 0 0 0 4.16-1.02" />
+            </svg>
+        </button>
         <button type="button" @click="copy()" :disabled="!password"
                 class="px-3 py-2 text-xs font-medium border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 disabled:opacity-40"
                 x-text="copied ? 'Tersalin!' : 'Copy'"></button>

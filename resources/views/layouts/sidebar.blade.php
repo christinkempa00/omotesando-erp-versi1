@@ -84,7 +84,7 @@
             </span>
             <span class="min-w-0">
                 <span class="block text-ink font-semibold text-sm truncate">Allez Group</span>
-                <span class="block text-ink-muted text-[11px] truncate">General Affairs</span>
+                <span class="block text-ink-muted text-[11px] truncate">{{ Auth::user()->identityLabel() }}</span>
             </span>
         </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-ink-muted hover:text-ink shrink-0">

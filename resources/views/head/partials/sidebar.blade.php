@@ -53,7 +53,7 @@
             </span>
             <span class="min-w-0">
                 <span class="block text-white font-semibold text-sm truncate">Allez Group</span>
-                <span class="block text-slate-400 text-[11px] truncate">Head Office</span>
+                <span class="block text-slate-400 text-[11px] truncate">{{ Auth::user()->identityLabel() }}</span>
             </span>
         </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white shrink-0">

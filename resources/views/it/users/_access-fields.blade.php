@@ -46,6 +46,7 @@
             </p>
             <div class="space-y-3">
                 @foreach ($modules as $module)
+                    @php $pages = $pagesByModuleKey[$module->key] ?? []; @endphp
                     <div>
                         <label class="flex items-center gap-2 text-sm text-gray-700">
                             <input type="checkbox" name="modules[]" value="{{ $module->id }}"
@@ -53,26 +54,46 @@
                                    @change="toggleModule('{{ $module->id }}')"
                                    class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                             {{ $module->label }}
+
+                            @if (count($pages) === 1)
+                                <span x-show="modules.includes('{{ $module->id }}')" x-cloak
+                                      class="flex items-center gap-3 text-xs text-gray-500">
+                                    <label class="flex items-center gap-1">
+                                        <input type="radio" name="page_access[{{ $pages[0]['key'] }}]" value="view"
+                                               x-model="pageAccess['{{ $pages[0]['key'] }}']"
+                                               class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                        Lihat saja
+                                    </label>
+                                    <label class="flex items-center gap-1">
+                                        <input type="radio" name="page_access[{{ $pages[0]['key'] }}]" value="edit"
+                                               x-model="pageAccess['{{ $pages[0]['key'] }}']"
+                                               class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                        Bisa edit
+                                    </label>
+                                </span>
+                            @endif
                         </label>
 
-                        @foreach ($pagesByModuleKey[$module->key] ?? [] as $page)
-                            <div x-show="modules.includes('{{ $module->id }}')" x-cloak
-                                 class="ml-6 mt-1 flex items-center gap-4 text-xs text-gray-500">
-                                <span class="text-gray-400">{{ $page['label'] }}:</span>
-                                <label class="flex items-center gap-1">
-                                    <input type="radio" name="page_access[{{ $page['key'] }}]" value="view"
-                                           x-model="pageAccess['{{ $page['key'] }}']"
-                                           class="border-gray-300 text-gold-600 focus:ring-gold-500">
-                                    Lihat saja
-                                </label>
-                                <label class="flex items-center gap-1">
-                                    <input type="radio" name="page_access[{{ $page['key'] }}]" value="edit"
-                                           x-model="pageAccess['{{ $page['key'] }}']"
-                                           class="border-gray-300 text-gold-600 focus:ring-gold-500">
-                                    Bisa edit
-                                </label>
-                            </div>
-                        @endforeach
+                        @if (count($pages) > 1)
+                            @foreach ($pages as $page)
+                                <div x-show="modules.includes('{{ $module->id }}')" x-cloak
+                                     class="ml-6 mt-1 flex items-center gap-4 text-xs text-gray-500">
+                                    <span class="text-gray-400">{{ $page['label'] }}:</span>
+                                    <label class="flex items-center gap-1">
+                                        <input type="radio" name="page_access[{{ $page['key'] }}]" value="view"
+                                               x-model="pageAccess['{{ $page['key'] }}']"
+                                               class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                        Lihat saja
+                                    </label>
+                                    <label class="flex items-center gap-1">
+                                        <input type="radio" name="page_access[{{ $page['key'] }}]" value="edit"
+                                               x-model="pageAccess['{{ $page['key'] }}']"
+                                               class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                        Bisa edit
+                                    </label>
+                                </div>
+                            @endforeach
+                        @endif
                     </div>
                 @endforeach
             </div>

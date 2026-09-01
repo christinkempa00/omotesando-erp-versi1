@@ -38,7 +38,7 @@
             </span>
             <span class="min-w-0">
                 <span class="block text-white font-semibold text-sm truncate">Allez Group</span>
-                <span class="block text-gold-300 text-[11px] truncate">Kontrol IT</span>
+                <span class="block text-gold-300 text-[11px] truncate">{{ Auth::user()->identityLabel() }}</span>
             </span>
         </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-gold-300 hover:text-white shrink-0">

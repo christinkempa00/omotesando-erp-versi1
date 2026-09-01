@@ -9,8 +9,8 @@
         ['route' => 'outlet.dashboard', 'pattern' => ['outlet.dashboard'], 'label' => 'Dashboard', 'icon' => 'home', 'system_module' => null, 'module' => null],
         ['route' => 'outlet.requests.index', 'pattern' => ['outlet.requests.*'], 'label' => 'Pengajuan', 'icon' => 'list', 'system_module' => \App\Models\SystemModule::GA_REQUESTS, 'module' => \App\Models\Module::REQUESTS],
         ['route' => 'outlet.assets.index', 'pattern' => ['outlet.assets.*'], 'label' => 'Aset', 'icon' => 'archive', 'system_module' => \App\Models\SystemModule::GA_ASSETS, 'module' => \App\Models\Module::ASSETS],
-        ['route' => 'outlet.uniforms.stocks.index', 'pattern' => ['outlet.uniforms.stocks.*'], 'label' => 'Seragam — Stok', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS, 'module' => \App\Models\Module::UNIFORMS],
-        ['route' => 'outlet.uniforms.records.index', 'pattern' => ['outlet.uniforms.records.*'], 'label' => 'Seragam — Serah Terima', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS, 'module' => \App\Models\Module::UNIFORMS],
+        ['route' => 'outlet.uniforms.stocks.index', 'pattern' => ['outlet.uniforms.stocks.*'], 'label' => 'Seragam: Stok', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS, 'module' => \App\Models\Module::UNIFORMS],
+        ['route' => 'outlet.uniforms.records.index', 'pattern' => ['outlet.uniforms.records.*'], 'label' => 'Seragam: Serah Terima', 'icon' => 'shirt', 'system_module' => \App\Models\SystemModule::GA_UNIFORMS, 'module' => \App\Models\Module::UNIFORMS],
         ['route' => 'outlet.maintenance.index', 'pattern' => ['outlet.maintenance.*'], 'label' => 'Jadwal Pemeliharaan', 'icon' => 'wrench', 'system_module' => \App\Models\SystemModule::GA_MAINTENANCE, 'module' => \App\Models\Module::MAINTENANCE],
         ['route' => 'outlet.worklogs.index', 'pattern' => ['outlet.worklogs.*'], 'label' => 'Work Log', 'icon' => 'clipboard', 'system_module' => \App\Models\SystemModule::GA_WORKLOG, 'module' => \App\Models\Module::WORK_LOG],
     ];
@@ -52,7 +52,7 @@
             </span>
             <span class="min-w-0">
                 <span class="block text-white font-semibold text-sm truncate">Allez Group</span>
-                <span class="block text-slate-400 text-[11px] truncate">{{ Auth::user()->branch?->name ?? 'Outlet' }}</span>
+                <span class="block text-slate-400 text-[11px] truncate">{{ Auth::user()->identityLabel() }}</span>
             </span>
         </a>
         <button @click="sidebarOpen = false" class="lg:hidden text-slate-400 hover:text-white shrink-0">

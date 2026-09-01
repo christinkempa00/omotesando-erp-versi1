@@ -48,8 +48,8 @@ class UserPagePermission extends Model
                 ['key' => self::PAGE_ASSETS, 'label' => 'Aset'],
             ],
             Module::UNIFORMS => [
-                ['key' => self::PAGE_UNIFORMS_STOCKS, 'label' => 'Seragam — Stok'],
-                ['key' => self::PAGE_UNIFORMS_RECORDS, 'label' => 'Seragam — Record'],
+                ['key' => self::PAGE_UNIFORMS_STOCKS, 'label' => 'Seragam: Stok'],
+                ['key' => self::PAGE_UNIFORMS_RECORDS, 'label' => 'Seragam: Record'],
             ],
             Module::MAINTENANCE => [
                 ['key' => self::PAGE_MAINTENANCE, 'label' => 'Jadwal Pemeliharaan'],

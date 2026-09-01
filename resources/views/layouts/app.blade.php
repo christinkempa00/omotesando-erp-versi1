@@ -16,12 +16,6 @@
     </head>
     <body class="font-sans antialiased">
         @php
-            $moduleLabel = match ($sidebar) {
-                'head' => 'Head Office',
-                'it' => 'IT Support',
-                'outlet' => 'Outlet',
-                default => 'General Affairs',
-            };
             $sidebarPartial = match ($sidebar) {
                 'head' => 'head.partials.sidebar',
                 'it' => 'it.partials.sidebar',
@@ -53,7 +47,7 @@
                                 <path d="M4 6h16M4 12h16M4 18h16" />
                             </svg>
                         </button>
-                        <span class="ml-3 font-semibold text-ink text-sm">Allez Group <span class="font-normal text-ink-muted">· {{ $moduleLabel }}</span></span>
+                        <span class="ml-3 font-semibold text-ink text-sm">Allez Group <span class="font-normal text-ink-muted">· {{ Auth::user()->identityLabel() }}</span></span>
                     </div>
                 </div>
 
