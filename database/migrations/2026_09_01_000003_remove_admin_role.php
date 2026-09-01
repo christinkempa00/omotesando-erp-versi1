@@ -31,12 +31,13 @@ return new class extends Migration
 {
     public function up(): void
     {
-        $admin = User::where('email', 'admin@omotesando.test')->first();
-
-        if ($admin) {
-            $admin->roles()->detach();
-            $admin->update(['is_active' => false]);
-        }
+        // Nonaktifkan dulu SEBELUM hapus Role — bukan detach() manual (itu
+        // akan melepas SEMUA role akun ini, bukan cuma Admin, kalau
+        // ternyata akun ini py role lain juga). Role::delete() di bawah
+        // sudah otomatis melepas HANYA baris role_user utk Admin lewat
+        // cascadeOnDelete, role lain yg mungkin melekat ke akun ini tetap
+        // utuh (walau tidak lagi relevan begitu is_active=false).
+        User::where('email', 'admin@omotesando.test')->update(['is_active' => false]);
 
         Role::where('name', 'Admin')->delete();
     }
