@@ -10,6 +10,24 @@ Catatan perubahan per tanggal — detail lengkap tiap fitur tetap ada di
 "Daftar Modul" & "Alur Kerja per Modul" di bawah, bagian ini cuma ringkasan
 kapan sesuatu berubah.
 
+- **01/09/2026** — **Polish Manajemen User (IT) + identitas Divisi per akun**
+  — (1) **Halaman khusus IT ikut sistem module_user**: Papan Kerja Kanban,
+  Kontrol Modul, dan Manajemen User sendiri sekarang digerbang per-user
+  lewat checklist Akses Modul (sama seperti modul GA/Head/Outlet), bukan
+  cuma `role:IT` — migrasi backfill otomatis kasih akses ke semua akun IT
+  yang sudah ada, jadi tidak ada yang ke-403 pas deploy. Form edit akun IT
+  sendiri sengaja tidak bisa mencabut modul Manajemen User dari akun itu
+  sendiri (guard self-lockout), akun lain tetap bebas diatur penuh. (2)
+  **Quick-create Divisi & Branch/Outlet**: dropdown di form user sekarang
+  py opsi "+ Tambah Baru..." yang langsung simpan ke database via AJAX,
+  IT tidak perlu lagi minta developer nambah baris manual. (3) **Identitas
+  akun di kiri-atas sidebar & topbar mobile**: field Divisi (kalau diisi)
+  jadi judul, fallback ke nama branch (Outlet) atau nama role kalau
+  kosong — menggantikan label portal statis yang sebelumnya hardcoded per
+  sidebar. (4) Baris Akses Modul yang cuma py 1 halaman (Request, Aset,
+  Jadwal Pemeliharaan, Work Log) tidak lagi mengulang judul sebelum pilihan
+  Lihat saja/Bisa edit. (5) Ikon mata (bukan teks) utk tombol lihat/
+  sembunyikan password.
 - **24/08/2026** — **Evaluasi sistem menyeluruh: hapus modul SCM/Purchasing/
   Finance & seluruh sistem Approval, sisakan role GA/Head/IT/Outlet** — (1)
   **Fix bug bfcache**: user yang logout lalu langsung kunjungi
