@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('ga.assets.index')" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Tambah Aset Baru</h2>
+            <h2 class="font-semibold text-xl text-ink leading-tight">Tambah Aset Baru</h2>
         </div>
     </x-slot>
 
