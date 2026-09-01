@@ -10,6 +10,14 @@ Catatan perubahan per tanggal — detail lengkap tiap fitur tetap ada di
 "Daftar Modul" & "Alur Kerja per Modul" di bawah, bagian ini cuma ringkasan
 kapan sesuatu berubah.
 
+- **01/09/2026** — **Tema visual gold/glass diseragamkan ke 4 portal** —
+  sidebar GA/Head/IT/Outlet yang sebelumnya beda-beda (GA putih polos,
+  Head/Outlet gelap slate-900, IT gold gelap) sekarang satu pola: putih
+  seragam, item aktif gradient gold, token gold/glass yang tadinya
+  IT-only dipromosikan jadi global, komponen baru `.glass-panel`/
+  `.btn-gold`/`.stat-card`. Dikerjakan bertahap di branch terpisah
+  (`restyle-shell`) supaya tidak bercampur dgn perubahan fungsional,
+  digabung ke `main` setelah keduanya stabil sendiri-sendiri.
 - **01/09/2026** — **Role "Admin" dihapus dari sistem** — bukan role bisnis
   nyata spt GA/Head/IT/Outlet (tidak py portal/dashboard sendiri), cuma
   flag "bypass semua" teknis yang ditempel di banyak tempat inti
