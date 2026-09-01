@@ -29,7 +29,7 @@ class QuickCreateController extends Controller
             'code' => $this->uniqueCode(Division::class, $validated['name']),
         ]);
 
-        return response()->json(['id' => $division->id, 'name' => $division->name], 201);
+        return response()->json(['id' => $division->id, 'name' => $division->name, 'code' => $division->code], 201);
     }
 
     public function branch(Request $request): JsonResponse

@@ -24,6 +24,19 @@
     // hilang total dari form & ke-drop diam-diam saat user ini disimpan.
     $ownedModuleIds = collect($moduleIdsByRole)->flatten()->unique()->all();
     $orphanModules = collect($modules)->reject(fn ($module) => in_array($module->id, $ownedModuleIds, true));
+
+    // Aturan Dashboard otomatis: tercentang kalau salah satu Role yang
+    // dicentang NAMANYA cocok (case-insensitive) dgn KODE Divisi yang
+    // dipilih (mis. Role "GA" <-> Divisi "General Affair" berkode "GA" —
+    // kasus akun ga@allez-group.com). Kalau tidak cocok/Divisi kosong
+    // (mis. Amanda: Role GA tapi Divisi "Human Resources"), tidak
+    // tercentang. Lihat syncDashboardModule() di script bawah.
+    $dashboardModuleId = $modules->firstWhere('key', \App\Models\Module::DASHBOARD)?->id;
+    $roleNamesById = collect($roles)->pluck('name', 'id');
+    $selectedDivisionId = old('division_id', $user?->division_id);
+    $initialDivisionCode = $selectedDivisionId
+        ? $divisions->firstWhere('id', (int) $selectedDivisionId)?->code
+        : null;
 @endphp
 
 <div
@@ -33,7 +46,11 @@
         pageAccess: @js($initialPageAccess),
         pageKeysByModuleId: @js($pageKeysByModuleId),
         outletRoleId: @js($outletRoleId ? (string) $outletRoleId : null),
+        dashboardModuleId: @js($dashboardModuleId ? (string) $dashboardModuleId : null),
+        roleNamesById: @js($roleNamesById),
+        initialDivisionCode: @js($initialDivisionCode),
     })"
+    x-on:division-changed.window="onDivisionChanged($event.detail.code)"
 >
     <h3 class="text-sm font-semibold text-gray-700 mb-1">Role & Akses Modul <span class="text-red-500">*</span></h3>
     <p class="text-xs text-gray-400 mb-3">
@@ -130,23 +147,64 @@
 
 @once
     <script>
-        function userAccessForm({ selectedRoles, selectedModules, pageAccess, pageKeysByModuleId, outletRoleId }) {
+        function userAccessForm({
+            selectedRoles, selectedModules, pageAccess, pageKeysByModuleId, outletRoleId,
+            dashboardModuleId, roleNamesById, initialDivisionCode,
+        }) {
             return {
                 roles: selectedRoles.map(String),
                 modules: selectedModules.map(String),
                 pageAccess: { ...pageAccess },
                 pageKeysByModuleId: pageKeysByModuleId,
                 outletRoleId: outletRoleId,
+                dashboardModuleId: dashboardModuleId,
+                roleNamesById: roleNamesById,
+                divisionCode: initialDivisionCode,
+                init() {
+                    this.syncDashboardModule();
+                },
                 toggleRole(roleId) {
                     roleId = String(roleId);
                     const idx = this.roles.indexOf(roleId);
                     if (idx === -1) {
                         // Cuma membuka daftar modul role ini (lihat markup) —
-                        // TIDAK auto-centang. Checklist modul final sepenuhnya
-                        // di tangan IT, dicentang manual satu-satu.
+                        // TIDAK auto-centang (kecuali Dashboard, lihat
+                        // syncDashboardModule). Checklist modul lainnya
+                        // sepenuhnya di tangan IT, dicentang manual satu-satu.
                         this.roles.push(roleId);
                     } else {
                         this.roles.splice(idx, 1);
+                    }
+                    this.syncDashboardModule();
+                },
+                onDivisionChanged(code) {
+                    this.divisionCode = code;
+                    this.syncDashboardModule();
+                },
+                /**
+                 * Dashboard tercentang otomatis kalau salah satu Role yang
+                 * dicentang namanya cocok (case-insensitive) dgn kode Divisi
+                 * yang sedang dipilih — mis. Role "GA" + Divisi berkode "GA"
+                 * ("General Affair"). Tidak cocok/Divisi kosong -> otomatis
+                 * tidak tercentang. Jalan tiap kali Role/Divisi berubah —
+                 * centang/uncentang manual IT tetap nempel SELAMA Role/Divisi
+                 * tidak diubah lagi setelahnya.
+                 */
+                syncDashboardModule() {
+                    if (!this.dashboardModuleId) {
+                        return;
+                    }
+
+                    const code = (this.divisionCode || '').toUpperCase();
+                    const matches = code !== '' && this.roles.some(
+                        (roleId) => (this.roleNamesById[roleId] || '').toUpperCase() === code
+                    );
+
+                    const idx = this.modules.indexOf(this.dashboardModuleId);
+                    if (matches && idx === -1) {
+                        this.modules.push(this.dashboardModuleId);
+                    } else if (! matches && idx !== -1) {
+                        this.modules.splice(idx, 1);
                     }
                 },
                 toggleModule(moduleId) {

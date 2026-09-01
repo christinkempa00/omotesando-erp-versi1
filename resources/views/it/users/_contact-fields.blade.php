@@ -16,7 +16,11 @@
                class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-500">
     </div>
 
-    <div x-data="quickCreateSelect({ createUrl: '{{ route('it.divisions.store') }}' })">
+    <div x-data="quickCreateSelect({
+            createUrl: '{{ route('it.divisions.store') }}',
+            dispatchEvent: 'division-changed',
+            codesById: @js($divisions->pluck('code', 'id')),
+         })">
         <label class="block text-sm font-medium text-gray-700 mb-2">Divisi</label>
         <select name="division_id" x-ref="select" @change="onChange($event)"
                 class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-500">
@@ -61,17 +65,32 @@
 
 @once
     <script>
-        function quickCreateSelect({ createUrl }) {
+        function quickCreateSelect({ createUrl, dispatchEvent = null, codesById = {} }) {
             return {
                 adding: false,
                 newName: '',
                 creating: false,
                 error: '',
+                codesById: { ...codesById },
                 onChange(event) {
                     this.adding = event.target.value === '__new__';
                     if (this.adding) {
                         this.error = '';
                     }
+                    this.notify(event.target.value);
+                },
+                // Dipakai select Divisi supaya form Akses Modul (lihat
+                // userAccessForm() di _access-fields.blade.php) tahu kode
+                // Divisi yang sedang dipilih — dipakai utk aturan Dashboard
+                // otomatis (Role cocok dgn Divisi). No-op utk select lain
+                // (mis. Branch/Outlet) yang tidak diberi `dispatchEvent`.
+                notify(id) {
+                    if (!dispatchEvent) {
+                        return;
+                    }
+                    window.dispatchEvent(new CustomEvent(dispatchEvent, {
+                        detail: { id, code: this.codesById[id] ?? null },
+                    }));
                 },
                 async create() {
                     const name = this.newName.trim();
@@ -101,6 +120,8 @@
                         option.textContent = data.name;
                         select.insertBefore(option, select.lastElementChild);
                         select.value = data.id;
+                        this.codesById[data.id] = data.code ?? null;
+                        this.notify(data.id);
 
                         this.adding = false;
                         this.newName = '';
