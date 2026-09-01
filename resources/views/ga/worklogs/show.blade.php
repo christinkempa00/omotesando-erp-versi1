@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div>
                 <x-back-link :href="route('ga.worklogs.index')" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
+                <h2 class="font-semibold text-xl text-ink leading-tight flex items-center gap-2">
                     Work Log tanggal {{ optional($workLog->work_date)->format('d/m/Y') }}
                     @if ($workLog->isComplete())
                         <span class="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Selesai</span>
@@ -38,7 +38,7 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-sm rounded-lg p-6 space-y-6">
+            <div class="glass-panel p-6 space-y-6">
                 <div class="flex flex-col sm:flex-row gap-6">
                     <div class="w-full sm:w-40 shrink-0">
                         <p class="text-xs font-medium text-gray-500 mb-1">Lampiran</p>
@@ -92,7 +92,7 @@
             </div>
 
             <div>
-                <a href="{{ route('ga.worklogs.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">&larr; Kembali ke daftar Work Log</a>
+                <a href="{{ route('ga.worklogs.index') }}" class="text-sm text-gold-600 hover:text-gold-700">&larr; Kembali ke daftar Work Log</a>
             </div>
         </div>
     </div>
