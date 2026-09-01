@@ -62,7 +62,7 @@
                 <div id="qr-select-bar" style="display:none" class="items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
                     <span id="qr-select-count" class="text-xs text-gray-500">Belum ada aset dipilih</span>
                     <button type="button" id="qr-select-submit" disabled
-                            class="btn-gold disabled:opacity-40 disabled:cursor-not-allowed">
+                            class="btn-gold-sm disabled:opacity-40 disabled:cursor-not-allowed">
                         Unduh QR Terpilih
                     </button>
                 </div>
@@ -71,7 +71,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="qr-select-col px-4 py-3" style="display:none">
-                                <input type="checkbox" id="qr-select-all" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" id="qr-select-all" class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                             </th>
                             <th class="px-4 py-3"></th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Aset</th>
@@ -87,7 +87,7 @@
                         @forelse ($assets as $asset)
                             <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.assets.show', $asset) }}'">
                                 <td class="qr-select-col px-4 py-3" style="display:none" onclick="event.stopPropagation()">
-                                    <input type="checkbox" value="{{ $asset->id }}" class="qr-select-row rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    <input type="checkbox" value="{{ $asset->id }}" class="qr-select-row rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                                 </td>
                                 <td class="px-4 py-3">
                                     @if ($asset->image_path)
