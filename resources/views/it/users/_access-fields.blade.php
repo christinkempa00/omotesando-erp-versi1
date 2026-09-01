@@ -134,24 +134,10 @@
                     roleId = String(roleId);
                     const idx = this.roles.indexOf(roleId);
                     if (idx === -1) {
+                        // Cuma menampilkan modul yang relevan (lihat moduleVisible) —
+                        // TIDAK auto-centang. Checklist modul final sepenuhnya di
+                        // tangan IT, dicentang manual satu-satu.
                         this.roles.push(roleId);
-                        // Saran awal: auto-centang modul default role ini. Additive saja
-                        // (tidak menghapus modul lain yang sudah dicentang manual), dan
-                        // tidak ada aksi kebalikan saat role di-uncheck — checklist modul
-                        // final tetap sepenuhnya di tangan IT sebelum submit.
-                        const roleDefaults = (this.defaults[roleId] || []).map(String);
-                        const isOutlet = this.outletRoleId !== null && roleId === this.outletRoleId;
-                        roleDefaults.forEach((moduleId) => {
-                            if (!this.modules.includes(moduleId)) {
-                                this.modules.push(moduleId);
-                                // Role Outlet default ke "Lihat saja" utk halaman yang
-                                // ikut tersaran modulnya — role lain default "Bisa edit"
-                                // (behavior lama). IT tetap bebas ubah manual sesudahnya.
-                                (this.pageKeysByModuleId[moduleId] || []).forEach((pageKey) => {
-                                    this.pageAccess[pageKey] = isOutlet ? 'view' : 'edit';
-                                });
-                            }
-                        });
                     } else {
                         this.roles.splice(idx, 1);
                     }
@@ -161,9 +147,13 @@
                     const idx = this.modules.indexOf(moduleId);
                     if (idx === -1) {
                         this.modules.push(moduleId);
+                        // Default tier saat modul BARU dicentang manual: Outlet
+                        // ke "Lihat saja", role lain ke "Bisa edit". IT tetap
+                        // bebas ubah manual sesudahnya.
+                        const isOutlet = this.outletRoleId !== null && this.roles.includes(this.outletRoleId);
                         (this.pageKeysByModuleId[moduleId] || []).forEach((pageKey) => {
                             if (!(pageKey in this.pageAccess)) {
-                                this.pageAccess[pageKey] = 'edit';
+                                this.pageAccess[pageKey] = isOutlet ? 'view' : 'edit';
                             }
                         });
                     } else {
