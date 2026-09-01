@@ -21,7 +21,7 @@ class AuthenticationTest extends TestCase
      * User factory polos tidak punya role apa pun — RoleHomeResolver
      * mengarahkannya ke profile.edit (satu2nya halaman yg pasti bisa
      * diakses tanpa role/modul tertentu), BUKAN ke dashboard seperti
-     * dulu (dashboard dibatasi role:GA,Admin,Finance — user tanpa role
+     * dulu (dashboard dibatasi role:GA — user tanpa role
      * akan 403 begitu sampai, lihat docblock RoleHomeResolver).
      */
     public function test_users_can_authenticate_using_the_login_screen(): void

@@ -17,7 +17,7 @@ class StoreGaRequestRequest extends FormRequest
     public function authorize(): bool
     {
         // Middleware route sudah membatasi role, jadi di sini cukup true
-        // untuk user yang sudah lolos middleware 'role:GA,Head,Admin'.
+        // untuk user yang sudah lolos middleware 'role:GA'.
         return true;
     }
 

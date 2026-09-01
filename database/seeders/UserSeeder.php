@@ -14,22 +14,6 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
-        $admin = User::updateOrCreate(
-            ['email' => 'admin@omotesando.test'],
-            [
-                'name' => 'Admin Omotesando',
-                'password' => Hash::make('password'), // GANTI setelah login pertama kali
-                'division_id' => null,
-                'email_verified_at' => now(),
-            ]
-        );
-
-        $adminRole = Role::where('name', Role::ADMIN)->first();
-
-        if ($adminRole) {
-            $admin->roles()->syncWithoutDetaching([$adminRole->id]);
-        }
-
         $head = User::updateOrCreate(
             ['email' => 'head@omotesando.test'],
             [

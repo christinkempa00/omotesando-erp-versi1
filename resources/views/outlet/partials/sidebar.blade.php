@@ -23,9 +23,8 @@
     // bukan cuma status aktif/nonaktif global. Tanpa ini, akun Outlet yg
     // cuma dicentang IT utk 1 modul tetap lihat semua menu di sidebar.
     $moduleActiveByKey = \App\Models\Module::pluck('is_active', 'key');
-    $isAdmin = Auth::user()->hasRole(\App\Models\Role::ADMIN);
-    $userModuleKeys = $isAdmin ? [] : Auth::user()->modules()->pluck('key')->all();
-    $hasModuleAccess = fn (?string $key) => $key === null || $isAdmin || in_array($key, $userModuleKeys, true);
+    $userModuleKeys = Auth::user()->modules()->pluck('key')->all();
+    $hasModuleAccess = fn (?string $key) => $key === null || in_array($key, $userModuleKeys, true);
     $navItems = collect($navItems)
         ->filter(fn ($item) => ($item['module'] === null || ($moduleActiveByKey[$item['module']] ?? true)) && $hasModuleAccess($item['module']))
         ->values()

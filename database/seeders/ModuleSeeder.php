@@ -10,9 +10,9 @@ class ModuleSeeder extends Seeder
 {
     /**
      * Seed modul GA yang sudah ada di project ini, dengan akses default
-     * role GA/Admin — persis sama dengan middleware role:GA,Admin yang
-     * sudah dipasang di grup route ga.* saat ini, supaya seeding ini
-     * tidak mengubah perilaku akses yang sudah berjalan.
+     * role GA/Head/Outlet — ketiganya sama-sama pakai modul ini (GA lewat
+     * ga.*, Head lewat head.* monitoring, Outlet lewat outlet.*, semua
+     * digerbang module: middleware yang sama, lihat routes/web.php).
      */
     public function run(): void
     {
@@ -24,14 +24,14 @@ class ModuleSeeder extends Seeder
             ['key' => Module::WORK_LOG, 'label' => 'Work Log', 'description' => 'Catatan aktivitas teknisi per outlet, utk kontrol kinerja'],
         ];
 
-        $defaultRoleIds = Role::whereIn('name', [Role::GA, Role::ADMIN])->pluck('id');
+        $defaultRoleIds = Role::whereIn('name', [Role::GA, Role::HEAD, Role::OUTLET])->pluck('id');
 
         foreach ($modules as $data) {
             $module = Module::updateOrCreate(['key' => $data['key']], $data + ['is_active' => true]);
             $module->roles()->syncWithoutDetaching($defaultRoleIds);
         }
 
-        $monitoringRoleIds = Role::whereIn('name', [Role::OUTLET, Role::GA, Role::HEAD, Role::ADMIN])->pluck('id');
+        $monitoringRoleIds = Role::whereIn('name', [Role::OUTLET, Role::GA, Role::HEAD])->pluck('id');
         $monitoring = Module::updateOrCreate(
             ['key' => Module::OUTLET_MONITORING],
             ['label' => 'Outlet', 'description' => 'Laporan foto kebersihan outlet saat opening & closing', 'is_active' => true]

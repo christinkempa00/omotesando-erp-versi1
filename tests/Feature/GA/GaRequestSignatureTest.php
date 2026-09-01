@@ -42,7 +42,8 @@ class GaRequestSignatureTest extends TestCase
     private function requesterUser(): User
     {
         $user = User::factory()->create();
-        $user->roles()->attach(Role::firstOrCreate(['name' => Role::ADMIN]));
+        $user->roles()->attach(Role::firstOrCreate(['name' => Role::GA]));
+        $user->modules()->attach(Module::where('key', Module::REQUESTS)->value('id'));
 
         return $user;
     }

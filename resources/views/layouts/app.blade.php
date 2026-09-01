@@ -51,7 +51,7 @@
                     </div>
                 </div>
 
-                {{-- Banner utk IT/Admin yang tetap lolos ke halaman yang sedang
+                {{-- Banner utk IT yang tetap lolos ke halaman yang sedang
                      ditandai dalam pemeliharaan (lihat CheckModuleMaintenance) --}}
                 @isset($maintenanceBannerModule)
                     <div class="bg-amber-50 border-b border-amber-200 px-4 py-2.5 text-sm text-amber-800 flex items-center gap-2">
@@ -59,7 +59,7 @@
                             <path d="M12 9v4M12 17h.01" /><path d="M10.29 3.86 1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0Z" />
                         </svg>
                         <span>
-                            <strong>{{ $maintenanceBannerModule->name }}</strong> sedang dalam mode pemeliharaan untuk role lain. Anda tetap bisa mengakses karena role IT/Admin.
+                            <strong>{{ $maintenanceBannerModule->name }}</strong> sedang dalam mode pemeliharaan untuk role lain. Anda tetap bisa mengakses karena role IT.
                         </span>
                     </div>
                 @endisset

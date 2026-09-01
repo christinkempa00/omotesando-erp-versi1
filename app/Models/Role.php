@@ -15,7 +15,6 @@ class Role extends Model
      */
     public const GA = 'GA';
     public const HEAD = 'Head';
-    public const ADMIN = 'Admin';
     public const IT = 'IT';
     public const OUTLET = 'Outlet';
 

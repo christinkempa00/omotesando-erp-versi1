@@ -57,17 +57,17 @@ Route::middleware('auth')->group(function () {
 
     // Halaman "Sedang Dalam Pemeliharaan" — tujuan redirect
     // CheckModuleMaintenance middleware saat sebuah halaman ditandai IT
-    // sedang dalam pemeliharaan & user yang akses bukan IT/Admin.
+    // sedang dalam pemeliharaan & user yang akses bukan IT.
     Route::get('/maintenance/{key}', [MaintenanceNoticeController::class, 'show'])->name('maintenance.notice');
 });
 
-// Satu-satunya dashboard untuk role GA/Admin (dulu ada 2: placeholder
+// Satu-satunya dashboard untuk role GA (dulu ada 2: placeholder
 // generic '/dashboard' dan '/ga/dashboard' — sekarang digabung jadi 1).
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'role:GA,Admin'])
+    ->middleware(['auth', 'role:GA'])
     ->name('dashboard');
 
-Route::middleware(['auth', 'role:GA,Admin'])
+Route::middleware(['auth', 'role:GA'])
     ->prefix('ga')
     ->name('ga.')
     ->group(function () {

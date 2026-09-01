@@ -39,7 +39,7 @@ class EmailVerificationTest extends TestCase
         Event::assertDispatched(Verified::class);
         $this->assertTrue($user->fresh()->hasVerifiedEmail());
         // Bukan route('dashboard') — user tanpa role apa pun jatuh ke
-        // profile.edit per RoleHomeResolver (dashboard di-gate role:GA,Admin,
+        // profile.edit per RoleHomeResolver (dashboard di-gate role:GA,
         // akan 403 kalau user test ini kebetulan bukan role itu).
         $response->assertRedirect(route('profile.edit', absolute: false).'?verified=1');
     }

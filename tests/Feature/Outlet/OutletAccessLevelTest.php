@@ -59,7 +59,7 @@ class OutletAccessLevelTest extends TestCase
     private function gaUser(): User
     {
         $user = User::factory()->create();
-        $user->roles()->attach(Role::firstOrCreate(['name' => Role::ADMIN]));
+        $user->roles()->attach(Role::firstOrCreate(['name' => Role::GA]));
 
         return $user;
     }

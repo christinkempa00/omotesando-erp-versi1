@@ -24,7 +24,7 @@ class GaRequestController extends Controller
 {
     /**
      * Staff GA hanya lihat pengajuan miliknya sendiri.
-     * Head & Admin lihat semua pengajuan (untuk kebutuhan monitoring).
+     * Head lihat semua pengajuan (untuk kebutuhan monitoring).
      */
     public function index(Request $request): View
     {
@@ -33,7 +33,7 @@ class GaRequestController extends Controller
         $query = GaRequest::with(['branch', 'branchLocation', 'requestedBy'])
             ->latest();
 
-        if (! $user->hasRole(Role::HEAD, Role::ADMIN)) {
+        if (! $user->hasRole(Role::HEAD)) {
             $query->where('requested_by', $user->id);
         }
 
@@ -306,7 +306,7 @@ class GaRequestController extends Controller
         $user = $request->user();
 
         abort_unless(
-            $user->hasRole(Role::HEAD, Role::ADMIN) || $gaRequest->requested_by === $user->id,
+            $user->hasRole(Role::HEAD) || $gaRequest->requested_by === $user->id,
             403
         );
 
@@ -328,7 +328,7 @@ class GaRequestController extends Controller
         $user = $request->user();
 
         abort_unless(
-            $user->hasRole(Role::HEAD, Role::ADMIN) || $gaRequest->requested_by === $user->id,
+            $user->hasRole(Role::HEAD) || $gaRequest->requested_by === $user->id,
             403
         );
 
@@ -351,10 +351,7 @@ class GaRequestController extends Controller
     {
         $user = $request->user();
 
-        abort_unless(
-            $user->hasRole(Role::ADMIN) || $gaRequest->requested_by === $user->id,
-            403
-        );
+        abort_unless($gaRequest->requested_by === $user->id, 403);
         abort_unless($user->canEdit(UserPagePermission::PAGE_REQUESTS), 403);
 
         foreach ($gaRequest->attachments as $attachment) {

@@ -44,11 +44,9 @@
     // Tanpa cek ini, sidebar tampilkan semua modul yg aktif secara global
     // walau user ybs tidak dicentang IT sama sekali (link tetap ada, cuma
     // 403 saat diklik) — insiden nyata: akun GA yg cuma dicentang Inventaris
-    // Seragam tetap lihat link Asset/Request/Work Log di sidebar. Admin
-    // selalu lolos (konsisten dgn ModuleAccessMiddleware).
-    $isAdmin = Auth::user()->hasRole(\App\Models\Role::ADMIN);
-    $userModuleKeys = $isAdmin ? [] : Auth::user()->modules()->pluck('key')->all();
-    $hasModuleAccess = fn (string $key) => $isAdmin || in_array($key, $userModuleKeys, true);
+    // Seragam tetap lihat link Asset/Request/Work Log di sidebar.
+    $userModuleKeys = Auth::user()->modules()->pluck('key')->all();
+    $hasModuleAccess = fn (string $key) => in_array($key, $userModuleKeys, true);
 
     // Status mode pemeliharaan per halaman (dikontrol IT) — beda dari
     // moduleActiveByKey di atas: ini cuma badge peringatan, menu tetap bisa

@@ -40,9 +40,9 @@ class AuthenticatedSessionController extends Controller
         }
 
         // Role Head & IT punya dashboard/halaman sendiri (terpisah dari GA);
-        // role lain (GA, Admin, Finance, dst.) tetap ke dashboard seperti
-        // sebelumnya — lihat RedirectsToRoleHome utk alasan tidak pakai
-        // ->intended().
+        // role lain (GA, Outlet) tetap ke dashboard/halaman rumahnya
+        // masing-masing seperti sebelumnya — lihat RedirectsToRoleHome utk
+        // alasan tidak pakai ->intended().
         return $this->redirectToRoleHome($request->user());
     }
 

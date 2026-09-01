@@ -11,7 +11,7 @@ use App\Models\User;
  * override RedirectIfAuthenticated (lihat AppServiceProvider) supaya
  * user yang sudah login dan mengunjungi /login lagi diarahkan ke
  * halamannya sendiri, bukan selalu ke /dashboard (yang dibatasi
- * role:GA,Admin — 403 utk IT/Head).
+ * role:GA — 403 utk IT/Head).
  *
  * Role tanpa cabang di atas (belum ada role lain saat ini) jatuh ke
  * profile.edit (satu2nya halaman yg PASTI bisa diakses siapa pun yang
@@ -29,7 +29,7 @@ class RoleHomeResolver
             return 'it.modules.index';
         }
 
-        if ($user->hasRole(Role::GA, Role::ADMIN)) {
+        if ($user->hasRole(Role::GA)) {
             return 'dashboard';
         }
 

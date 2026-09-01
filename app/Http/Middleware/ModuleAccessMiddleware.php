@@ -3,7 +3,6 @@
 namespace App\Http\Middleware;
 
 use App\Models\Module;
-use App\Models\Role;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,9 +28,7 @@ class ModuleAccessMiddleware
 
         $user = $request->user();
 
-        // Admin selalu bisa akses semua modul — supaya tidak ada skenario
-        // Head tidak sengaja mengunci akses administratifnya sendiri.
-        if (! $user || $user->hasRole(Role::ADMIN)) {
+        if (! $user) {
             return $next($request);
         }
 

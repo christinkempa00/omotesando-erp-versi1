@@ -108,14 +108,10 @@ class User extends Authenticatable
     /**
      * Tier akses (view/edit) user ini ke satu halaman GA (lihat konstanta
      * UserPagePermission::PAGE_*). Tidak ada baris utk halaman itu = default
-     * 'edit' (behavior lama, sebelum tier ini ada). Admin selalu lolos.
+     * 'edit' (behavior lama, sebelum tier ini ada).
      */
     public function canEdit(string $pageKey): bool
     {
-        if ($this->hasRole(Role::ADMIN)) {
-            return true;
-        }
-
         $level = $this->pagePermissions()->where('page_key', $pageKey)->value('access_level');
 
         return ($level ?? UserPagePermission::ACCESS_EDIT) === UserPagePermission::ACCESS_EDIT;

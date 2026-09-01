@@ -43,21 +43,4 @@ class SidebarModuleAccessTest extends TestCase
         $response->assertDontSee('Asset Request');
         $response->assertDontSee('Work Log');
     }
-
-    public function test_admin_sees_all_modules_regardless_of_module_user_rows(): void
-    {
-        $this->seedModules();
-
-        $admin = User::factory()->create();
-        $admin->roles()->attach(Role::firstOrCreate(['name' => Role::ADMIN]));
-        // Sengaja TIDAK attach modules apa pun — Admin harus tetap lolos.
-
-        $response = $this->actingAs($admin)->get('/dashboard');
-
-        $response->assertOk();
-        $response->assertSee('Uniform Inventory');
-        $response->assertSee('Asset Inventory');
-        $response->assertSee('Asset Request');
-        $response->assertSee('Work Log');
-    }
 }

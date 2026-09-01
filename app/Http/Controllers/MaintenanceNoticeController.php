@@ -8,10 +8,10 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
- * Tujuan redirect CheckModuleMaintenance middleware — user (selain IT/Admin)
+ * Tujuan redirect CheckModuleMaintenance middleware — user (selain IT)
  * yang mencoba akses halaman yang sedang ditandai IT "Dalam Pemeliharaan"
  * diarahkan ke halaman "rumah" role-nya sendiri (lihat RoleHomeResolver —
- * BUKAN selalu '/dashboard', itu 403 utk role selain GA/Admin) dengan
+ * BUKAN selalu '/dashboard', itu 403 utk role selain GA) dengan
  * notice di-flash ke session, lalu ditampilkan sebagai popup (lihat blok
  * "maintenanceNotice" di layouts/app.blade.php) — bukan halaman penuh
  * terpisah lagi (Revisi V1 10/08/2026).
@@ -22,7 +22,7 @@ class MaintenanceNoticeController extends Controller
      * Peta "route rumah role" -> SystemModule key yang menggerbanginya —
      * dipakai utk hindari redirect-loop kalau modul yang sedang dalam
      * pemeliharaan justru halaman rumah role user itu sendiri. '/dashboard'
-     * (GA/Admin) & 'it.modules.index' (IT selalu bypass middleware ini)
+     * (GA) & 'it.modules.index' (IT selalu bypass middleware ini)
      * sengaja tidak masuk sini krn tidak digerbangi module.maintenance.
      */
     private const ROLE_HOME_MODULE_KEYS = [

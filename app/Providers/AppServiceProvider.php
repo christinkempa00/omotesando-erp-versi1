@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
 
         // Default bawaan Laravel selalu redirect ke route('dashboard') utk
         // user yang sudah login tapi mengunjungi /login lagi — tapi /dashboard
-        // dibatasi role:GA,Admin, jadi role lain (IT/Head/Outlet) akan 403
+        // dibatasi role:GA, jadi role lain (IT/Head/Outlet) akan 403
         // begitu sampai. Pakai resolver yang sama dgn RedirectsToRoleHome
         // supaya selalu mendarat di halaman rumah yg benar.
         RedirectIfAuthenticated::redirectUsing(

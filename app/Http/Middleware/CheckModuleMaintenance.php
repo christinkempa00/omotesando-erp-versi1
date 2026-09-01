@@ -14,8 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * Beda dengan ModuleAccessMiddleware (aktif/nonaktif kasar per modul,
  * dikontrol Head), middleware ini per-halaman & dikontrol role IT — kalau
- * is_under_maintenance, user selain IT/Admin diarahkan ke halaman "Sedang
- * Dalam Pemeliharaan" (bukan abort/403 biasa). IT/Admin tetap lolos supaya
+ * is_under_maintenance, user selain IT diarahkan ke halaman "Sedang
+ * Dalam Pemeliharaan" (bukan abort/403 biasa). IT tetap lolos supaya
  * bisa terus mengerjakan perbaikan, dengan banner kecil sebagai penanda.
  */
 class CheckModuleMaintenance
@@ -30,7 +30,7 @@ class CheckModuleMaintenance
 
         $user = $request->user();
 
-        if ($user && $user->hasRole(Role::IT, Role::ADMIN)) {
+        if ($user && $user->hasRole(Role::IT)) {
             // Dibagikan ke semua view di request ini supaya layout bisa
             // menampilkan banner "modul ini dalam mode pemeliharaan utk role
             // lain" tanpa tiap controller perlu tahu soal ini.
