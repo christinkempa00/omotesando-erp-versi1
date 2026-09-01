@@ -104,7 +104,7 @@
                                             </svg>
                                         </a>
                                         <a href="{{ route('ga.uniforms.stocks.edit-group', ['uniform_type' => $group->type, 'branch_id' => $group->branch->id, 'color' => $group->color]) }}"
-                                           title="Edit grup ini (Tipe Seragam/Outlet/Warna, dll — semua ukuran sekaligus)"
+                                           title="Edit grup ini (Tipe Seragam/Outlet/Warna, dll, semua ukuran sekaligus)"
                                            class="w-6 h-6 flex items-center justify-center rounded-md border border-gray-200 text-gray-500 hover:bg-gray-50">
                                             <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M11 4H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-5" />

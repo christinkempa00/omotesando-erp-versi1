@@ -59,7 +59,7 @@
             }
             this.syncDataInput();
             if (! this.pad || this.pad.isEmpty()) {
-                this.errorMessage = 'Tanda tangan wajib diisi — gambar dulu di area kanvas{{ $savedSignatureUrl ? ", atau pilih pakai tanda tangan tersimpan" : "" }}.';
+                this.errorMessage = 'Tanda tangan wajib diisi, gambar dulu di area kanvas{{ $savedSignatureUrl ? ", atau pilih pakai tanda tangan tersimpan" : "" }}.';
                 event.preventDefault();
                 event.stopImmediatePropagation();
                 return false;
@@ -113,7 +113,7 @@
     <input type="hidden" name="{{ $name }}_use_saved" value="{{ $savedSignatureUrl ? '1' : '0' }}" x-ref="useSavedInput">
 
     <p class="text-xs text-gray-400">
-        Tanda tangan gambar ini bukan tanda tangan elektronik tersertifikasi — hanya ditempel ke dokumen PDF sebagai jejak audit internal.
+        Tanda tangan gambar ini bukan tanda tangan elektronik tersertifikasi, hanya ditempel ke dokumen PDF sebagai jejak audit internal.
     </p>
     <p x-show="errorMessage" x-text="errorMessage" class="text-xs text-red-600 font-medium"></p>
 </div>

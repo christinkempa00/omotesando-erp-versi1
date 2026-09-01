@@ -1,7 +1,7 @@
 <x-app-layout sidebar="outlet">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Aset — {{ auth()->user()->branch?->name }}
+            Aset Outlet {{ auth()->user()->branch?->name }}
         </h2>
     </x-slot>
 

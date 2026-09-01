@@ -4,7 +4,7 @@
             <div>
                 <x-back-link :href="route('ga.worklogs.index')" />
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
-                    Work Log — {{ optional($workLog->work_date)->format('d/m/Y') }}
+                    Work Log tanggal {{ optional($workLog->work_date)->format('d/m/Y') }}
                     @if ($workLog->isComplete())
                         <span class="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Selesai</span>
                     @else
@@ -76,7 +76,7 @@
                     </div>
                     <div>
                         <dt class="text-gray-500 mb-1">Hasil Pengerjaan</dt>
-                        <dd class="font-medium text-gray-900 whitespace-pre-line">{{ $workLog->work_result ?: 'Belum diisi — pekerjaan belum ditandai selesai.' }}</dd>
+                        <dd class="font-medium text-gray-900 whitespace-pre-line">{{ $workLog->work_result ?: 'Belum diisi karena pekerjaan belum ditandai selesai.' }}</dd>
                     </div>
                     @if ($workLog->notes)
                         <div>

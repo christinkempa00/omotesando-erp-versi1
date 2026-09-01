@@ -4,7 +4,7 @@
             <div class="print:hidden">
                 <x-back-link :href="route('ga.assets.show', $asset)" />
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                    Label QR — {{ $asset->asset_code }}
+                    Label QR {{ $asset->asset_code }}
                 </h2>
             </div>
             <div class="print:hidden flex items-center gap-3">

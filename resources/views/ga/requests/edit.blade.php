@@ -3,7 +3,7 @@
         <div>
             <x-back-link :href="route('ga.requests.show', $gaRequest)" />
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Lanjutkan Draft — {{ $gaRequest->request_number }}
+                Lanjutkan Draft {{ $gaRequest->request_number }}
             </h2>
         </div>
     </x-slot>

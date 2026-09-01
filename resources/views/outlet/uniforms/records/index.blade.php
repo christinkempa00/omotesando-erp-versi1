@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Serah Terima Seragam — {{ auth()->user()->branch?->name }}
+                Serah Terima Seragam Outlet {{ auth()->user()->branch?->name }}
             </h2>
             @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_RECORDS))
                 <a href="{{ route('outlet.uniforms.records.create') }}"

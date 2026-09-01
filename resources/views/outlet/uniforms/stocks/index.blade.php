@@ -1,7 +1,7 @@
 <x-app-layout sidebar="outlet">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Stok Seragam — {{ auth()->user()->branch?->name }}
+            Stok Seragam Outlet {{ auth()->user()->branch?->name }}
         </h2>
     </x-slot>
 
@@ -31,7 +31,7 @@
 
             <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
-                    <p class="text-xs text-gray-400">Per kombinasi jenis seragam dan warna. Lihat saja — perubahan stok dikelola GA.</p>
+                    <p class="text-xs text-gray-400">Per kombinasi jenis seragam dan warna. Lihat saja, perubahan stok dikelola GA.</p>
                 </div>
 
                 <div class="p-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">

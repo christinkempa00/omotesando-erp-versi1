@@ -225,14 +225,14 @@
     {{-- Lampiran foto (opsional) --}}
     <div class="mt-6">
         <label class="block text-sm font-medium text-gray-700 mb-1">Lampiran Foto</label>
-        <p class="text-xs text-gray-400 mb-2">Opsional — bisa lampirkan lebih dari satu foto.</p>
+        <p class="text-xs text-gray-400 mb-2">Opsional, bisa lampirkan lebih dari satu foto.</p>
         @if ($gaRequest && $gaRequest->attachments->isNotEmpty())
             <div class="mb-3 grid grid-cols-4 sm:grid-cols-6 gap-2">
                 @foreach ($gaRequest->attachments as $attachment)
                     <img src="{{ \Illuminate\Support\Facades\Storage::url($attachment->photo_path) }}" class="w-full aspect-square rounded-md object-cover border border-gray-200">
                 @endforeach
             </div>
-            <p class="text-xs text-gray-400 mb-2">Foto di atas sudah tersimpan — unggah di bawah kalau mau menambah lagi.</p>
+            <p class="text-xs text-gray-400 mb-2">Foto di atas sudah tersimpan. Unggah di bawah kalau mau menambah lagi.</p>
         @endif
         <input type="file" name="attachments[]" multiple accept="image/*" @change="onAttachmentsChange($event)"
                class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">

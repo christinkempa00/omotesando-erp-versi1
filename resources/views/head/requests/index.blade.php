@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
             <p class="text-sm text-gray-500 -mt-2">
-                Pantau semua pengajuan GA — draft maupun yang sudah diajukan.
+                Pantau semua pengajuan GA, draft maupun yang sudah diajukan.
             </p>
 
             {{-- Filter --}}

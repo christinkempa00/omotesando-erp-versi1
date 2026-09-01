@@ -140,7 +140,7 @@
                 </div>
             @else
                 <div class="bg-white shadow-sm rounded-lg p-6">
-                    <h3 class="font-medium text-gray-800 mb-3">Tandai Dikembalikan — Pemeriksaan Pengembalian Barang</h3>
+                    <h3 class="font-medium text-gray-800 mb-3">Tandai Dikembalikan: Pemeriksaan Pengembalian Barang</h3>
                     <form method="POST" action="{{ route('ga.uniforms.records.return', $record) }}" class="space-y-4">
                         @csrf
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -194,7 +194,7 @@
                                 @endforeach
                             </select>
                             <p class="mt-1 text-xs text-gray-400">
-                                Menentukan pergerakan stok — "Bagus" kembali ke tersedia, "Rusak" masuk stok rusak.
+                                Menentukan pergerakan stok: "Bagus" kembali ke tersedia, "Rusak" masuk stok rusak.
                                 Berlaku untuk seluruh item dalam serah-terima ini.
                             </p>
                         </div>

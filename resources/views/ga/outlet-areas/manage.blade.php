@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('ga.outlet-areas.index')" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Area Pemeriksaan — {{ $branch->name }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Area Pemeriksaan Outlet {{ $branch->name }}</h2>
         </div>
     </x-slot>
 

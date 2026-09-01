@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('ga.uniforms.stocks.index')" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Grup Varian — {{ $first->uniform_type }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Grup Varian {{ $first->uniform_type }}</h2>
         </div>
     </x-slot>
 
@@ -95,7 +95,7 @@
                                 </div>
                             @endforeach
                         </div>
-                        <p class="text-xs text-gray-400 mt-2">Tampilan saja — ukuran &amp; jumlah stok tidak bisa diubah di sini.</p>
+                        <p class="text-xs text-gray-400 mt-2">Tampilan saja, ukuran &amp; jumlah stok tidak bisa diubah di sini.</p>
                     </div>
 
                     <div class="flex justify-end gap-3 mt-6">

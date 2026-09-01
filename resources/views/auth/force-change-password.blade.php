@@ -2,7 +2,7 @@
     <div class="mb-4">
         <h2 class="text-lg font-semibold text-gray-900">Wajib Ganti Password</h2>
         <p class="mt-1 text-sm text-gray-600">
-            Ini login pertama Anda (atau password baru saja di-reset IT) — silakan buat
+            Ini login pertama Anda (atau password baru saja di-reset IT), silakan buat
             password baru sebelum melanjutkan.
         </p>
     </div>

@@ -113,7 +113,7 @@
 
             <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Hasil Pengerjaan</label>
-                <p class="text-xs text-gray-400 mb-1">Boleh dikosongkan dulu — isi begitu pekerjaan selesai dikerjakan.</p>
+                <p class="text-xs text-gray-400 mb-1">Boleh dikosongkan dulu, isi begitu pekerjaan selesai dikerjakan.</p>
                 <textarea name="work_result" rows="4" placeholder="Jelaskan hasil/kondisi setelah pengerjaan"
                           class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('work_result', $workLog->work_result ?? '') }}</textarea>
             </div>

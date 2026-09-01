@@ -93,14 +93,14 @@
                     @if ($existingStock->isEmpty())
                         <div class="mt-3 flex items-start gap-2 rounded-md border border-blue-200 bg-blue-50 px-3 py-2 text-xs text-blue-700"
                              x-show="isDuplicateType" x-cloak>
-                            <span><strong>Info (bukan error, form tetap bisa disimpan):</strong> nama "<span x-text="uniformType" class="font-semibold"></span>" sudah dipakai di outlet ini. Kalau memang mau menambah varian baru, cek dulu apakah maksudnya menambah ukuran ke varian yang sudah ada (pakai ikon + pada kartu varian tersebut di halaman daftar) — kalau bukan, ganti nama Tipe Seragam supaya tidak tertukar dengan varian lain.</span>
+                            <span><strong>Info (bukan error, form tetap bisa disimpan):</strong> nama "<span x-text="uniformType" class="font-semibold"></span>" sudah dipakai di outlet ini. Kalau memang mau menambah varian baru, cek dulu apakah maksudnya menambah ukuran ke varian yang sudah ada (pakai ikon + pada kartu varian tersebut di halaman daftar). Kalau bukan, ganti nama Tipe Seragam supaya tidak tertukar dengan varian lain.</span>
                         </div>
                     @endif
 
                     @if ($existingStock->isNotEmpty())
                         <div class="mt-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
                             <p class="text-sm font-medium text-gray-700 mb-1">Sisa Stok Saat Ini</p>
-                            <p class="text-xs text-gray-400 mb-3">Tampilan saja, tidak bisa diedit di sini — jumlah yang diisi di bawah akan DITAMBAHKAN ke stok yang sudah ada.</p>
+                            <p class="text-xs text-gray-400 mb-3">Tampilan saja, tidak bisa diedit di sini. Jumlah yang diisi di bawah akan DITAMBAHKAN ke stok yang sudah ada.</p>
                             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
                                 @foreach ($existingStock as $s)
                                     <div class="flex items-center justify-between bg-white border border-gray-200 rounded-md px-3 py-2">
@@ -125,7 +125,7 @@
                                 Buat Ukuran
                             </button>
                         </div>
-                        <p class="text-xs text-gray-400 mb-3">Isi ukuran &amp; jumlah stoknya — kosongkan/hapus baris kalau ukuran itu tidak ada. Bisa tambah ukuran apa saja.</p>
+                        <p class="text-xs text-gray-400 mb-3">Isi ukuran &amp; jumlah stoknya, kosongkan/hapus baris kalau ukuran itu tidak ada. Bisa tambah ukuran apa saja.</p>
 
                         <div class="space-y-2">
                             <template x-for="(row, index) in rows" :key="index">

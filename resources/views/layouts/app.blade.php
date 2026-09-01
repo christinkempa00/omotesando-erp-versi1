@@ -65,7 +65,7 @@
                             <path d="M12 9v4M12 17h.01" /><path d="M10.29 3.86 1.82 18a1 1 0 0 0 .86 1.5h18.64a1 1 0 0 0 .86-1.5L13.71 3.86a1 1 0 0 0-1.72 0Z" />
                         </svg>
                         <span>
-                            <strong>{{ $maintenanceBannerModule->name }}</strong> sedang dalam mode pemeliharaan untuk role lain — Anda tetap bisa mengakses karena role IT/Admin.
+                            <strong>{{ $maintenanceBannerModule->name }}</strong> sedang dalam mode pemeliharaan untuk role lain. Anda tetap bisa mengakses karena role IT/Admin.
                         </span>
                     </div>
                 @endisset

@@ -3,7 +3,7 @@
         <div>
             <x-back-link :href="route('ga.maintenance.show', $job)" />
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Edit Pemeliharaan — {{ $job->job_code }}
+                Edit Pemeliharaan {{ $job->job_code }}
             </h2>
         </div>
     </x-slot>

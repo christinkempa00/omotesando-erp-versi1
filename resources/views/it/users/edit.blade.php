@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('it.users.index')" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit User — {{ $user->name }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit User {{ $user->name }}</h2>
         </div>
     </x-slot>
 
@@ -43,7 +43,7 @@
                         Akun aktif (bisa login)
                     </label>
                     <p class="mt-1 text-xs text-gray-400">
-                        User nonaktif tidak bisa login sama sekali — ditolak langsung saat proses login dengan pesan jelas.
+                        User nonaktif tidak bisa login sama sekali, ditolak langsung saat proses login dengan pesan jelas.
                     </p>
                 </div>
 

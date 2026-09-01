@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-center justify-between">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Papan Kerja — {{ $board->name }}
+                Papan Kerja {{ $board->name }}
             </h2>
             <a href="{{ route('it.labels.index') }}" class="text-sm text-gold-600 hover:text-gold-700 font-medium">
                 Kelola Label

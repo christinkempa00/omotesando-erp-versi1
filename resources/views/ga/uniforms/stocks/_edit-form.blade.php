@@ -77,6 +77,6 @@
 
 @unless ($stock)
     <p class="text-xs text-gray-400 mt-4">
-        Stok awal (tersedia/rusak) dimulai dari 0 — gunakan aksi "Restock" di halaman detail setelah varian ini dibuat.
+        Stok awal (tersedia/rusak) dimulai dari 0. Gunakan aksi "Restock" di halaman detail setelah varian ini dibuat.
     </p>
 @endunless

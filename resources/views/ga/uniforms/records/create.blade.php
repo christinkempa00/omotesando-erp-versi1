@@ -61,7 +61,7 @@
                                 <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
                                 <input type="text" name="issued_by_name" required value="{{ old('issued_by_name') }}"
                                        class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
-                                <p class="mt-1 text-xs text-gray-400">Diisi sekali — otomatis jadi nama di baris "Diserahkan Oleh" pada dokumen PDF.</p>
+                                <p class="mt-1 text-xs text-gray-400">Diisi sekali, otomatis jadi nama di baris "Diserahkan Oleh" pada dokumen PDF.</p>
                             </div>
 
                             <div>
@@ -162,7 +162,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Foto Serah Terima</label>
                             <input type="file" name="issue_photo" accept="image/*"
                                    class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                            <p class="text-xs text-gray-400 mt-1">Opsional — bukti foto saat barang/seragam diambil karyawan.</p>
+                            <p class="text-xs text-gray-400 mt-1">Opsional, sebagai bukti foto saat barang/seragam diambil karyawan.</p>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">

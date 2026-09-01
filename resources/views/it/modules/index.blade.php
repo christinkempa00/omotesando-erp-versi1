@@ -1,7 +1,7 @@
 <x-app-layout sidebar="it">
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Kontrol Modul — Mode Pemeliharaan
+            Kontrol Modul: Mode Pemeliharaan
         </h2>
     </x-slot>
 
@@ -9,7 +9,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <p class="text-sm text-gray-500">
-                Tandai halaman tertentu sebagai "Dalam Pemeliharaan" — role selain IT/Admin yang mencoba
+                Tandai halaman tertentu sebagai "Dalam Pemeliharaan". Role selain IT/Admin yang mencoba
                 mengakses halaman tersebut akan otomatis diarahkan ke halaman pemberitahuan.
             </p>
 

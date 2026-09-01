@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Pengajuan — {{ auth()->user()->branch?->name }}
+                Pengajuan Outlet {{ auth()->user()->branch?->name }}
             </h2>
             @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_REQUESTS))
                 <div class="flex flex-wrap gap-2" x-data="{ quickOpen: false }">

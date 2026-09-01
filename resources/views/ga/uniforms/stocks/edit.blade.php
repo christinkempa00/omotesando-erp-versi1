@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('ga.uniforms.stocks.show', $stock)" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Varian — {{ $stock->stock_code }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Varian {{ $stock->stock_code }}</h2>
         </div>
     </x-slot>
 

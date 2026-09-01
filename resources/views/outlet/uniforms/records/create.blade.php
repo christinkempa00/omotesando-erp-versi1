@@ -150,7 +150,7 @@
                             <label class="block text-sm font-medium text-gray-700 mb-1">Foto Serah Terima</label>
                             <input type="file" name="issue_photo" accept="image/*"
                                    class="w-full text-sm text-gray-600 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100">
-                            <p class="text-xs text-gray-400 mt-1">Opsional — bukti foto saat barang/seragam diambil karyawan.</p>
+                            <p class="text-xs text-gray-400 mt-1">Opsional, sebagai bukti foto saat barang/seragam diambil karyawan.</p>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">

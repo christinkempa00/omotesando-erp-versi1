@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('ga.uniforms.records.show', $record)" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Serah-terima — {{ $record->record_code }}</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Serah-terima {{ $record->record_code }}</h2>
         </div>
     </x-slot>
 
@@ -39,7 +39,7 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-700 mb-1">Seragam</label>
                         <p class="text-sm text-gray-600">{{ $record->summaryLabel() }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Item tidak bisa diganti setelah dibuat — hapus &amp; buat ulang kalau salah pilih.</p>
+                        <p class="text-xs text-gray-400 mt-1">Item tidak bisa diganti setelah dibuat. Hapus &amp; buat ulang kalau salah pilih.</p>
                     </div>
 
                     <div>

@@ -121,7 +121,7 @@
                 </div>
             @elseif (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_RECORDS))
                 <div class="bg-white shadow-sm rounded-lg p-6">
-                    <h3 class="font-medium text-gray-800 mb-3">Tandai Dikembalikan — Pemeriksaan Pengembalian Barang</h3>
+                    <h3 class="font-medium text-gray-800 mb-3">Tandai Dikembalikan: Pemeriksaan Pengembalian Barang</h3>
                     <form method="POST" action="{{ route('outlet.uniforms.records.return', $record) }}" class="space-y-4">
                         @csrf
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">

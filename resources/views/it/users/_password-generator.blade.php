@@ -25,7 +25,7 @@
         Generate Password Acak
     </button>
     <p class="text-xs text-gray-500">
-        Password ini hanya tampil sekali di sini — sampaikan ke user secara manual lewat WA/Telegram
+        Password ini hanya tampil sekali di sini, sampaikan ke user secara manual lewat WA/Telegram
         (email belum aktif). User akan diminta ganti password ini sendiri saat login pertama.
     </p>
 </div>
