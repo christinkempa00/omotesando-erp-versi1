@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('ga.worklogs.show', $workLog)" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Work Log</h2>
+            <h2 class="font-semibold text-xl text-ink leading-tight">Edit Work Log</h2>
         </div>
     </x-slot>
 
@@ -23,7 +23,7 @@
                  update di bawah (bukan nested form), lihat komentar di
                  _form.blade.php. --}}
             @if ($workLog->attachments->isNotEmpty())
-                <div class="bg-white shadow-sm rounded-lg p-6 mb-4">
+                <div class="glass-panel p-6 mb-4">
                     <p class="text-xs font-medium text-gray-500 mb-2">Foto yang sudah ada</p>
                     <div class="grid grid-cols-4 sm:grid-cols-8 gap-2">
                         @foreach ($workLog->attachments as $attachment)
@@ -51,7 +51,7 @@
 
                 <div class="flex justify-end gap-3 mt-6">
                     <a href="{{ route('ga.worklogs.show', $workLog) }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan Perubahan</button>
+                    <button type="submit" class="btn-gold">Simpan Perubahan</button>
                 </div>
             </form>
         </div>
