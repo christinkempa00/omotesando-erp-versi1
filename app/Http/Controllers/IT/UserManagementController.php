@@ -89,7 +89,7 @@ class UserManagementController extends Controller
             'is_active' => $request->boolean('is_active'),
         ]);
 
-        $user->roles()->sync($validated['roles']);
+        $user->roles()->sync($this->roleIdsGuardingSelfLockout($request, $user, $validated['roles']));
         $user->modules()->sync($this->moduleIdsGuardingSelfLockout($request, $user, $validated['modules'] ?? []));
         $this->syncPageAccess($user, $validated['page_access'] ?? []);
 
@@ -155,6 +155,29 @@ class UserManagementController extends Controller
         }
 
         return $moduleIds;
+    }
+
+    /**
+     * Cegah IT mengunci dirinya sendiri: jika user meng-edit akunnya sendiri,
+     * role IT dipaksa tetap ada walau checkbox-nya ter-uncheck di form.
+     * (Route /it/* dijaga role:IT di level grup — kehilangan role IT = 403 total.)
+     *
+     * @param  array<int|string>  $roleIds
+     * @return array<int|string>
+     */
+    private function roleIdsGuardingSelfLockout(Request $request, User $user, array $roleIds): array
+    {
+        if ($user->id !== $request->user()->id) {
+            return $roleIds;
+        }
+
+        $itRoleId = Role::where('name', 'IT')->value('id');
+
+        if ($itRoleId !== null && ! in_array((string) $itRoleId, array_map('strval', $roleIds), true)) {
+            $roleIds[] = $itRoleId;
+        }
+
+        return $roleIds;
     }
 
     /**
