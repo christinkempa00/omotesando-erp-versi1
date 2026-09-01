@@ -2,6 +2,7 @@
 
 namespace Tests\Feature\Auth;
 
+use App\Models\Module;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,6 +20,13 @@ class EnsurePasswordChangedTest extends TestCase
             'password_must_change' => true,
         ]);
         $user->roles()->attach(Role::create(['name' => Role::GA]));
+        // '/dashboard' sekarang digerbang module:dashboard — akun ini perlu
+        // modulnya supaya test-test redirect-ke-dashboard di bawah tetap
+        // mewakili skenario akun GA yang wajar (bukan yg sengaja dibatasi
+        // spt kasus Amanda).
+        $user->modules()->attach(
+            Module::firstOrCreate(['key' => Module::DASHBOARD], ['label' => 'Dashboard', 'is_active' => true])
+        );
 
         return $user;
     }

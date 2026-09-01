@@ -37,5 +37,15 @@ class ModuleSeeder extends Seeder
             ['label' => 'Outlet', 'description' => 'Laporan foto kebersihan outlet saat opening & closing', 'is_active' => true]
         );
         $monitoring->roles()->syncWithoutDetaching($monitoringRoleIds);
+
+        // Cuma role GA — '/dashboard' cuma dipakai role GA (Head & Outlet
+        // py dashboard sendiri, head.dashboard & outlet.dashboard, tidak
+        // digerbang modul ini).
+        $dashboardRoleIds = Role::whereIn('name', [Role::GA])->pluck('id');
+        $dashboard = Module::updateOrCreate(
+            ['key' => Module::DASHBOARD],
+            ['label' => 'Dashboard', 'description' => 'Ringkasan statistik semua modul GA', 'is_active' => true]
+        );
+        $dashboard->roles()->syncWithoutDetaching($dashboardRoleIds);
     }
 }

@@ -28,6 +28,7 @@ class Module extends Model
     public const MAINTENANCE = 'maintenance';
     public const WORK_LOG = 'work_log';
     public const OUTLET_MONITORING = 'outlet';
+    public const DASHBOARD = 'dashboard';
 
     /**
      * Halaman khusus IT (bukan modul GA) — ikut sistem toggle module_user

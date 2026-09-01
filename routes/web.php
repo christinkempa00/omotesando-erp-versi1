@@ -63,8 +63,11 @@ Route::middleware('auth')->group(function () {
 
 // Satu-satunya dashboard untuk role GA (dulu ada 2: placeholder
 // generic '/dashboard' dan '/ga/dashboard' — sekarang digabung jadi 1).
+// module:dashboard supaya IT bisa sembunyikan dashboard ringkasan ini dari
+// akun yang cuma dikasih 1 modul spesifik (mis. Amanda — cuma Inventaris
+// Seragam — tidak perlu lihat ringkasan modul lain yang tidak dia akses).
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'role:GA'])
+    ->middleware(['auth', 'role:GA', 'module:'.Module::DASHBOARD])
     ->name('dashboard');
 
 Route::middleware(['auth', 'role:GA'])

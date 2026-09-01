@@ -1,6 +1,6 @@
 @php
     $navMain = [
-        ['route' => 'dashboard', 'pattern' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home'],
+        ['route' => 'dashboard', 'pattern' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'home', 'module' => \App\Models\Module::DASHBOARD],
     ];
 
     // Restrukturisasi 03/08/2026 — label Inggris + berjenjang: "Asset
@@ -94,6 +94,7 @@
 
     <nav class="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         @foreach ($navMain as $item)
+            @continue(! $hasModuleAccess($item['module']))
             <a href="{{ route($item['route']) }}" @click="sidebarOpen = false"
                class="sidebar-nav-item {{ request()->routeIs($item['pattern']) ? 'sidebar-nav-item-active' : '' }}">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
