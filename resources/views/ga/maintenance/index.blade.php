@@ -1,11 +1,11 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-ink leading-tight">
                 Jadwal Pemeliharaan
             </h2>
             <a href="{{ route('ga.maintenance.create') }}"
-               class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+               class="inline-flex items-center btn-gold">
                 Buat Pemeliharaan
             </a>
         </div>
@@ -67,19 +67,19 @@
 
             {{-- Kartu ringkasan --}}
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
+                <div class="glass-panel p-4 flex flex-col">
                     <p class="text-sm text-gray-500">Terjadwal</p>
                     <p class="text-2xl font-bold text-blue-600 mt-auto">{{ $summary['scheduled'] }}</p>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
+                <div class="glass-panel p-4 flex flex-col">
                     <p class="text-sm text-gray-500">Sedang Berjalan</p>
                     <p class="text-2xl font-bold text-yellow-600 mt-auto">{{ $summary['in_progress'] }}</p>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
+                <div class="glass-panel p-4 flex flex-col">
                     <p class="text-sm text-gray-500">Selesai</p>
                     <p class="text-2xl font-bold text-green-600 mt-auto">{{ $summary['completed'] }}</p>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
+                <div class="glass-panel p-4 flex flex-col">
                     <p class="text-sm text-gray-500">Terlambat</p>
                     <p class="text-2xl font-bold text-red-600 mt-auto">{{ $summary['overdue'] }}</p>
                 </div>
@@ -169,7 +169,7 @@
                                             <button type="submit" class="text-sm text-red-600 hover:text-red-800">Hapus</button>
                                         </form>
                                     </div>
-                                    <a :href="selectedJob.showUrl" class="text-sm text-indigo-600 hover:text-indigo-800 font-medium">Buka Detail Lengkap &rarr;</a>
+                                    <a :href="selectedJob.showUrl" class="text-sm text-gold-600 hover:text-gold-700 font-medium">Buka Detail Lengkap &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -210,16 +210,16 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @include('ga.maintenance._mini-calendar')
 
-                <div class="bg-white shadow-sm rounded-lg p-4">
+                <div class="glass-panel p-4">
                     <h3 class="text-sm font-semibold text-gray-700 mb-3">Jadwal Mendatang</h3>
                     <div class="space-y-3">
                         @forelse ($upcomingJobs as $job)
                             <a href="{{ route('ga.maintenance.show', $job) }}" class="flex items-start gap-3 group">
-                                <div class="w-9 h-9 rounded-full bg-indigo-50 flex items-center justify-center text-indigo-600 text-xs font-semibold shrink-0">
+                                <div class="w-9 h-9 rounded-full bg-gold-50 flex items-center justify-center text-gold-600 text-xs font-semibold shrink-0">
                                     {{ optional($job->scheduled_date)->format('d') }}
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-sm font-medium text-gray-800 truncate group-hover:text-indigo-600">{{ $job->title }}</p>
+                                    <p class="text-sm font-medium text-gray-800 truncate group-hover:text-gold-600">{{ $job->title }}</p>
                                     <p class="text-xs text-gray-500">
                                         {{ $job->scheduled_date?->translatedFormat('d M') }}
                                         @if ($job->scheduled_time)
@@ -232,7 +232,7 @@
                             <p class="text-sm text-gray-400">Tidak ada jadwal mendatang.</p>
                         @endforelse
                     </div>
-                    <a href="#daftar-pemeliharaan" class="mt-4 inline-block text-sm text-indigo-600 hover:text-indigo-800">
+                    <a href="#daftar-pemeliharaan" class="mt-4 inline-block text-sm text-gold-600 hover:text-gold-700">
                         Lihat Semua &rarr;
                     </a>
                 </div>
@@ -245,7 +245,7 @@
             </x-filter-bar>
 
             {{-- Tabel --}}
-            <div id="daftar-pemeliharaan" class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div id="daftar-pemeliharaan" class="glass-panel overflow-hidden">
                 <div class="overflow-x-auto">
                     <table class="min-w-full divide-y divide-gray-200 text-sm">
                         <thead class="bg-gray-50">
