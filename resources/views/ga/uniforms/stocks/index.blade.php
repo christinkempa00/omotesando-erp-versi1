@@ -3,14 +3,14 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
                 <x-back-link :href="route('ga.uniforms.records.index')" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-ink leading-tight">
                     Manajemen Stok
                 </h2>
             </div>
             @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
                 <div class="flex flex-wrap gap-2">
                     <a href="{{ route('ga.uniforms.stocks.create') }}"
-                       class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                       class="inline-flex items-center btn-gold">
                         Buat Varian
                     </a>
                 </div>
@@ -34,18 +34,18 @@
 
             {{-- Kartu ringkasan --}}
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 items-stretch">
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
+                <div class="glass-panel p-4 flex flex-col">
                     <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Stok Tersedia</p>
                     <p class="text-2xl font-bold text-gray-800 mt-auto pt-1">{{ $summary['total_available'] }}</p>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
+                <div class="glass-panel p-4 flex flex-col">
                     <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Belum Dikembalikan</p>
                     <p class="text-2xl font-bold text-blue-600 mt-auto pt-1">{{ $summary['pending_return'] }}</p>
-                    <a href="{{ route('ga.uniforms.records.index', ['status' => \App\Models\GA\UniformRecord::STATUS_ISSUED]) }}" class="text-xs text-indigo-600 hover:underline mt-1">
+                    <a href="{{ route('ga.uniforms.records.index', ['status' => \App\Models\GA\UniformRecord::STATUS_ISSUED]) }}" class="text-xs text-gold-600 hover:text-gold-700 mt-1">
                         Lihat di Inventaris Seragam &rarr;
                     </a>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
+                <div class="glass-panel p-4 flex flex-col">
                     <p class="text-xs font-medium text-gray-400 uppercase tracking-wide">Stok Tidak Layak</p>
                     <p class="text-2xl font-bold text-red-600 mt-auto pt-1">{{ $summary['total_unusable'] }}</p>
                 </div>
@@ -55,7 +55,7 @@
             <x-filter-bar :action="route('ga.uniforms.stocks.index')" search-name="stock_search" :search-value="$stockSearch" search-placeholder="Cari tipe/kode/warna..." :reset-url="route('ga.uniforms.stocks.index')">
                 <div>
                     <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                         <option value="">Semua Outlet</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
@@ -65,7 +65,7 @@
                 <x-filter-pills name="status" label="Kondisi" :options="$statusLabels" :selected="$selectedStatus" />
             </x-filter-bar>
 
-            <div class="bg-white border border-gray-200 rounded-lg shadow-sm overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <p class="text-xs text-gray-400">Per kombinasi outlet, jenis seragam, dan warna.</p>
                 </div>
@@ -183,10 +183,10 @@
             </div>
 
             {{-- Audit trail stok (embedded, tanpa halaman terpisah) --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100 flex items-center justify-between">
                     <h3 class="text-sm font-semibold text-gray-700">Riwayat</h3>
-                    <a href="{{ route('ga.uniforms.movements.index') }}" class="text-xs text-indigo-600 hover:underline">Lihat Semua &rarr;</a>
+                    <a href="{{ route('ga.uniforms.movements.index') }}" class="text-xs text-gold-600 hover:text-gold-700">Lihat Semua &rarr;</a>
                 </div>
                 <div class="divide-y divide-gray-100">
                     @forelse ($recentMovements as $movement)
