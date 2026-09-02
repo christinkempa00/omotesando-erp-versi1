@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div>
                 <x-back-link :href="route('ga.uniforms.stocks.index')" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-ink leading-tight">
                     {{ $first->uniform_type }}
                     <span class="ml-2 text-sm text-gray-400 font-normal">{{ $first->outletLabel() }}{{ $first->color ? ' / '.$first->color : '' }}</span>
                 </h2>
@@ -34,7 +34,7 @@
             @endif
 
             {{-- Detail grup --}}
-            <div class="bg-white shadow-sm rounded-lg p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="glass-panel p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div class="sm:col-span-1">
                     @if ($first->stock_photo_path)
                         <img src="{{ Storage::url($first->stock_photo_path) }}" class="w-full rounded-lg object-cover">
@@ -57,7 +57,7 @@
             </div>
 
             {{-- Per ukuran --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="text-sm font-semibold text-gray-700">Semua Ukuran</h3>
                     <p class="text-xs text-gray-400 mt-0.5">Klik salah satu ukuran untuk Restock atau lihat riwayat movement-nya.</p>
