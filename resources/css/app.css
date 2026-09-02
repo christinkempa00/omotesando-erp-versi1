@@ -58,6 +58,19 @@
         transform: translateY(-1px);
     }
 
+    /* Varian kecil btn-gold untuk tombol toolbar/sekunder. */
+    .btn-gold-sm {
+        @apply inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg
+               text-xs font-medium text-white border-0 cursor-pointer transition-all duration-150;
+        background: linear-gradient(135deg, theme('colors.gold.500') 0%, theme('colors.gold.600') 100%);
+        box-shadow: 0 3px 10px rgba(200,155,44,0.3);
+    }
+    .btn-gold-sm:hover:not(:disabled) {
+        background: linear-gradient(135deg, theme('colors.gold.600') 0%, theme('colors.gold.700') 100%);
+        box-shadow: 0 5px 14px rgba(200,155,44,0.4);
+        transform: translateY(-1px);
+    }
+
     /* Kartu ringkasan dashboard (stat/KPI) — acuan wonderland. */
     .stat-card {
         @apply glass-panel flex items-start gap-4 p-6;

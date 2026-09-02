@@ -3,12 +3,12 @@
         <div class="flex items-start justify-between">
             <div class="print:hidden">
                 <x-back-link :href="route('ga.assets.show', $asset)" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-ink leading-tight">
                     Label QR {{ $asset->asset_code }}
                 </h2>
             </div>
             <div class="print:hidden flex items-center gap-3">
-                <select id="qr-size-select" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></select>
+                <select id="qr-size-select" class="rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500"></select>
                 <button type="button" id="qr-download-btn" class="px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-md hover:bg-emerald-700">
                     Download Gambar (PNG)
                 </button>

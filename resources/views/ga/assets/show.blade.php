@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div>
                 <x-back-link :href="route('ga.assets.index')" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-ink leading-tight">
                     {{ $asset->name }} <span class="text-gray-400 font-normal">({{ $asset->asset_code }})</span>
                 </h2>
             </div>
@@ -33,7 +33,7 @@
                 </div>
             @endif
 
-            <div class="bg-white shadow-sm rounded-lg p-6 space-y-6">
+            <div class="glass-panel p-6 space-y-6">
                 <div class="grid grid-cols-2 gap-4 sm:max-w-md">
                     <div>
                         <p class="text-xs font-medium text-gray-500 mb-1">Foto Aset</p>
@@ -81,7 +81,7 @@
             </div>
 
             <div>
-                <a href="{{ route('ga.assets.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">&larr; Kembali ke daftar aset</a>
+                <a href="{{ route('ga.assets.index') }}" class="text-sm text-gold-600 hover:text-gold-700">&larr; Kembali ke daftar aset</a>
             </div>
         </div>
     </div>

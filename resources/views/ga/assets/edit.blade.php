@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div>
             <x-back-link :href="route('ga.assets.show', $asset)" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Aset {{ $asset->asset_code }}</h2>
+            <h2 class="font-semibold text-xl text-ink leading-tight">Edit Aset {{ $asset->asset_code }}</h2>
         </div>
     </x-slot>
 

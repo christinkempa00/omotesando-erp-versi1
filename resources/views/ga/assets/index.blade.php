@@ -1,12 +1,12 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-ink leading-tight">
                 Inventaris Aset
             </h2>
             <div class="flex gap-2">
                 <a href="{{ route('ga.assets.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                   class="inline-flex items-center btn-gold">
                     Buat Aset
                 </a>
             </div>
@@ -28,7 +28,7 @@
                     <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index')">
                         <div>
                             <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                            <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                            <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                                 <option value="">Semua Outlet</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
@@ -42,9 +42,9 @@
                             <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Tanggal Beli</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="date" name="date_from" value="{{ $dateFrom }}" placeholder="Dari"
-                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                                 <input type="date" name="date_to" value="{{ $dateTo }}" placeholder="Sampai"
-                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
                             </div>
                         </div>
                     </x-filter-bar>
@@ -58,11 +58,11 @@
             {{-- Catatan: sengaja BUKAN <form>, supaya tidak nested dengan <form> hapus
                  per-baris di dalam tabel (nested <form> invalid di HTML dan akan merusak
                  submit). Checkbox terpilih dikumpulkan lalu di-navigate via JS. --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div id="qr-select-bar" style="display:none" class="items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
                     <span id="qr-select-count" class="text-xs text-gray-500">Belum ada aset dipilih</span>
                     <button type="button" id="qr-select-submit" disabled
-                            class="px-3 py-1.5 bg-indigo-600 text-white text-xs font-medium rounded-md hover:bg-indigo-700 disabled:opacity-40 disabled:cursor-not-allowed">
+                            class="btn-gold-sm disabled:opacity-40 disabled:cursor-not-allowed">
                         Unduh QR Terpilih
                     </button>
                 </div>
@@ -71,7 +71,7 @@
                     <thead class="bg-gray-50">
                         <tr>
                             <th class="qr-select-col px-4 py-3" style="display:none">
-                                <input type="checkbox" id="qr-select-all" class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                <input type="checkbox" id="qr-select-all" class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                             </th>
                             <th class="px-4 py-3"></th>
                             <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Aset</th>
@@ -87,7 +87,7 @@
                         @forelse ($assets as $asset)
                             <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.assets.show', $asset) }}'">
                                 <td class="qr-select-col px-4 py-3" style="display:none" onclick="event.stopPropagation()">
-                                    <input type="checkbox" value="{{ $asset->id }}" class="qr-select-row rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    <input type="checkbox" value="{{ $asset->id }}" class="qr-select-row rounded border-gray-300 text-gold-600 focus:ring-gold-500">
                                 </td>
                                 <td class="px-4 py-3">
                                     @if ($asset->image_path)
@@ -120,7 +120,7 @@
                                                 <rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h.01"/>
                                             </svg>
                                         </a>
-                                        <a href="{{ route('ga.assets.edit', $asset) }}" title="Edit" class="text-indigo-600 hover:text-indigo-900">
+                                        <a href="{{ route('ga.assets.edit', $asset) }}" title="Edit" class="text-gold-600 hover:text-gold-700">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7"/>
                                                 <path d="M18.5 2.5a1.71 1.71 0 0 1 2 2L12 13l-4 1 1-4Z"/>
