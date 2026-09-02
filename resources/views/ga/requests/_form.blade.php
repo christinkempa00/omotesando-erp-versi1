@@ -164,7 +164,7 @@
 
         <button type="button" @click="items.push({ item_name: '', type: '', unit: 'Pcs', qty: 1, price_per_unit: 0, vendor_name: '' })"
                 class="mt-2 inline-flex items-center px-3 py-1.5 text-sm text-gold-600 hover:text-gold-700 rounded-md">
-            Buat item
+            Tambah Item
         </button>
         <p class="text-xs text-gray-400 mt-1">Harga Satuan tiap item wajib diisi saat "Kirim Pengajuan" (boleh 0 dulu utk semua item selama masih disimpan sbg draft).</p>
 
@@ -180,44 +180,38 @@
             </button>
         </div>
 
-        <div class="mt-2 space-y-2">
-            <template x-if="discountEnabled">
-                <div class="flex items-center gap-2">
-                    <label class="text-sm text-gray-600 w-24 shrink-0">Diskon (%)</label>
-                    <input type="number" min="0" max="100" step="0.01" name="discount_percent" x-model="discountPercent"
-                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
-                    <span class="text-xs text-gray-500">&minus; <span x-text="rupiah(discountAmount)"></span></span>
-                    <button type="button" @click="discountEnabled = false; discountPercent = 0" class="text-xs text-red-500 hover:text-red-700">Hapus</button>
-                </div>
-            </template>
-            <template x-if="pphEnabled">
-                <div class="flex items-center gap-2">
-                    <label class="text-sm text-gray-600 w-24 shrink-0">PPH (%)</label>
-                    <input type="number" min="0" max="100" step="0.01" name="pph_percent" x-model="pphPercent"
-                           class="w-28 rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm">
-                    <span class="text-xs text-gray-500">&minus; <span x-text="rupiah(pphAmount)"></span></span>
-                    <button type="button" @click="pphEnabled = false; pphPercent = 0" class="text-xs text-red-500 hover:text-red-700">Hapus</button>
-                </div>
-            </template>
-        </div>
-
-        <div class="mt-4 glass-panel-static p-4 space-y-1 text-right">
-            <div class="text-sm text-gray-500">
-                Sub Total: <span class="text-gray-700 font-medium" x-text="rupiah(subtotal)"></span>
+        <div class="mt-4 glass-panel-static p-4 space-y-2">
+            <div class="flex items-center justify-between text-sm text-gray-600">
+                <span>Sub Total</span>
+                <span class="text-gray-700 font-medium" x-text="rupiah(subtotal)"></span>
             </div>
             <template x-if="discountEnabled">
-                <div class="text-sm text-gray-500">
-                    Diskon (<span x-text="discountPercent"></span>%): <span class="text-gray-700 font-medium">&minus; <span x-text="rupiah(discountAmount)"></span></span>
+                <div class="flex items-center justify-between text-sm text-gray-600">
+                    <span>Diskon</span>
+                    <div class="flex items-center gap-2">
+                        <input type="number" min="0" max="100" step="0.01" name="discount_percent" x-model="discountPercent"
+                               class="w-16 rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm text-right">
+                        <span class="text-gray-500">%</span>
+                        <span class="text-gray-700 font-medium w-24 text-right">&minus; <span x-text="rupiah(discountAmount)"></span></span>
+                        <button type="button" @click="discountEnabled = false; discountPercent = 0" class="text-xs text-red-500 hover:text-red-700 shrink-0">Hapus</button>
+                    </div>
                 </div>
             </template>
             <template x-if="pphEnabled">
-                <div class="text-sm text-gray-500">
-                    PPH (<span x-text="pphPercent"></span>%): <span class="text-gray-700 font-medium">&minus; <span x-text="rupiah(pphAmount)"></span></span>
+                <div class="flex items-center justify-between text-sm text-gray-600">
+                    <span>PPH</span>
+                    <div class="flex items-center gap-2">
+                        <input type="number" min="0" max="100" step="0.01" name="pph_percent" x-model="pphPercent"
+                               class="w-16 rounded-md border-gray-300 shadow-sm focus:border-gold-500 focus:ring-gold-500 text-sm text-right">
+                        <span class="text-gray-500">%</span>
+                        <span class="text-gray-700 font-medium w-24 text-right">&minus; <span x-text="rupiah(pphAmount)"></span></span>
+                        <button type="button" @click="pphEnabled = false; pphPercent = 0" class="text-xs text-red-500 hover:text-red-700 shrink-0">Hapus</button>
+                    </div>
                 </div>
             </template>
-            <div class="pt-2 mt-1 border-t border-gold-500/20">
-                <span class="text-sm text-gray-500">Total:</span>
-                <span class="text-lg font-bold text-gold-600 ml-2" x-text="rupiah(grandTotal)"></span>
+            <div class="flex items-center justify-between pt-2 mt-1 border-t border-gold-500/20">
+                <span class="text-sm font-semibold text-gray-700">Total</span>
+                <span class="text-lg font-bold text-gold-600" x-text="rupiah(grandTotal)"></span>
             </div>
         </div>
     </div>
