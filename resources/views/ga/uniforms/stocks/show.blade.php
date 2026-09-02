@@ -3,7 +3,7 @@
         <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
             <div>
                 <x-back-link :href="route('ga.uniforms.stocks.index')" />
-                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                <h2 class="font-semibold text-xl text-ink leading-tight">
                     {{ $stock->uniform_type }}
                     <span class="ml-2 font-mono text-sm text-gray-400">{{ $stock->stock_code }}</span>
                 </h2>
@@ -40,7 +40,7 @@
             @endif
 
             {{-- Detail --}}
-            <div class="bg-white shadow-sm rounded-lg p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
+            <div class="glass-panel p-6 grid grid-cols-1 sm:grid-cols-3 gap-6">
                 <div class="sm:col-span-1">
                     @if ($stock->stock_photo_path)
                         <img src="{{ Storage::url($stock->stock_photo_path) }}" class="w-full rounded-lg object-cover">
@@ -69,14 +69,14 @@
 
             @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
                 <div class="max-w-sm">
-                    <div class="bg-white shadow-sm rounded-lg p-5">
+                    <div class="glass-panel p-5">
                         <h3 class="text-sm font-semibold text-gray-700 mb-3">Restock (+)</h3>
                         <form method="POST" action="{{ route('ga.uniforms.stocks.restock', $stock) }}" class="space-y-2">
                             @csrf
                             <input type="number" name="quantity" min="1" required placeholder="Jumlah"
-                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                             <input type="text" name="notes" placeholder="Catatan (opsional)"
-                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-indigo-500 focus:ring-indigo-500">
+                                   class="w-full rounded-md border-gray-300 shadow-sm text-sm focus:border-gold-500 focus:ring-gold-500">
                             <button type="submit" class="w-full px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700">
                                 Tambah Stok
                             </button>
@@ -86,7 +86,7 @@
             @endif
 
             {{-- Riwayat movement --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="glass-panel overflow-hidden">
                 <div class="px-6 py-4 border-b border-gray-100">
                     <h3 class="text-sm font-semibold text-gray-700">Riwayat Movement</h3>
                 </div>
