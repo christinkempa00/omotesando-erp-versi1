@@ -149,7 +149,10 @@ class HeadController extends Controller
             });
         }
 
-        $requests = $query->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $requests = $query->paginate($perPage)->withQueryString();
 
         return view('head.requests.index', [
             'requests' => $requests,

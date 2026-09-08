@@ -1,6 +1,6 @@
 <x-app-layout sidebar="outlet">
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-ink leading-tight">
             Jadwal Pemeliharaan Outlet {{ auth()->user()->branch?->name }}
         </h2>
     </x-slot>
@@ -10,20 +10,20 @@
 
             {{-- Kartu ringkasan --}}
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Terjadwal</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Terjadwal</p>
                     <p class="text-2xl font-bold text-blue-600 mt-auto">{{ $summary['scheduled'] }}</p>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Sedang Berjalan</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Sedang Berjalan</p>
                     <p class="text-2xl font-bold text-yellow-600 mt-auto">{{ $summary['in_progress'] }}</p>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Selesai</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Selesai</p>
                     <p class="text-2xl font-bold text-green-600 mt-auto">{{ $summary['completed'] }}</p>
                 </div>
-                <div class="bg-white shadow-sm rounded-lg p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Terlambat</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Terlambat</p>
                     <p class="text-2xl font-bold text-red-600 mt-auto">{{ $summary['overdue'] }}</p>
                 </div>
             </div>
@@ -33,34 +33,34 @@
                 <x-filter-pills name="type" label="Tipe" :options="$typeLabels" :selected="$selectedType" all-label="Semua Tipe" />
             </x-filter-bar>
 
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="card-flat overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-hairline text-sm">
+                        <thead class="border-b border-hairline">
                             <tr>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Kode</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Pekerjaan</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Aset</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Jadwal</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Prioritas</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Status</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Kode</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Pekerjaan</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aset</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Jadwal</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Prioritas</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody class="divide-y divide-hairline">
                             @forelse ($jobs as $job)
-                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('outlet.maintenance.show', $job) }}'">
-                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ $job->job_code }}</td>
+                                <tr class="hover:bg-[#FDFBF4] cursor-pointer" onclick="window.location='{{ route('outlet.maintenance.show', $job) }}'">
+                                    <td class="px-4 py-3 font-mono text-xs text-ink-muted">{{ $job->job_code }}</td>
                                     <td class="px-4 py-3">
-                                        <div class="font-medium text-gray-800">{{ $job->title }}</div>
-                                        <div class="text-xs text-gray-500">{{ $typeLabels[$job->type] ?? $job->type }}</div>
+                                        <div class="font-medium text-ink">{{ $job->title }}</div>
+                                        <div class="text-xs text-ink-muted">{{ $typeLabels[$job->type] ?? $job->type }}</div>
                                     </td>
-                                    <td class="px-4 py-3 text-gray-600">
+                                    <td class="px-4 py-3 text-ink-muted">
                                         {{ $job->asset?->name ?? '—' }}
                                     </td>
-                                    <td class="px-4 py-3 text-gray-600">
+                                    <td class="px-4 py-3 text-ink-muted">
                                         {{ optional($job->scheduled_date)->format('d M Y') }}
                                         @if ($job->scheduled_time)
-                                            <span class="text-gray-400">{{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}</span>
+                                            <span class="text-ink-muted">{{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}</span>
                                         @endif
                                         @if ($job->isOverdue())
                                             <span class="ml-1 text-xs font-medium text-red-600">(terlambat)</span>
@@ -79,7 +79,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-gray-400">
+                                    <td colspan="6" class="px-4 py-8 text-center text-ink-muted">
                                         Belum ada pekerjaan pemeliharaan.
                                     </td>
                                 </tr>
@@ -89,7 +89,7 @@
                 </div>
             </div>
 
-            <div>{{ $jobs->links() }}</div>
+            <div><x-table-footer :paginator="$jobs" /></div>
         </div>
     </div>
 </x-app-layout>

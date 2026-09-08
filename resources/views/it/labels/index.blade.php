@@ -1,13 +1,9 @@
 <x-app-layout sidebar="it">
     <x-slot name="header">
-        <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                Kelola Label
-            </h2>
-            <a href="{{ route('it.board.index') }}" class="text-sm text-gold-600 hover:text-gold-700 font-medium">
-                &larr; Kembali ke Papan Kerja
-            </a>
-        </div>
+        <x-back-link :href="route('it.board.index')" parent="Papan Kerja" current="Kelola Label" />
+        <h2 class="font-semibold text-xl text-ink leading-tight">
+            Kelola Label
+        </h2>
     </x-slot>
 
     @php
@@ -37,43 +33,43 @@
                 </div>
             @endif
 
-            <div class="glass-panel p-5">
-                <h3 class="font-medium text-gray-800 mb-3">Tambah Label Baru</h3>
+            <div class="card-flat p-5">
+                <h3 class="font-medium text-ink mb-3">Tambah Label Baru</h3>
                 <form method="POST" action="{{ route('it.labels.store') }}" class="flex flex-wrap items-end gap-3">
                     @csrf
                     <div class="flex-1 min-w-[160px]">
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Nama Label</label>
+                        <label class="block text-xs font-medium text-ink-muted mb-1">Nama Label</label>
                         <input type="text" name="name" value="{{ old('name') }}" required maxlength="50"
-                               class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-500">
+                               class="w-full px-3.5 py-2.5 border border-hairline rounded-lg text-sm focus:border-action focus:ring-2 focus:ring-action">
                     </div>
                     <div class="min-w-[140px]">
-                        <label class="block text-xs font-medium text-gray-500 mb-1">Warna</label>
-                        <select name="color" required class="w-full px-3.5 py-2.5 border border-gray-300 rounded-lg text-sm focus:border-gold-500 focus:ring-2 focus:ring-gold-500">
+                        <label class="block text-xs font-medium text-ink-muted mb-1">Warna</label>
+                        <select name="color" required class="w-full px-3.5 py-2.5 border border-hairline rounded-lg text-sm focus:border-action focus:ring-2 focus:ring-action">
                             @foreach ($colors as $color)
                                 <option value="{{ $color }}">{{ ucfirst($color) }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <button type="submit" class="px-5 py-2.5 text-sm font-medium rounded-lg bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_4px_12px_-2px_rgba(200,155,44,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(200,155,44,0.5)] transition">
+                    <button type="submit" class="btn-primary">
                         Tambah
                     </button>
                 </form>
             </div>
 
-            <div class="glass-panel overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="font-medium text-gray-800">Label Tersedia</h3>
+            <div class="card-flat overflow-hidden">
+                <div class="px-6 py-4 border-b border-hairline">
+                    <h3 class="font-medium text-ink">Label Tersedia</h3>
                 </div>
-                <div class="divide-y divide-gray-100">
+                <div class="divide-y divide-hairline">
                     @forelse ($labels as $label)
                         <div class="px-6 py-3 flex items-center justify-between text-sm">
                             <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium {{ $colorClasses[$label->color] ?? 'bg-gray-100 text-gray-700' }}">
                                 {{ $label->name }}
                             </span>
-                            <span class="text-xs text-gray-400">{{ $label->tasks_count }} task</span>
+                            <span class="text-xs text-ink-muted">{{ $label->tasks_count }} task</span>
                         </div>
                     @empty
-                        <p class="px-6 py-10 text-center text-sm text-gray-400 italic">Belum ada label.</p>
+                        <p class="px-6 py-10 text-center text-sm text-ink-muted italic">Belum ada label.</p>
                     @endforelse
                 </div>
             </div>

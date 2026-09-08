@@ -5,7 +5,7 @@
                 Jadwal Pemeliharaan
             </h2>
             <a href="{{ route('ga.maintenance.create') }}"
-               class="inline-flex items-center btn-gold">
+               class="inline-flex items-center btn-primary">
                 Buat Pemeliharaan
             </a>
         </div>
@@ -67,20 +67,20 @@
 
             {{-- Kartu ringkasan --}}
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 items-stretch">
-                <div class="glass-panel p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Terjadwal</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Terjadwal</p>
                     <p class="text-2xl font-bold text-blue-600 mt-auto">{{ $summary['scheduled'] }}</p>
                 </div>
-                <div class="glass-panel p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Sedang Berjalan</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Sedang Berjalan</p>
                     <p class="text-2xl font-bold text-yellow-600 mt-auto">{{ $summary['in_progress'] }}</p>
                 </div>
-                <div class="glass-panel p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Selesai</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Selesai</p>
                     <p class="text-2xl font-bold text-green-600 mt-auto">{{ $summary['completed'] }}</p>
                 </div>
-                <div class="glass-panel p-4 flex flex-col">
-                    <p class="text-sm text-gray-500">Terlambat</p>
+                <div class="card-flat p-4 flex flex-col">
+                    <p class="text-sm text-ink-muted">Terlambat</p>
                     <p class="text-2xl font-bold text-red-600 mt-auto">{{ $summary['overdue'] }}</p>
                 </div>
             </div>
@@ -107,7 +107,7 @@
                                 </div>
                             </div>
 
-                            <div class="border-t-2 border-dashed border-gray-200 relative">
+                            <div class="border-t-2 border-dashed border-hairline relative">
                                 <div class="absolute -left-3 -top-3 w-6 h-6 bg-gray-100 rounded-full"></div>
                                 <div class="absolute -right-3 -top-3 w-6 h-6 bg-gray-100 rounded-full"></div>
                             </div>
@@ -121,47 +121,47 @@
 
                                 <dl class="grid grid-cols-2 gap-3 text-sm">
                                     <div>
-                                        <dt class="text-gray-400 text-xs">Tipe</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.type"></dd>
+                                        <dt class="text-ink-muted text-xs">Tipe</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.type"></dd>
                                     </div>
                                     <div>
-                                        <dt class="text-gray-400 text-xs">Aset</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.asset || '-'"></dd>
+                                        <dt class="text-ink-muted text-xs">Aset</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.asset || '-'"></dd>
                                     </div>
                                     <div>
-                                        <dt class="text-gray-400 text-xs">Tanggal</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.date"></dd>
+                                        <dt class="text-ink-muted text-xs">Tanggal</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.date"></dd>
                                     </div>
                                     <div>
-                                        <dt class="text-gray-400 text-xs">Jam</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.time || '-'"></dd>
+                                        <dt class="text-ink-muted text-xs">Jam</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.time || '-'"></dd>
                                     </div>
                                     <div>
-                                        <dt class="text-gray-400 text-xs">PIC</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.pic || '-'"></dd>
+                                        <dt class="text-ink-muted text-xs">PIC</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.pic || '-'"></dd>
                                     </div>
                                     <div>
-                                        <dt class="text-gray-400 text-xs">Vendor</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.vendor || '-'"></dd>
+                                        <dt class="text-ink-muted text-xs">Vendor</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.vendor || '-'"></dd>
                                     </div>
                                     <div>
-                                        <dt class="text-gray-400 text-xs">Lokasi</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.location || '-'"></dd>
+                                        <dt class="text-ink-muted text-xs">Lokasi</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.location || '-'"></dd>
                                     </div>
                                     <div>
-                                        <dt class="text-gray-400 text-xs">Estimasi Biaya</dt>
-                                        <dd class="font-medium text-gray-800" x-text="selectedJob.cost || '-'"></dd>
+                                        <dt class="text-ink-muted text-xs">Estimasi Biaya</dt>
+                                        <dd class="font-medium text-ink" x-text="selectedJob.cost || '-'"></dd>
                                     </div>
                                 </dl>
 
                                 <div x-show="selectedJob.notes">
-                                    <dt class="text-gray-400 text-xs">Catatan</dt>
-                                    <dd class="text-sm text-gray-700 whitespace-pre-line" x-text="selectedJob.notes"></dd>
+                                    <dt class="text-ink-muted text-xs">Catatan</dt>
+                                    <dd class="text-sm text-ink whitespace-pre-line" x-text="selectedJob.notes"></dd>
                                 </div>
 
-                                <div class="flex items-center justify-between pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between pt-2 border-t border-hairline">
                                     <div class="flex items-center gap-3">
-                                        <a :href="selectedJob.editUrl" class="text-sm text-gray-500 hover:text-gray-700">Edit</a>
+                                        <a :href="selectedJob.editUrl" class="text-sm text-ink-muted hover:text-ink">Edit</a>
                                         <form :action="selectedJob.deleteUrl" method="POST"
                                               @submit="if (! confirm('Hapus pekerjaan ini?')) $event.preventDefault()">
                                             @csrf
@@ -169,7 +169,7 @@
                                             <button type="submit" class="text-sm text-red-600 hover:text-red-800">Hapus</button>
                                         </form>
                                     </div>
-                                    <a :href="selectedJob.showUrl" class="text-sm text-gold-600 hover:text-gold-700 font-medium">Buka Detail Lengkap &rarr;</a>
+                                    <a :href="selectedJob.showUrl" class="text-sm text-action hover:text-action-hover font-medium">Buka Detail Lengkap &rarr;</a>
                                 </div>
                             </div>
                         </div>
@@ -183,22 +183,22 @@
                 <div class="fixed inset-0 bg-gray-900/50" @click="pickingDate = null"></div>
 
                 <div class="relative bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden">
-                    <div class="flex items-center justify-between px-5 py-4 border-b border-gray-100">
-                        <h3 class="text-sm font-semibold text-gray-800" x-text="pickingDate"></h3>
-                        <button type="button" @click="pickingDate = null" class="text-gray-400 hover:text-gray-600">
+                    <div class="flex items-center justify-between px-5 py-4 border-b border-hairline">
+                        <h3 class="text-sm font-semibold text-ink" x-text="pickingDate"></h3>
+                        <button type="button" @click="pickingDate = null" class="text-ink-muted hover:text-ink">
                             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M6 6l12 12M18 6 6 18" />
                             </svg>
                         </button>
                     </div>
-                    <div class="max-h-80 overflow-y-auto divide-y divide-gray-100">
+                    <div class="max-h-80 overflow-y-auto divide-y divide-hairline">
                         <template x-for="job in pickingJobs" :key="job.code">
-                            <button type="button" @click="pickJob(job)" class="w-full text-left px-5 py-3 hover:bg-gray-50">
+                            <button type="button" @click="pickJob(job)" class="w-full text-left px-5 py-3 hover:bg-surface">
                                 <div class="flex items-center justify-between gap-2">
-                                    <p class="text-sm font-medium text-gray-800 truncate" x-text="job.title"></p>
+                                    <p class="text-sm font-medium text-ink truncate" x-text="job.title"></p>
                                     <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium shrink-0" :class="job.statusColor" x-text="job.status"></span>
                                 </div>
-                                <p class="text-xs text-gray-400 mt-0.5" x-text="(job.asset || '-') + (job.time ? ' · ' + job.time : '')"></p>
+                                <p class="text-xs text-ink-muted mt-0.5" x-text="(job.asset || '-') + (job.time ? ' · ' + job.time : '')"></p>
                             </button>
                         </template>
                     </div>
@@ -210,17 +210,17 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                 @include('ga.maintenance._mini-calendar')
 
-                <div class="glass-panel p-4">
-                    <h3 class="text-sm font-semibold text-gray-700 mb-3">Jadwal Mendatang</h3>
+                <div class="card-flat p-4">
+                    <h3 class="text-sm font-semibold text-ink mb-3">Jadwal Mendatang</h3>
                     <div class="space-y-3">
                         @forelse ($upcomingJobs as $job)
                             <a href="{{ route('ga.maintenance.show', $job) }}" class="flex items-start gap-3 group">
-                                <div class="w-9 h-9 rounded-full bg-gold-50 flex items-center justify-center text-gold-600 text-xs font-semibold shrink-0">
+                                <div class="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-ink text-xs font-semibold shrink-0">
                                     {{ optional($job->scheduled_date)->format('d') }}
                                 </div>
                                 <div class="min-w-0">
-                                    <p class="text-sm font-medium text-gray-800 truncate group-hover:text-gold-600">{{ $job->title }}</p>
-                                    <p class="text-xs text-gray-500">
+                                    <p class="text-sm font-medium text-ink truncate group-hover:text-action">{{ $job->title }}</p>
+                                    <p class="text-xs text-ink-muted">
                                         {{ $job->scheduled_date?->translatedFormat('d M') }}
                                         @if ($job->scheduled_time)
                                             · {{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}
@@ -229,10 +229,10 @@
                                 </div>
                             </a>
                         @empty
-                            <p class="text-sm text-gray-400">Tidak ada jadwal mendatang.</p>
+                            <p class="text-sm text-ink-muted">Tidak ada jadwal mendatang.</p>
                         @endforelse
                     </div>
-                    <a href="#daftar-pemeliharaan" class="mt-4 inline-block text-sm text-gold-600 hover:text-gold-700">
+                    <a href="#daftar-pemeliharaan" class="mt-4 inline-block text-sm text-action hover:text-action-hover">
                         Lihat Semua &rarr;
                     </a>
                 </div>
@@ -245,35 +245,35 @@
             </x-filter-bar>
 
             {{-- Tabel --}}
-            <div id="daftar-pemeliharaan" class="glass-panel overflow-hidden">
+            <div id="daftar-pemeliharaan" class="card-flat overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-hairline text-sm">
+                        <thead class="border-b border-hairline">
                             <tr>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Kode</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Pekerjaan</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Aset</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Jadwal</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Prioritas</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-                                <th class="px-4 py-3"></th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Kode</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Pekerjaan</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aset</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Jadwal</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Prioritas</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
+                                <th class="px-4 py-3 text-center"></th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody class="divide-y divide-hairline">
                             @forelse ($jobs as $job)
-                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.maintenance.show', $job) }}'">
-                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ $job->job_code }}</td>
+                                <tr class="hover:bg-[#FDFBF4] cursor-pointer" onclick="window.location='{{ route('ga.maintenance.show', $job) }}'">
+                                    <td class="px-4 py-3 font-mono text-xs text-ink-muted">{{ $job->job_code }}</td>
                                     <td class="px-4 py-3">
-                                        <div class="font-medium text-gray-800">{{ $job->title }}</div>
-                                        <div class="text-xs text-gray-500">{{ \App\Models\GA\MaintenanceJob::typeLabels()[$job->type] ?? $job->type }}</div>
+                                        <div class="font-medium text-ink">{{ $job->title }}</div>
+                                        <div class="text-xs text-ink-muted">{{ \App\Models\GA\MaintenanceJob::typeLabels()[$job->type] ?? $job->type }}</div>
                                     </td>
-                                    <td class="px-4 py-3 text-gray-600">
+                                    <td class="px-4 py-3 text-ink-muted">
                                         {{ $job->asset?->name ?? '—' }}
                                     </td>
-                                    <td class="px-4 py-3 text-gray-600">
+                                    <td class="px-4 py-3 text-ink-muted">
                                         {{ optional($job->scheduled_date)->format('d M Y') }}
                                         @if ($job->scheduled_time)
-                                            <span class="text-gray-400">{{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}</span>
+                                            <span class="text-ink-muted">{{ \Illuminate\Support\Str::of($job->scheduled_time)->substr(0, 5) }}</span>
                                         @endif
                                         @if ($job->isOverdue())
                                             <span class="ml-1 text-xs font-medium text-red-600">(terlambat)</span>
@@ -308,7 +308,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="px-4 py-8 text-center text-gray-400">
+                                    <td colspan="7" class="px-4 py-8 text-center text-ink-muted">
                                         Belum ada pekerjaan pemeliharaan.
                                     </td>
                                 </tr>
@@ -318,7 +318,7 @@
                 </div>
             </div>
 
-            <div>{{ $jobs->links() }}</div>
+            <div><x-table-footer :paginator="$jobs" /></div>
         </div>
     </div>
 </x-app-layout>

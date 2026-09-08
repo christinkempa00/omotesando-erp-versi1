@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <x-back-link :href="route('ga.assets.index')" />
+            <x-back-link :href="route('ga.assets.index')" parent="Aset" current="Buat Aset" />
             <h2 class="font-semibold text-xl text-ink leading-tight">Tambah Aset Baru</h2>
         </div>
     </x-slot>

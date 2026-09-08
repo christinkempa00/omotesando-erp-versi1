@@ -35,7 +35,10 @@ class HeadUniformController extends Controller
             $query->lowStock();
         }
 
-        $stocks = $query->orderBy('uniform_type')->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $stocks = $query->orderBy('uniform_type')->paginate($perPage)->withQueryString();
 
         $summary = [
             'total_variants' => UniformStock::count(),

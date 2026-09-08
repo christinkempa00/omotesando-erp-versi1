@@ -5,7 +5,7 @@
                 Work Log
             </h2>
             <a href="{{ route('ga.worklogs.create') }}"
-               class="inline-flex items-center btn-gold">
+               class="inline-flex items-center btn-primary">
                 Buat Work Log
             </a>
         </div>
@@ -23,8 +23,8 @@
             {{-- Filter --}}
             <x-filter-bar :action="route('ga.worklogs.index')" :search-value="$search" search-placeholder="Nama teknisi..." :reset-url="route('ga.worklogs.index')">
                 <div>
-                    <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                    <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                    <label class="block text-xs font-medium text-ink-muted mb-1">Outlet</label>
+                    <select name="branch_id" class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
                         <option value="">Semua Outlet</option>
                         @foreach ($branches as $branch)
                             <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>
@@ -37,60 +37,105 @@
                 <x-filter-pills name="category" label="Kategori Pengerjaan" :options="$categoryLabels" :selected="$selectedCategory" all-label="Semua Kategori" />
 
                 <div>
-                    <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Tanggal Pengerjaan</p>
+                    <p class="text-xs font-medium text-ink-muted uppercase tracking-wide mb-2">Tanggal Pengerjaan</p>
                     <div class="grid grid-cols-2 gap-2">
                         <input type="date" name="date_from" value="{{ $dateFrom }}" placeholder="Dari"
-                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                               class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
                         <input type="date" name="date_to" value="{{ $dateTo }}" placeholder="Sampai"
-                               class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                               class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
                     </div>
                 </div>
             </x-filter-bar>
 
-            <div class="glass-panel p-6">
-                <h3 class="text-sm font-semibold text-gray-700">Distribusi Pekerjaan per Teknisi</h3>
-                <p class="text-xs text-gray-400 mb-4">Berdasarkan filter yang diterapkan di atas.</p>
-                <x-donut-chart :data="$technicianByCount" :labels="$technicianLabels" :total="$technicianTotal" size="w-28 h-28" />
+            <div class="grid grid-cols-1 lg:grid-cols-[1.4fr_1fr_1fr_1fr] gap-6 items-stretch">
+                <div class="card-flat p-6">
+                    <h3 class="text-sm font-semibold text-ink">Distribusi Pekerjaan per Teknisi</h3>
+                    <p class="text-xs text-ink-muted mb-4">Berdasarkan filter yang diterapkan di atas.</p>
+                    <x-donut-chart :data="$technicianByCount" :labels="$technicianLabels" :total="$technicianTotal" size="w-28 h-28" />
+                </div>
+
+                <div class="card-flat p-6 flex flex-col gap-4">
+                    <span class="w-10 h-10 rounded-[10px] bg-gold-500 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 3"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <p class="font-mono text-2xl text-ink">{{ $kpiTotalJam }}<span class="text-sm text-ink-muted">j</span> {{ $kpiTotalJamMenit }}<span class="text-sm text-ink-muted">m</span></p>
+                        <p class="text-xs text-ink-muted mt-1">Total Jam Kerja</p>
+                    </div>
+                </div>
+
+                <div class="card-flat p-6 flex flex-col gap-4">
+                    <span class="w-10 h-10 rounded-[10px] bg-gold-500 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 6 9 17l-5-5"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <p class="font-mono text-2xl text-ink">{{ $kpiTugasSelesai }}</p>
+                        <p class="text-xs text-ink-muted mt-1">Tugas Selesai</p>
+                    </div>
+                </div>
+
+                <div class="card-flat p-6 flex flex-col gap-4">
+                    <span class="w-10 h-10 rounded-[10px] bg-gold-500 flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M5 3l14 9-14 9V3z"/>
+                        </svg>
+                    </span>
+                    <div>
+                        <p class="font-mono text-2xl text-ink">{{ $kpiSedangBerjalan }}</p>
+                        <p class="text-xs text-ink-muted mt-1">Sedang Berjalan</p>
+                    </div>
+                </div>
             </div>
 
-            <div class="glass-panel overflow-hidden">
+            <div class="card-flat overflow-hidden">
                 <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-hairline">
+                    <thead class="border-b border-hairline">
                         <tr>
-                            <th class="px-4 py-3"></th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal &amp; Waktu</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kategori</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Outlet</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teknisi in Charge</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Teknisi Assist</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                            <th class="px-4 py-3 text-center"></th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tanggal &amp; Waktu</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Kategori</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Outlet</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Teknisi in Charge</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Teknisi Assist</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-hairline">
                         @forelse ($workLogs as $workLog)
-                            <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.worklogs.show', $workLog) }}'">
+                            <tr class="hover:bg-[#FDFBF4] cursor-pointer" onclick="window.location='{{ route('ga.worklogs.show', $workLog) }}'">
                                 <td class="px-4 py-3">
                                     @if ($workLog->attachments->isNotEmpty())
                                         <img src="{{ Storage::url($workLog->attachments->first()->photo_path) }}" class="w-10 h-10 rounded object-cover">
                                     @else
-                                        <div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-gray-400 text-xs">N/A</div>
+                                        <div class="w-10 h-10 rounded bg-surface flex items-center justify-center text-ink-muted text-xs">N/A</div>
                                     @endif
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    <div class="text-gray-900">{{ optional($workLog->work_date)->format('d/m/y') }}</div>
-                                    <div class="text-xs text-gray-500">
+                                    <div class="text-ink">{{ optional($workLog->work_date)->format('d/m/y') }}</div>
+                                    <div class="text-xs text-ink-muted">
                                         {{ substr($workLog->start_time, 0, 5) }}@if ($workLog->end_time)&ndash;{{ substr($workLog->end_time, 0, 5) }}@endif
                                     </div>
                                     @if ($workLog->durationLabel())
-                                        <div class="text-xs text-gray-400">{{ $workLog->durationLabel() }}</div>
+                                        <div class="text-xs text-ink-muted">{{ $workLog->durationLabel() }}</div>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $workLog->outletLabel() }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-900">{{ $workLog->technician_in_charge }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $workLog->technician_assist ?: '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $workLog->outletLabel() }}</td>
+                                <td class="px-4 py-3 text-sm">
+                                    <div class="flex items-center gap-2">
+                                        <span class="w-7 h-7 rounded-full bg-action text-white text-xs font-semibold flex items-center justify-center shrink-0">
+                                            {{ strtoupper(substr($workLog->technician_in_charge, 0, 1)) }}
+                                        </span>
+                                        <span class="text-ink">{{ $workLog->technician_in_charge }}</span>
+                                    </div>
+                                </td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $workLog->technician_assist ?: '-' }}</td>
                                 <td class="px-4 py-3">
                                     @if ($workLog->isComplete())
                                         <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Selesai</span>
@@ -100,7 +145,7 @@
                                 </td>
                                 <td class="px-4 py-3 text-right text-sm" onclick="event.stopPropagation()">
                                     <div class="flex items-center justify-end gap-3">
-                                        <a href="{{ route('ga.worklogs.edit', $workLog) }}" title="Edit" class="text-gold-600 hover:text-gold-700">
+                                        <a href="{{ route('ga.worklogs.edit', $workLog) }}" title="Edit" class="text-action hover:text-action-hover">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7"/>
                                                 <path d="M18.5 2.5a1.71 1.71 0 0 1 2 2L12 13l-4 1 1-4Z"/>
@@ -123,7 +168,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada Work Log.</td>
+                                <td colspan="8" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada Work Log.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -131,7 +176,7 @@
                 </div>
             </div>
 
-            <div>{{ $workLogs->links() }}</div>
+            <div><x-table-footer :paginator="$workLogs" /></div>
         </div>
     </div>
 </x-app-layout>

@@ -48,6 +48,20 @@ export default {
                     800: '#6b5216',
                     900: '#574314',
                     950: '#2e230a',
+                    // Fase Shell GA (design system baru) — gold dipersempit
+                    // perannya jadi aksen brand + state sidebar aktif SAJA,
+                    // tidak lagi warna tombol aksi (lihat `action` di bawah).
+                    // 'ink' = varian gold gelap utk teks di atas bg terang.
+                    ink: '#8A6D2B',
+                },
+                // Fase Shell GA — warna aksi utama modul GA (biru korporat),
+                // menggantikan indigo default Breeze pada komponen bersama
+                // (primary-button, text-input, dll). Modul IT TETAP pakai
+                // gold sbg aksen (lihat btn-gold di app.css) — token ini
+                // ditambahkan, bukan pengganti gold di seluruh sistem.
+                action: {
+                    DEFAULT: '#2B5C8A',
+                    hover: '#234B71',
                 },
                 // Allez ERP Redesign tokens — warm neutral ink/surface with a
                 // single terracotta accent, replacing the generic indigo/gray

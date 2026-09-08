@@ -1,8 +1,8 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <x-back-link :href="route('ga.outlet-areas.index')" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Area Pemeriksaan Outlet {{ $branch->name }}</h2>
+            <x-back-link :href="route('ga.outlet-areas.index')" parent="Area Outlet" current="Kelola Area" />
+            <h2 class="font-semibold text-xl text-ink leading-tight">Area Pemeriksaan Outlet {{ $branch->name }}</h2>
         </div>
     </x-slot>
 
@@ -22,34 +22,34 @@
                 </div>
             @endif
 
-            <div class="bg-white border border-gray-200 rounded-lg p-6">
-                <h3 class="text-sm font-semibold text-gray-800 mb-4">{{ $editingArea ? 'Edit Area' : 'Tambah Area Baru' }}</h3>
+            <div class="card-flat p-6">
+                <h3 class="text-sm font-semibold text-ink mb-4">{{ $editingArea ? 'Edit Area' : 'Tambah Area Baru' }}</h3>
                 @include('ga.outlet-areas._form', ['area' => $editingArea, 'branch' => $branch])
             </div>
 
-            <div class="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="text-sm font-semibold text-gray-800">Daftar Area</h3>
+            <div class="card-flat overflow-hidden">
+                <div class="px-6 py-4 border-b border-hairline">
+                    <h3 class="text-sm font-semibold text-ink">Daftar Area</h3>
                 </div>
-                <table class="min-w-full divide-y divide-gray-200 text-sm">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-hairline text-sm">
+                    <thead class="border-b border-hairline">
                         <tr>
-                            <th class="w-8 px-3 py-3"></th>
-                            <th class="px-4 py-3 text-left font-medium text-gray-500">Nama</th>
-                            <th class="px-4 py-3 text-left font-medium text-gray-500">Status</th>
-                            <th class="px-4 py-3 text-right font-medium text-gray-500">Aksi</th>
+                            <th class="w-8 px-3 py-3 text-center"></th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Nama</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100" id="area-sortable-list">
+                    <tbody class="divide-y divide-hairline" id="area-sortable-list">
                         @forelse ($areas as $area)
-                            <tr class="hover:bg-gray-50" data-area-id="{{ $area->id }}">
-                                <td class="px-3 py-3 text-gray-300 drag-handle cursor-move" title="Seret untuk urutkan">
+                            <tr class="hover:bg-[#FDFBF4]" data-area-id="{{ $area->id }}">
+                                <td class="px-3 py-3 text-ink-muted drag-handle cursor-move" title="Seret untuk urutkan">
                                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
                                         <circle cx="9" cy="6" r="1.4" /><circle cx="9" cy="12" r="1.4" /><circle cx="9" cy="18" r="1.4" />
                                         <circle cx="15" cy="6" r="1.4" /><circle cx="15" cy="12" r="1.4" /><circle cx="15" cy="18" r="1.4" />
                                     </svg>
                                 </td>
-                                <td class="px-4 py-3 text-gray-800">{{ $area->name }}</td>
+                                <td class="px-4 py-3 text-ink">{{ $area->name }}</td>
                                 <td class="px-4 py-3">
                                     @if ($area->is_active)
                                         <span class="inline-flex px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-700">Aktif</span>
@@ -59,10 +59,10 @@
                                 </td>
                                 <td class="px-4 py-3 text-right">
                                     <div class="flex items-center justify-end gap-3">
-                                        <a href="{{ route('ga.outlet-areas.manage', ['branch' => $branch, 'edit' => $area->id]) }}" class="text-xs font-medium text-accent hover:underline">Edit</a>
+                                        <a href="{{ route('ga.outlet-areas.manage', ['branch' => $branch, 'edit' => $area->id]) }}" class="text-xs font-medium text-action hover:underline">Edit</a>
                                         <form method="POST" action="{{ route('ga.outlet-areas.toggle', [$branch, $area]) }}" class="inline">
                                             @csrf
-                                            <button type="submit" class="text-xs font-medium text-gray-500 hover:text-gray-700">
+                                            <button type="submit" class="text-xs font-medium text-ink-muted hover:text-ink">
                                                 {{ $area->is_active ? 'Nonaktifkan' : 'Aktifkan' }}
                                             </button>
                                         </form>
@@ -77,13 +77,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada area pemeriksaan untuk outlet ini.</td>
+                                <td colspan="4" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada area pemeriksaan untuk outlet ini.</td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
                 @if ($areas->count() > 1)
-                    <p class="px-6 py-3 text-xs text-gray-400 border-t border-gray-100">Seret ikon di kiri baris untuk mengubah urutan.</p>
+                    <p class="px-6 py-3 text-xs text-ink-muted border-t border-hairline">Seret ikon di kiri baris untuk mengubah urutan.</p>
                 @endif
             </div>
         </div>

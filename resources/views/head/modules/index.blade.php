@@ -1,6 +1,6 @@
 <x-app-layout sidebar="head">
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl text-ink leading-tight">
             Kontrol Modul
         </h2>
     </x-slot>
@@ -21,12 +21,12 @@
 
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
                 @foreach ($modules as $module)
-                    <div class="bg-white shadow-sm rounded-lg p-5">
+                    <div class="card-flat p-5">
                         <div class="flex items-start justify-between mb-3">
                             <div>
-                                <h3 class="font-semibold text-gray-800">{{ $module->label }}</h3>
+                                <h3 class="font-semibold text-ink">{{ $module->label }}</h3>
                                 @if ($module->description)
-                                    <p class="text-xs text-gray-400 mt-0.5">{{ $module->description }}</p>
+                                    <p class="text-xs text-ink-muted mt-0.5">{{ $module->description }}</p>
                                 @endif
                             </div>
                             <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium
@@ -51,21 +51,21 @@
             </div>
 
             {{-- Aktivitas terbaru --}}
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-                <div class="px-6 py-4 border-b border-gray-100">
-                    <h3 class="font-medium text-gray-800">Aktivitas Kontrol Modul Terbaru</h3>
+            <div class="card-flat overflow-hidden">
+                <div class="px-6 py-4 border-b border-hairline">
+                    <h3 class="font-medium text-ink">Aktivitas Kontrol Modul Terbaru</h3>
                 </div>
-                <div class="divide-y divide-gray-100">
+                <div class="divide-y divide-hairline">
                     @forelse ($recentActivity as $log)
                         <div class="px-6 py-3 flex items-center justify-between text-sm">
                             <div class="min-w-0">
-                                <p class="text-gray-800 truncate">{{ $log->description }}</p>
-                                <p class="text-xs text-gray-400">oleh {{ $log->user?->name ?? 'Sistem' }}</p>
+                                <p class="text-ink truncate">{{ $log->description }}</p>
+                                <p class="text-xs text-ink-muted">oleh {{ $log->user?->name ?? 'Sistem' }}</p>
                             </div>
-                            <span class="text-xs text-gray-400 shrink-0">{{ $log->created_at->format('d M Y H:i') }}</span>
+                            <span class="text-xs text-ink-muted shrink-0">{{ $log->created_at->format('d M Y H:i') }}</span>
                         </div>
                     @empty
-                        <p class="px-6 py-8 text-center text-sm text-gray-500">Belum ada aktivitas.</p>
+                        <p class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada aktivitas.</p>
                     @endforelse
                 </div>
             </div>

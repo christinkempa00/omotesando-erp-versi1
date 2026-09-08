@@ -1,17 +1,17 @@
 <x-app-layout sidebar="outlet">
     <x-slot name="header">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-ink leading-tight">
                 Pengajuan Outlet {{ auth()->user()->branch?->name }}
             </h2>
             @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_REQUESTS))
                 <div class="flex flex-wrap gap-2" x-data="{ quickOpen: false }">
                     <button type="button" @click="quickOpen = true"
-                            class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                            class="inline-flex items-center btn-secondary">
                         Buat Permintaan
                     </button>
                     <a href="{{ route('outlet.requests.create') }}"
-                       class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                       class="inline-flex items-center btn-primary">
                         Buat Pengajuan
                     </a>
 
@@ -34,27 +34,27 @@
                 <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
             </x-filter-bar>
 
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="card-flat overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50">
+                    <table class="min-w-full divide-y divide-hairline text-sm">
+                        <thead class="border-b border-hairline">
                             <tr>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Nomor</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Kategori</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Pemohon</th>
-                                <th class="px-4 py-3 text-right font-medium text-gray-500">Total</th>
-                                <th class="px-4 py-3 text-left font-medium text-gray-500">Status</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Nomor</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Kategori</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Pemohon</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Total</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-100">
+                        <tbody class="divide-y divide-hairline">
                             @forelse ($requests as $req)
-                                <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('outlet.requests.show', $req) }}'">
-                                    <td class="px-4 py-3 font-mono text-xs text-gray-600">{{ $req->request_number }}</td>
-                                    <td class="px-4 py-3 text-gray-700">
+                                <tr class="hover:bg-[#FDFBF4] cursor-pointer" onclick="window.location='{{ route('outlet.requests.show', $req) }}'">
+                                    <td class="px-4 py-3 font-mono text-xs text-ink-muted">{{ $req->request_number }}</td>
+                                    <td class="px-4 py-3 text-ink">
                                         {{ \App\Models\GA\GaRequest::categoryLabels()[$req->category] ?? $req->category }}
                                     </td>
-                                    <td class="px-4 py-3 text-gray-600">{{ $req->requester_name ?: ($req->requestedBy?->name ?? '—') }}</td>
-                                    <td class="px-4 py-3 text-right text-gray-700">
+                                    <td class="px-4 py-3 text-ink-muted">{{ $req->requester_name ?: ($req->requestedBy?->name ?? '—') }}</td>
+                                    <td class="px-4 py-3 text-right text-ink font-mono">
                                         Rp {{ number_format((float) $req->total_amount, 0, ',', '.') }}
                                     </td>
                                     <td class="px-4 py-3">
@@ -65,7 +65,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="5" class="px-4 py-8 text-center text-gray-400">
+                                    <td colspan="5" class="px-4 py-8 text-center text-ink-muted">
                                         Belum ada pengajuan.
                                     </td>
                                 </tr>
@@ -75,7 +75,7 @@
                 </div>
             </div>
 
-            <div>{{ $requests->links() }}</div>
+            <div><x-table-footer :paginator="$requests" /></div>
         </div>
     </div>
 </x-app-layout>

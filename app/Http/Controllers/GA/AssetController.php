@@ -23,7 +23,10 @@ class AssetController extends Controller
     {
         $query = $this->filteredQuery($request);
 
-        $assets = $query->latest()->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $assets = $query->latest()->paginate($perPage)->withQueryString();
 
         return $this->viewFor('assets.index', [
             'assets' => $assets,

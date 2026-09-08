@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <x-back-link :href="route('ga.requests.index')" />
+            <x-back-link :href="route('ga.requests.index')" parent="Asset Request" current="Buat Pengajuan" />
             <h2 class="font-semibold text-xl text-ink leading-tight">
                 Pengajuan GA Baru
             </h2>
@@ -10,7 +10,7 @@
 
     <div class="py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="glass-panel p-6">
+            <div class="card-flat p-6">
                 @if ($errors->any())
                     <div class="mb-5 rounded-md bg-red-50 border border-red-200 p-4 text-sm text-red-700">
                         <ul class="list-disc list-inside space-y-1">

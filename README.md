@@ -45,6 +45,33 @@ kapan sesuatu berubah.
   Jadwal Pemeliharaan, Work Log) tidak lagi mengulang judul sebelum pilihan
   Lihat saja/Bisa edit. (5) Ikon mata (bukan teks) utk tombol lihat/
   sembunyikan password.
+- **31/08/2026** — **Fix kecil pasca-tier akses**: (1) `branch auto-scope`
+  (dibuat 30/08, lihat di bawah) ternyata sempat berlaku ke siapa saja yang
+  punya `branch_id`, bukan cuma role Outlet — staf GA yang `branch_id`-nya
+  kebetulan "Head Office" jadi salah ter-scope; diperbaiki jadi khusus
+  `User::scopingBranch()` cuma aktif untuk role Outlet. (2) View Stok
+  Seragam dibuat tier-aware — tombol tulis (Buat/Edit/Hapus) disembunyikan
+  otomatis kalau akses akun "Lihat saja". (3) Foto Serah Terima pada Kartu
+  Seragam Karyawan tidak lagi wajib diunggah.
+- **30/08/2026** — **Tier akses per halaman (Lihat saja/Bisa edit) +
+  branch auto-scope** — tabel & model `UserPagePermission` baru, dengan
+  `User::canEdit(pageKey)` menggerbang aksi tulis di 6 halaman GA (Request,
+  Aset, Stok Seragam, Kartu Seragam Karyawan, Jadwal Pemeliharaan, Work
+  Log) secara independen per akun — default tetap "Bisa edit" kalau IT
+  belum mengatur apa pun, supaya akun lama tidak terdampak. Bareng itu,
+  `branch_id` sekarang otomatis dipaksa & disaring di controller GA yang
+  dipakai bersama (awalnya dimaksudkan untuk Outlet, lihat perbaikan
+  31/08 di atas).
+- **28/08/2026** — **Field "Cabang" (sub-lokasi outlet)** — tabel baru
+  `branch_locations` (sub-lokasi opsional di dalam satu outlet, mis.
+  sebuah unit tambahan yang masih bagian outlet yang sama) + kolom
+  `branch_location_id` (nullable) ditambahkan ke 7 tabel GA: Aset, Jadwal
+  Pemeliharaan, Work Log, Stok Seragam, Kartu Seragam Karyawan, GA
+  Request, dan GA Quick Request. Field Cabang di form otomatis
+  tersembunyi kalau outlet yang dipilih belum punya sub-lokasi terdaftar
+  (saat ini baru satu: outlet "Ask for Patty" → "Gandaria City"). Kalau
+  terisi, tampilan Outlet di daftar/detail berubah jadi "Nama Outlet —
+  Nama Cabang".
 - **24/08/2026** — **Evaluasi sistem menyeluruh: hapus modul SCM/Purchasing/
   Finance & seluruh sistem Approval, sisakan role GA/Head/IT/Outlet** — (1)
   **Fix bug bfcache**: user yang logout lalu langsung kunjungi

@@ -52,8 +52,8 @@
     })"
     x-on:division-changed.window="onDivisionChanged($event.detail.code)"
 >
-    <h3 class="text-sm font-semibold text-gray-700 mb-1">Role & Akses Modul <span class="text-red-500">*</span></h3>
-    <p class="text-xs text-gray-400 mb-3">
+    <h3 class="text-sm font-semibold text-ink mb-1">Role & Akses Modul <span class="text-red-500">*</span></h3>
+    <p class="text-xs text-ink-muted mb-3">
         Centang role, lalu centang modul yang muncul di bawahnya. Untuk halaman yang punya tier, pilih "Lihat saja"
         (tanpa tombol tambah/edit/hapus) atau "Bisa edit".
     </p>
@@ -61,11 +61,11 @@
     <div class="space-y-4">
         @foreach ($roles as $role)
             <div>
-                <label class="flex items-center gap-2 text-sm font-medium text-gray-700">
+                <label class="flex items-center gap-2 text-sm font-medium text-ink">
                     <input type="checkbox" name="roles[]" value="{{ $role->id }}"
                            :checked="roles.includes('{{ $role->id }}')"
                            @change="toggleRole('{{ $role->id }}')"
-                           class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                           class="rounded border-hairline text-action focus:ring-action">
                     {{ $role->name }}
                 </label>
 
@@ -74,26 +74,26 @@
                         @continue(! in_array($module->id, $moduleIdsByRole[$role->id] ?? [], true))
                         @php $pages = $pagesByModuleKey[$module->key] ?? []; @endphp
                         <div>
-                            <label class="flex items-center gap-2 text-sm text-gray-700">
+                            <label class="flex items-center gap-2 text-sm text-ink">
                                 <input type="checkbox" name="modules[]" value="{{ $module->id }}"
                                        :checked="modules.includes('{{ $module->id }}')"
                                        @change="toggleModule('{{ $module->id }}')"
-                                       class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                                       class="rounded border-hairline text-action focus:ring-action">
                                 {{ $module->label }}
 
                                 @if (count($pages) === 1)
                                     <span x-show="modules.includes('{{ $module->id }}')" x-cloak
-                                          class="flex items-center gap-3 text-xs text-gray-500">
+                                          class="flex items-center gap-3 text-xs text-ink-muted">
                                         <label class="flex items-center gap-1">
                                             <input type="radio" name="page_access[{{ $pages[0]['key'] }}]" value="view"
                                                    x-model="pageAccess['{{ $pages[0]['key'] }}']"
-                                                   class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                                   class="border-hairline text-action focus:ring-action">
                                             Lihat saja
                                         </label>
                                         <label class="flex items-center gap-1">
                                             <input type="radio" name="page_access[{{ $pages[0]['key'] }}]" value="edit"
                                                    x-model="pageAccess['{{ $pages[0]['key'] }}']"
-                                                   class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                                   class="border-hairline text-action focus:ring-action">
                                             Bisa edit
                                         </label>
                                     </span>
@@ -103,18 +103,18 @@
                             @if (count($pages) > 1)
                                 @foreach ($pages as $page)
                                     <div x-show="modules.includes('{{ $module->id }}')" x-cloak
-                                         class="ml-6 mt-1 flex items-center gap-4 text-xs text-gray-500">
-                                        <span class="text-gray-400">{{ $page['label'] }}:</span>
+                                         class="ml-6 mt-1 flex items-center gap-4 text-xs text-ink-muted">
+                                        <span class="text-ink-muted">{{ $page['label'] }}:</span>
                                         <label class="flex items-center gap-1">
                                             <input type="radio" name="page_access[{{ $page['key'] }}]" value="view"
                                                    x-model="pageAccess['{{ $page['key'] }}']"
-                                                   class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                                   class="border-hairline text-action focus:ring-action">
                                             Lihat saja
                                         </label>
                                         <label class="flex items-center gap-1">
                                             <input type="radio" name="page_access[{{ $page['key'] }}]" value="edit"
                                                    x-model="pageAccess['{{ $page['key'] }}']"
-                                                   class="border-gray-300 text-gold-600 focus:ring-gold-500">
+                                                   class="border-hairline text-action focus:ring-action">
                                             Bisa edit
                                         </label>
                                     </div>
@@ -128,14 +128,14 @@
 
         @if ($orphanModules->isNotEmpty())
             <div>
-                <p class="text-sm font-medium text-gray-700">Modul Lainnya</p>
+                <p class="text-sm font-medium text-ink">Modul Lainnya</p>
                 <div class="mt-2 space-y-2">
                     @foreach ($orphanModules as $module)
-                        <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <label class="flex items-center gap-2 text-sm text-ink">
                             <input type="checkbox" name="modules[]" value="{{ $module->id }}"
                                    :checked="modules.includes('{{ $module->id }}')"
                                    @change="toggleModule('{{ $module->id }}')"
-                                   class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                                   class="rounded border-hairline text-action focus:ring-action">
                             {{ $module->label }}
                         </label>
                     @endforeach

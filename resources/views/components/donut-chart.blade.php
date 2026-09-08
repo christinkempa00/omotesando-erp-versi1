@@ -45,8 +45,8 @@
         @foreach ($labels as $value => $label)
             <div class="flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full shrink-0" style="background: {{ $resolvedColors[$value] }}"></span>
-                <span class="text-gray-600">{{ $label }}</span>
-                <span class="font-medium text-gray-800">{{ $data[$value] ?? 0 }}</span>
+                <span class="text-gray-600 flex-1 min-w-0">{{ $label }}</span>
+                <span class="font-mono font-medium text-gray-800 tabular-nums">{{ $data[$value] ?? 0 }}</span>
             </div>
         @endforeach
     </div>

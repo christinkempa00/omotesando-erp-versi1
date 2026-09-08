@@ -34,7 +34,10 @@ class HeadAssetController extends Controller
             $query->where('branch_id', $branchId);
         }
 
-        $assets = $query->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $assets = $query->paginate($perPage)->withQueryString();
 
         return view('head.assets.index', [
             'assets' => $assets,

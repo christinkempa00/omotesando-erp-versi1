@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <x-back-link :href="route('ga.assets.show', $asset)" />
+            <x-back-link :href="route('ga.assets.show', $asset)" parent="Detail Aset" current="Edit Aset" />
             <h2 class="font-semibold text-xl text-ink leading-tight">Edit Aset {{ $asset->asset_code }}</h2>
         </div>
     </x-slot>

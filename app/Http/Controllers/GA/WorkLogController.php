@@ -57,7 +57,24 @@ class WorkLogController extends Controller
         $technicianLabels = collect(WorkLog::technicianOptions())->mapWithKeys(fn ($t) => [$t => $t]);
         $technicianByCount = $technicianLabels->keys()->mapWithKeys(fn ($t) => [$t => (int) ($technicianCounts[$t] ?? 0)]);
 
-        $workLogs = $query->latest('work_date')->latest('start_time')->paginate(15)->withQueryString();
+        // KPI: ikut filter yang sama dengan tabel & diagram (clone sebelum paginate).
+        $kpiBase = (clone $query);
+
+        $tugasSelesai = (clone $kpiBase)->whereNotNull('work_result')
+            ->where('work_result', '!=', '')->count();
+        $totalWorkLogs = (clone $kpiBase)->count();
+        $sedangBerjalan = $totalWorkLogs - $tugasSelesai;
+
+        // Total jam: durasi bukan kolom → hitung via collection (volume worklog kecil, aman).
+        $totalMinutes = (clone $kpiBase)->get(['start_time', 'end_time'])
+            ->sum(fn ($w) => $w->durationMinutes() ?? 0);
+        $totalJam = intdiv($totalMinutes, 60);
+        $totalJamMenit = $totalMinutes % 60;
+
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $workLogs = $query->latest('work_date')->latest('start_time')->paginate($perPage)->withQueryString();
 
         return $this->viewFor('worklogs.index', [
             'workLogs' => $workLogs,
@@ -71,6 +88,10 @@ class WorkLogController extends Controller
             'technicianLabels' => $technicianLabels,
             'technicianByCount' => $technicianByCount,
             'technicianTotal' => $technicianByCount->sum(),
+            'kpiTugasSelesai' => $tugasSelesai,
+            'kpiSedangBerjalan' => $sedangBerjalan,
+            'kpiTotalJam' => $totalJam,
+            'kpiTotalJamMenit' => $totalJamMenit,
         ]);
     }
 

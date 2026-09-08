@@ -46,7 +46,10 @@ class MaintenanceJobController extends Controller
             });
         }
 
-        $jobs = $query->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $jobs = $query->paginate($perPage)->withQueryString();
 
         // Ringkasan kartu status — scoped ke branch user kalau ada (Outlet dkk)
         $summaryQuery = fn () => $userBranch ? MaintenanceJob::where('branch_id', $userBranch->id) : MaintenanceJob::query();

@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-start justify-between">
             <div class="print:hidden">
-                <x-back-link :href="route('ga.assets.show', $asset)" />
+                <x-back-link :href="route('ga.assets.show', $asset)" parent="Detail Aset" current="Label QR" />
                 <h2 class="font-semibold text-xl text-ink leading-tight">
                     Label QR {{ $asset->asset_code }}
                 </h2>

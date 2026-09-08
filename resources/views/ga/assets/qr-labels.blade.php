@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex items-start justify-between">
             <div>
-                <x-back-link :href="route('ga.assets.index')" />
+                <x-back-link :href="route('ga.assets.index')" parent="Aset" current="Label QR" />
                 <h2 class="font-semibold text-xl text-ink leading-tight">
                     Cetak Label QR ({{ $assets->count() }} aset)
                 </h2>

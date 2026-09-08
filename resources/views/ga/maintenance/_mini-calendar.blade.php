@@ -5,18 +5,18 @@
     $today = now()->toDateString();
 @endphp
 
-<div class="glass-panel p-4">
+<div class="card-flat p-4">
     <div class="flex items-center justify-between mb-3">
-        <h3 class="text-sm font-semibold text-gray-700">{{ $calendarMonth->translatedFormat('F Y') }}</h3>
+        <h3 class="text-sm font-semibold text-ink">{{ $calendarMonth->translatedFormat('F Y') }}</h3>
         <div class="flex items-center gap-1">
             <a href="{{ route('ga.maintenance.index', array_filter(request()->except('month') + ['month' => $calendarMonth->copy()->subMonth()->format('Y-m')])) }}"
-               class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">‹</a>
+               class="w-6 h-6 flex items-center justify-center rounded text-ink-muted hover:bg-surface">‹</a>
             <a href="{{ route('ga.maintenance.index', array_filter(request()->except('month') + ['month' => $calendarMonth->copy()->addMonth()->format('Y-m')])) }}"
-               class="w-6 h-6 flex items-center justify-center rounded text-gray-400 hover:bg-gray-100">›</a>
+               class="w-6 h-6 flex items-center justify-center rounded text-ink-muted hover:bg-surface">›</a>
         </div>
     </div>
 
-    <div class="grid grid-cols-7 gap-1 text-center text-xs text-gray-400 mb-1">
+    <div class="grid grid-cols-7 gap-1 text-center text-xs text-ink-muted mb-1">
         @foreach (['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'] as $d)
             <span>{{ $d }}</span>
         @endforeach
@@ -35,11 +35,11 @@
             <button type="button"
                     @if ($hasJobs) @click="onDateClick('{{ $dateStr }}', {{ Illuminate\Support\Js::from($dateJobIds) }})" @endif
                     class="relative aspect-square flex items-center justify-center text-xs rounded-full
-                           {{ $isToday ? 'bg-gold-500 text-white font-semibold' : ($inMonth ? 'text-gray-700' : 'text-gray-300') }}
-                           {{ $hasJobs ? 'cursor-pointer hover:bg-gold-50 hover:text-gold-700' : 'cursor-default' }}">
+                           {{ $isToday ? 'bg-action text-white font-semibold' : ($inMonth ? 'text-ink' : 'text-ink-muted') }}
+                           {{ $hasJobs ? 'cursor-pointer hover:bg-surface hover:text-action' : 'cursor-default' }}">
                 {{ $cursor->day }}
                 @if ($hasJobs && ! $isToday)
-                    <span class="absolute bottom-0.5 w-1 h-1 rounded-full bg-orange-400"></span>
+                    <span class="absolute bottom-0.5 w-1.5 h-1.5 rounded-full bg-action"></span>
                 @endif
             </button>
             @php $cursor->addDay(); @endphp

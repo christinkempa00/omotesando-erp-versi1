@@ -35,7 +35,10 @@ class HeadMaintenanceController extends Controller
             });
         }
 
-        $jobs = $query->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $jobs = $query->paginate($perPage)->withQueryString();
 
         $summary = [
             'scheduled' => MaintenanceJob::where('status', MaintenanceJob::STATUS_SCHEDULED)->count(),

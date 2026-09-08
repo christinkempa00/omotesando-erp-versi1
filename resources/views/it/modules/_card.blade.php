@@ -57,13 +57,13 @@
                             }
                         },
                     }"
-                    class="glass-panel p-5"
+                    class="card-flat p-5"
                     :class="underMaintenance ? 'border-t-[3px] border-t-amber-500' : 'border-t-[3px] border-t-emerald-500'"
                 >
                     <div class="flex items-start justify-between mb-3 gap-3">
                         <div class="min-w-0">
-                            <h3 class="font-semibold text-gray-800 truncate">{{ $module->name }}</h3>
-                            <p class="text-xs text-gray-400 mt-0.5 font-mono">{{ $module->key }}</p>
+                            <h3 class="font-semibold text-ink truncate">{{ $module->name }}</h3>
+                            <p class="text-xs text-ink-muted mt-0.5 font-mono">{{ $module->key }}</p>
                         </div>
                         <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium shrink-0"
                               :class="underMaintenance ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'"
@@ -72,7 +72,7 @@
                     </div>
 
                     <div class="flex items-center justify-between py-2">
-                        <span class="text-sm text-gray-600">Mode Pemeliharaan</span>
+                        <span class="text-sm text-ink-muted">Mode Pemeliharaan</span>
                         <button type="button" @click="requestToggle()" :disabled="saving"
                                 class="relative inline-flex h-6 w-11 items-center rounded-full transition disabled:opacity-50"
                                 :class="underMaintenance ? 'bg-amber-500' : 'bg-gray-300'">
@@ -98,29 +98,29 @@
                                 Konfirmasi
                             </button>
                             <button type="button" @click="cancelOn()" :disabled="saving"
-                                    class="px-3 py-1.5 text-xs font-medium rounded-md bg-white border border-gray-200 text-gray-600 hover:bg-gray-50">
+                                    class="px-3 py-1.5 text-xs font-medium rounded-md bg-white border border-hairline text-ink-muted hover:bg-surface">
                                 Batal
                             </button>
                         </div>
                     </div>
 
                     <template x-if="underMaintenance && note && !showNoteInput">
-                        <p class="text-xs text-gray-500 mb-2" x-text="'Catatan: ' + note"></p>
+                        <p class="text-xs text-ink-muted mb-2" x-text="'Catatan: ' + note"></p>
                     </template>
 
-                    <p class="flex items-center gap-1.5 text-xs text-gray-400 mt-3 pt-3 border-t border-gray-100" x-show="updatedBy">
+                    <p class="flex items-center gap-1.5 text-xs text-ink-muted mt-3 pt-3 border-t border-hairline" x-show="updatedBy">
                         <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9" /><path d="M12 7v5l3 3" /></svg>
-                        Terakhir diubah oleh <span x-text="updatedBy" class="font-medium text-gray-500"></span> pada <span x-text="updatedAt"></span>
+                        Terakhir diubah oleh <span x-text="updatedBy" class="font-medium text-ink-muted"></span> pada <span x-text="updatedAt"></span>
                     </p>
 
                     @if ($module->linkedTasks->isNotEmpty())
-                        <div class="mt-3 pt-3 border-t border-gray-100">
-                            <p class="text-xs font-medium text-gray-500 mb-1.5">Task Papan Kerja Terkait</p>
+                        <div class="mt-3 pt-3 border-t border-hairline">
+                            <p class="text-xs font-medium text-ink-muted mb-1.5">Task Papan Kerja Terkait</p>
                             <ul class="space-y-1">
                                 @foreach ($module->linkedTasks as $task)
                                     <li class="flex items-center justify-between text-xs">
-                                        <span class="text-gray-600 truncate">{{ $task->title }}</span>
-                                        <span class="text-gray-400 shrink-0 ml-2">{{ $task->column?->name }}</span>
+                                        <span class="text-ink-muted truncate">{{ $task->title }}</span>
+                                        <span class="text-ink-muted shrink-0 ml-2">{{ $task->column?->name }}</span>
                                     </li>
                                 @endforeach
                             </ul>

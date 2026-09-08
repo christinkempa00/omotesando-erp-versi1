@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <x-back-link :href="route('ga.uniforms.stocks.show', $stock)" />
+            <x-back-link :href="route('ga.uniforms.stocks.show', $stock)" parent="Detail Stok" current="Edit Stok" />
             <h2 class="font-semibold text-xl text-ink leading-tight">Edit Varian {{ $stock->stock_code }}</h2>
         </div>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-            <div class="glass-panel p-6">
+            <div class="card-flat p-6">
 
                 @if ($errors->any())
                     <div class="mb-4 bg-red-50 border border-red-200 text-red-800 text-sm rounded-md px-4 py-3">
@@ -26,8 +26,8 @@
                     @include('ga.uniforms.stocks._edit-form')
 
                     <div class="flex justify-end gap-3 mt-6">
-                        <a href="{{ route('ga.uniforms.stocks.show', $stock) }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                        <button type="submit" class="btn-gold">Simpan</button>
+                        <a href="{{ route('ga.uniforms.stocks.show', $stock) }}" class="btn-secondary">Batal</a>
+                        <button type="submit" class="btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>

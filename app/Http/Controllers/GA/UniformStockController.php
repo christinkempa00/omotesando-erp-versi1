@@ -379,10 +379,13 @@ class UniformStockController extends Controller
 
         $stock->load(['branch', 'branchLocation']);
 
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
         $movements = $stock->movements()
             ->with('createdBy')
             ->latest()
-            ->paginate(10)
+            ->paginate($perPage)
             ->withQueryString();
 
         return $this->viewFor('uniforms.stocks.show', [

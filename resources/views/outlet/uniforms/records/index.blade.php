@@ -1,12 +1,12 @@
 <x-app-layout sidebar="outlet">
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            <h2 class="font-semibold text-xl text-ink leading-tight">
                 Serah Terima Seragam Outlet {{ auth()->user()->branch?->name }}
             </h2>
             @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_RECORDS))
                 <a href="{{ route('outlet.uniforms.records.create') }}"
-                   class="inline-flex items-center px-4 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">
+                   class="inline-flex items-center btn-primary">
                     Buat Serah Terima
                 </a>
             @endif
@@ -26,25 +26,25 @@
                 <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
             </x-filter-bar>
 
-            <div class="bg-white shadow-sm rounded-lg overflow-hidden">
+            <div class="card-flat overflow-hidden">
                 <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-hairline">
+                    <thead class="border-b border-hairline">
                         <tr>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Kode</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Karyawan</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Seragam</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tgl Serah</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Kode</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Karyawan</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Seragam</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tgl Serah</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-hairline">
                         @forelse ($records as $record)
-                            <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('outlet.uniforms.records.show', $record) }}'">
-                                <td class="px-4 py-3 text-sm font-mono text-gray-600">{{ $record->record_code }}</td>
-                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $record->employee_name }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $record->summaryLabel() }}</td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $record->issue_date->format('d M Y') }}</td>
+                            <tr class="hover:bg-[#FDFBF4] cursor-pointer" onclick="window.location='{{ route('outlet.uniforms.records.show', $record) }}'">
+                                <td class="px-4 py-3 text-sm font-mono text-ink-muted">{{ $record->record_code }}</td>
+                                <td class="px-4 py-3 text-sm font-medium text-ink">{{ $record->employee_name }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $record->summaryLabel() }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $record->issue_date->format('d M Y') }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ \App\Models\GA\UniformRecord::statusBadgeColor($record->status) }}">
                                         {{ $statusLabels[$record->status] }}
@@ -53,7 +53,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada catatan serah-terima.</td>
+                                <td colspan="5" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada catatan serah-terima.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -61,7 +61,7 @@
                 </div>
             </div>
 
-            <div>{{ $records->links() }}</div>
+            <div><x-table-footer :paginator="$records" /></div>
         </div>
     </div>
 </x-app-layout>

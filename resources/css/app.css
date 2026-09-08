@@ -91,20 +91,80 @@
         background: theme('colors.status.rejected.fg');
     }
 
+    /* ============================================================
+       Fase Shell GA — design system baru (flat, biru korporat).
+       Dipakai modul GA & komponen bersama (primary-button dkk).
+       Modul IT TETAP pakai .glass-panel/.btn-gold di atas — TIDAK
+       dihapus, TIDAK di-rename. Lihat Component Board.dc.html.
+       ============================================================ */
+
+    /* Pengganti .glass-panel utk GA — kartu flat, bukan glass/gradient. */
+    .card-flat {
+        @apply rounded-[14px] border bg-white border-hairline;
+        box-shadow: 0 1px 2px rgba(58,53,44,0.04);
+    }
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg
+               text-sm font-semibold text-white border-0 cursor-pointer transition-colors duration-150;
+        background: theme('colors.action.DEFAULT');
+    }
+    .btn-primary:hover:not(:disabled) {
+        background: theme('colors.action.hover');
+    }
+    .btn-primary:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(43,92,138,0.28);
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg
+               text-sm font-semibold bg-white border cursor-pointer transition-colors duration-150 text-ink border-hairline;
+    }
+    .btn-secondary:hover:not(:disabled) {
+        @apply bg-surface;
+    }
+    .btn-secondary:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(43,92,138,0.20);
+    }
+
+    .btn-danger {
+        @apply inline-flex items-center justify-center gap-2 h-10 px-[18px] rounded-lg
+               text-sm font-semibold text-white border-0 cursor-pointer transition-colors duration-150;
+        background: #B3261E;
+    }
+    .btn-danger:hover:not(:disabled) {
+        background: #8F1E18;
+    }
+    .btn-danger:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(179,38,30,0.24);
+    }
+
+    .field-input {
+        @apply h-10 px-3 rounded-lg border border-hairline;
+    }
+    .field-input:focus {
+        outline: none;
+        border-color: theme('colors.action.DEFAULT');
+        box-shadow: 0 0 0 3px rgba(43,92,138,0.20);
+    }
+
     /* Item nav sidebar — pola gold/glass dipromosikan jadi komponen bersama
-       (Fase 1 restyle shell). KOREKSI ARAH (dikonfirmasi CC): sidebar jadi
-       PUTIH seragam (bukan gelap) — idle = slate di atas putih, active tetap
-       gradient gold (cuma sekitarnya yang berubah gelap->putih). Ikon
-       mengikuti warna teks item induknya lewat selector turunan di bawah,
-       supaya markup <svg> di tiap file TIDAK perlu disentuh satu-satu. */
+       (Fase 1 restyle shell). KOREKSI ARAH FASE SHELL GA (dikonfirmasi CC):
+       active jadi blok GOLD SOLID (bukan gradient) radius 8px; idle pakai
+       token ink/surface baru alih-alih slate. Berlaku jg utk sidebar IT/
+       Head/Outlet krn kelas ini dipakai bersama (disengaja, lihat Component
+       Board) — markup tiap portal TIDAK disentuh, cuma definisi kelasnya. */
     .sidebar-nav-item {
-        @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition text-slate-600 hover:bg-gold-50;
+        @apply flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition text-ink hover:bg-surface;
     }
     .sidebar-nav-item svg {
         @apply text-slate-400;
     }
     .sidebar-nav-item-active {
-        @apply bg-gradient-to-r from-gold-500 to-gold-600 text-white shadow-[0_3px_10px_rgba(200,155,44,0.3)];
+        @apply bg-gold-500 text-white rounded-lg;
     }
     .sidebar-nav-item-active svg {
         @apply text-white;

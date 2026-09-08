@@ -7,7 +7,7 @@
 --}}
 @php
     $colors = [
-        'bagus' => '#22c55e',
+        'bagus' => '#1E6B39',
         'dalam_pemeliharaan' => '#eab308',
         'rusak' => '#ef4444',
     ];
@@ -28,16 +28,16 @@
 
 <div class="flex items-center gap-6">
     <div class="w-28 h-28 rounded-full shrink-0 relative" style="background: {{ $gradient }}">
-        <div class="absolute inset-3 bg-white rounded-full flex items-center justify-center">
-            <span class="text-lg font-bold text-gray-800">{{ $total }}</span>
+        <div class="absolute inset-4 bg-white rounded-full flex items-center justify-center">
+            <span class="text-lg font-bold text-ink">{{ $total }}</span>
         </div>
     </div>
     <div class="space-y-1.5 text-sm">
         @foreach ($labels as $value => $label)
             <div class="flex items-center gap-2">
                 <span class="w-2.5 h-2.5 rounded-full shrink-0" style="background: {{ $colors[$value] ?? '#9ca3af' }}"></span>
-                <span class="text-gray-600">{{ $label }}</span>
-                <span class="font-medium text-gray-800">{{ $data[$value] ?? 0 }}</span>
+                <span class="text-ink-muted flex-1 min-w-0">{{ $label }}</span>
+                <span class="font-mono font-medium text-ink tabular-nums">{{ $data[$value] ?? 0 }}</span>
             </div>
         @endforeach
     </div>

@@ -1,9 +1,9 @@
 <x-app-layout sidebar="it">
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Manajemen User</h2>
+            <h2 class="font-semibold text-xl text-ink leading-tight">Manajemen User</h2>
             <a href="{{ route('it.users.create') }}"
-               class="inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-gold-500 to-gold-600 text-white text-sm font-medium rounded-lg shadow-[0_4px_12px_-2px_rgba(200,155,44,0.4)] hover:-translate-y-px hover:shadow-[0_6px_16px_-2px_rgba(200,155,44,0.5)] transition">
+               class="inline-flex items-center btn-primary">
                 Buat User
             </a>
         </div>
@@ -24,34 +24,34 @@
                 </div>
             @endif
 
-            <div class="glass-panel overflow-hidden">
+            <div class="card-flat overflow-hidden">
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-sm">
-                        <thead class="bg-gray-50">
-                            <tr class="text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                <th class="px-4 py-3.5">Nama</th>
-                                <th class="px-4 py-3.5">Email</th>
-                                <th class="px-4 py-3.5">Role</th>
-                                <th class="px-4 py-3.5">Branch</th>
-                                <th class="px-4 py-3.5">Status</th>
-                                <th class="px-4 py-3.5 text-right">Aksi</th>
+                    <table class="min-w-full divide-y divide-hairline text-sm">
+                        <thead class="border-b border-hairline">
+                            <tr>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Nama</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Email</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Role</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Branch</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
+                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
                             </tr>
                         </thead>
-                        <tbody class="divide-y divide-gray-200">
+                        <tbody class="divide-y divide-hairline">
                             @forelse ($users as $user)
-                                <tr>
-                                    <td class="px-4 py-3.5 font-medium text-gray-800">{{ $user->name }}</td>
-                                    <td class="px-4 py-3.5 text-gray-600">{{ $user->email }}</td>
+                                <tr class="hover:bg-[#FDFBF4]">
+                                    <td class="px-4 py-3.5 font-medium text-ink">{{ $user->name }}</td>
+                                    <td class="px-4 py-3.5 text-ink-muted">{{ $user->email }}</td>
                                     <td class="px-4 py-3.5">
                                         <div class="flex flex-wrap gap-1">
                                             @forelse ($user->roles as $role)
-                                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-gold-100 text-gold-700">{{ $role->name }}</span>
+                                                <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium border border-hairline bg-white text-ink-muted">{{ $role->name }}</span>
                                             @empty
-                                                <span class="text-xs text-gray-400">-</span>
+                                                <span class="text-xs text-ink-muted">-</span>
                                             @endforelse
                                         </div>
                                     </td>
-                                    <td class="px-4 py-3.5 text-gray-600">{{ $user->branch?->name ?? '-' }}</td>
+                                    <td class="px-4 py-3.5 text-ink-muted">{{ $user->branch?->name ?? '-' }}</td>
                                     <td class="px-4 py-3.5">
                                         @if ($user->is_active)
                                             <span class="inline-flex px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-100 text-emerald-700">Aktif</span>
@@ -61,7 +61,7 @@
                                     </td>
                                     <td class="px-4 py-3.5 text-right">
                                         <div class="flex items-center justify-end gap-3">
-                                            <a href="{{ route('it.users.edit', $user) }}" title="Edit" class="text-gold-600 hover:text-gold-800">
+                                            <a href="{{ route('it.users.edit', $user) }}" title="Edit" class="text-action hover:text-action-hover">
                                                 <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                     <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7"/>
                                                     <path d="M18.5 2.5a1.71 1.71 0 0 1 2 2L12 13l-4 1 1-4Z"/>
@@ -86,7 +86,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="6" class="px-4 py-8 text-center text-gray-500">Belum ada user.</td>
+                                    <td colspan="6" class="px-4 py-8 text-center text-ink-muted">Belum ada user.</td>
                                 </tr>
                             @endforelse
                         </tbody>

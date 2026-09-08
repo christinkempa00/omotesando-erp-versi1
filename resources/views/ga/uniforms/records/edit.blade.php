@@ -1,14 +1,14 @@
 <x-app-layout>
     <x-slot name="header">
         <div>
-            <x-back-link :href="route('ga.uniforms.records.show', $record)" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">Edit Serah-terima {{ $record->record_code }}</h2>
+            <x-back-link :href="route('ga.uniforms.records.show', $record)" parent="Detail Serah Terima" current="Edit Serah Terima" />
+            <h2 class="font-semibold text-xl text-ink leading-tight">Edit Serah-terima {{ $record->record_code }}</h2>
         </div>
     </x-slot>
 
     <div class="py-8">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white shadow-sm rounded-lg p-6">
+            <div class="card-flat p-6">
 
                 @if ($errors->any())
                     <div class="mb-4 bg-red-50 border border-red-200 text-red-800 text-sm rounded-md px-4 py-3">
@@ -25,39 +25,39 @@
                     @method('PUT')
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Karyawan *</label>
+                        <label class="block text-sm font-medium text-ink mb-1">Nama Karyawan *</label>
                         <input type="text" name="employee_name" required value="{{ old('employee_name', $record->employee_name) }}"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full field-input">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Nama Penyerah *</label>
+                        <label class="block text-sm font-medium text-ink mb-1">Nama Penyerah *</label>
                         <input type="text" name="issued_by_name" required value="{{ old('issued_by_name', $record->issued_by_name) }}"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full field-input">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Seragam</label>
-                        <p class="text-sm text-gray-600">{{ $record->summaryLabel() }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Item tidak bisa diganti setelah dibuat. Hapus &amp; buat ulang kalau salah pilih.</p>
+                        <label class="block text-sm font-medium text-ink mb-1">Seragam</label>
+                        <p class="text-sm text-ink-muted">{{ $record->summaryLabel() }}</p>
+                        <p class="text-xs text-ink-muted mt-1">Item tidak bisa diganti setelah dibuat. Hapus &amp; buat ulang kalau salah pilih.</p>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Tanggal Serah *</label>
+                        <label class="block text-sm font-medium text-ink mb-1">Tanggal Serah *</label>
                         <input type="date" name="issue_date" required
                                value="{{ old('issue_date', $record->issue_date->format('Y-m-d')) }}"
-                               class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+                               class="w-full field-input">
                     </div>
 
                     <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Catatan</label>
+                        <label class="block text-sm font-medium text-ink mb-1">Catatan</label>
                         <textarea name="issue_notes" rows="2"
-                                  class="w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">{{ old('issue_notes', $record->issue_notes) }}</textarea>
+                                  class="w-full rounded-lg border-hairline focus:border-action focus:ring-action">{{ old('issue_notes', $record->issue_notes) }}</textarea>
                     </div>
 
                     <div class="flex justify-end gap-3">
-                        <a href="{{ route('ga.uniforms.records.show', $record) }}" class="px-4 py-2 text-sm font-medium text-gray-600 hover:text-gray-800">Batal</a>
-                        <button type="submit" class="px-5 py-2 bg-indigo-600 text-white text-sm font-medium rounded-md hover:bg-indigo-700">Simpan</button>
+                        <a href="{{ route('ga.uniforms.records.show', $record) }}" class="btn-secondary">Batal</a>
+                        <button type="submit" class="btn-primary">Simpan</button>
                     </div>
                 </form>
             </div>

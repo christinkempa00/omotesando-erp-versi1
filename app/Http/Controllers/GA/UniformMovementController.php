@@ -34,7 +34,10 @@ class UniformMovementController extends Controller
             });
         }
 
-        $movements = $query->latest()->paginate(20)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $movements = $query->latest()->paginate($perPage)->withQueryString();
 
         return view('ga.uniforms.movements.index', [
             'movements' => $movements,

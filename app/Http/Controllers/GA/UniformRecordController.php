@@ -33,7 +33,10 @@ class UniformRecordController extends Controller
         $branchId = $request->query('branch_id');
         $search = $request->query('search');
 
-        $records = $this->filteredQuery($request)->latest()->paginate(15)->withQueryString();
+        $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->input('per_page') : 15;
+
+        $records = $this->filteredQuery($request)->latest()->paginate($perPage)->withQueryString();
 
         return $this->viewFor('uniforms.records.index', [
             'records' => $records,

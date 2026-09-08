@@ -19,12 +19,12 @@
 @endphp
 
 <aside
-    class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-white border-r border-gold-500/15 shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
+    class="fixed inset-y-0 left-0 z-40 w-64 flex flex-col bg-white border-r border-hairline shadow-lg transform transition-transform duration-200 ease-in-out lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen"
     :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'"
 >
-    <div class="h-16 shrink-0 flex items-center justify-between px-5 border-b border-gold-500/10">
+    <div class="h-16 shrink-0 flex items-center justify-between px-5 border-b border-hairline">
         <a href="{{ route('it.modules.index') }}" class="flex items-center gap-2 min-w-0">
-            <span class="w-9 h-9 rounded-lg bg-white border border-gold-500/15 flex items-center justify-center shrink-0 overflow-hidden p-0.5">
+            <span class="w-9 h-9 rounded-lg bg-white border border-hairline flex items-center justify-center shrink-0 overflow-hidden p-0.5">
                 <img src="{{ asset('images/allez-logo.jpg') }}" alt="Allez Group" class="w-full h-full object-contain">
             </span>
             <span class="min-w-0">
@@ -52,9 +52,9 @@
         @endforeach
     </nav>
 
-    <div class="shrink-0 border-t border-gold-500/12 p-3 space-y-1">
+    <div class="shrink-0 border-t border-hairline p-3 space-y-1">
         <a href="{{ route('profile.edit') }}"
-           class="flex items-center gap-3 px-2 py-2 rounded-lg transition {{ request()->routeIs('profile.edit') ? 'bg-gold-50' : 'hover:bg-gold-50' }}">
+           class="flex items-center gap-3 px-2 py-2 rounded-lg transition {{ request()->routeIs('profile.edit') ? 'bg-surface' : 'hover:bg-surface' }}">
             <div class="w-8 h-8 rounded-full bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-white text-xs font-semibold shrink-0">
                 {{ $initials }}
             </div>
@@ -66,7 +66,7 @@
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
-                    class="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-slate-500 hover:bg-gold-50 hover:text-ink transition">
+                    class="w-full flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-slate-500 hover:bg-surface hover:text-ink transition">
                 <svg class="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
                     <path d="M10 17l5-5-5-5" />

@@ -106,7 +106,7 @@
                     @endif
 
                     <button @click="open = false" type="button"
-                            class="mt-6 px-4 py-2 rounded-md bg-gold-600 text-white text-sm font-medium hover:bg-gold-700">
+                            class="mt-6 btn-secondary">
                         Tutup
                     </button>
                 </div>

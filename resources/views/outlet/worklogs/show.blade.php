@@ -1,8 +1,8 @@
 <x-app-layout sidebar="outlet">
     <x-slot name="header">
         <div>
-            <x-back-link :href="route('outlet.worklogs.index')" />
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight flex items-center gap-2">
+            <x-back-link :href="route('outlet.worklogs.index')" parent="Work Log" current="Detail Work Log" />
+            <h2 class="font-semibold text-xl text-ink leading-tight flex items-center gap-2">
                 Work Log tanggal {{ optional($workLog->work_date)->format('d/m/Y') }}
                 @if ($workLog->isComplete())
                     <span class="inline-flex px-2.5 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-700">Selesai</span>
@@ -16,10 +16,10 @@
     <div class="py-8">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="bg-white shadow-sm rounded-lg p-6 space-y-6">
+            <div class="card-flat p-6 space-y-6">
                 <div class="flex flex-col sm:flex-row gap-6">
                     <div class="w-full sm:w-40 shrink-0">
-                        <p class="text-xs font-medium text-gray-500 mb-1">Lampiran</p>
+                        <p class="text-xs font-medium text-ink-muted mb-1">Lampiran</p>
                         @if ($workLog->attachments->isNotEmpty())
                             <div class="grid grid-cols-4 sm:grid-cols-2 gap-2">
                                 @foreach ($workLog->attachments as $attachment)
@@ -29,47 +29,47 @@
                                 @endforeach
                             </div>
                         @else
-                            <div class="w-full sm:w-40 aspect-square rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 text-xs text-center px-2">
+                            <div class="w-full sm:w-40 aspect-square rounded-lg bg-gray-100 flex items-center justify-center text-ink-muted text-xs text-center px-2">
                                 Belum ada foto
                             </div>
                         @endif
                     </div>
 
                     <dl class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm flex-1">
-                        <div><dt class="text-gray-500">Tanggal Pengerjaan</dt><dd class="font-medium text-gray-900">{{ optional($workLog->work_date)->format('d/m/Y') }}</dd></div>
-                        <div><dt class="text-gray-500">Waktu Mulai</dt><dd class="font-medium text-gray-900">{{ substr($workLog->start_time, 0, 5) }}</dd></div>
-                        <div><dt class="text-gray-500">Waktu Berakhir</dt><dd class="font-medium text-gray-900">{{ $workLog->end_time ? substr($workLog->end_time, 0, 5) : '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Durasi</dt><dd class="font-medium text-gray-900">{{ $workLog->durationLabel() ?? '-' }}</dd></div>
-                        <div><dt class="text-gray-500">Kategori Pengerjaan</dt><dd class="font-medium text-gray-900">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</dd></div>
-                        <div><dt class="text-gray-500">Teknisi in Charge</dt><dd class="font-medium text-gray-900">{{ $workLog->technician_in_charge }}</dd></div>
-                        <div><dt class="text-gray-500">Teknisi Assist</dt><dd class="font-medium text-gray-900">{{ $workLog->technician_assist ?: '-' }}</dd></div>
+                        <div><dt class="text-ink-muted">Tanggal Pengerjaan</dt><dd class="font-medium text-ink">{{ optional($workLog->work_date)->format('d/m/Y') }}</dd></div>
+                        <div><dt class="text-ink-muted">Waktu Mulai</dt><dd class="font-medium text-ink">{{ substr($workLog->start_time, 0, 5) }}</dd></div>
+                        <div><dt class="text-ink-muted">Waktu Berakhir</dt><dd class="font-medium text-ink">{{ $workLog->end_time ? substr($workLog->end_time, 0, 5) : '-' }}</dd></div>
+                        <div><dt class="text-ink-muted">Durasi</dt><dd class="font-medium text-ink">{{ $workLog->durationLabel() ?? '-' }}</dd></div>
+                        <div><dt class="text-ink-muted">Kategori Pengerjaan</dt><dd class="font-medium text-ink">{{ $categoryLabels[$workLog->category] ?? $workLog->category }}</dd></div>
+                        <div><dt class="text-ink-muted">Teknisi in Charge</dt><dd class="font-medium text-ink">{{ $workLog->technician_in_charge }}</dd></div>
+                        <div><dt class="text-ink-muted">Teknisi Assist</dt><dd class="font-medium text-ink">{{ $workLog->technician_assist ?: '-' }}</dd></div>
                     </dl>
                 </div>
 
-                <dl class="space-y-4 text-sm border-t border-gray-100 pt-6">
+                <dl class="space-y-4 text-sm border-t border-hairline pt-6">
                     <div>
-                        <dt class="text-gray-500 mb-1">Detail Pengerjaan</dt>
-                        <dd class="font-medium text-gray-900 whitespace-pre-line">{{ $workLog->work_detail }}</dd>
+                        <dt class="text-ink-muted mb-1">Detail Pengerjaan</dt>
+                        <dd class="font-medium text-ink whitespace-pre-line">{{ $workLog->work_detail }}</dd>
                     </div>
                     <div>
-                        <dt class="text-gray-500 mb-1">Hasil Pengerjaan</dt>
-                        <dd class="font-medium text-gray-900 whitespace-pre-line">{{ $workLog->work_result ?: 'Belum diisi karena pekerjaan belum ditandai selesai.' }}</dd>
+                        <dt class="text-ink-muted mb-1">Hasil Pengerjaan</dt>
+                        <dd class="font-medium text-ink whitespace-pre-line">{{ $workLog->work_result ?: 'Belum diisi karena pekerjaan belum ditandai selesai.' }}</dd>
                     </div>
                     @if ($workLog->notes)
                         <div>
-                            <dt class="text-gray-500 mb-1">Keterangan</dt>
-                            <dd class="font-medium text-gray-900 whitespace-pre-line">{{ $workLog->notes }}</dd>
+                            <dt class="text-ink-muted mb-1">Keterangan</dt>
+                            <dd class="font-medium text-ink whitespace-pre-line">{{ $workLog->notes }}</dd>
                         </div>
                     @endif
                 </dl>
 
-                <p class="text-xs text-gray-400 border-t border-gray-100 pt-4">
+                <p class="text-xs text-ink-muted border-t border-hairline pt-4">
                     Dicatat oleh {{ $workLog->createdBy?->name ?? '-' }} pada {{ $workLog->created_at->format('d/m/Y H:i') }}
                 </p>
             </div>
 
             <div>
-                <a href="{{ route('outlet.worklogs.index') }}" class="text-sm text-indigo-600 hover:text-indigo-800">&larr; Kembali ke daftar Work Log</a>
+                <a href="{{ route('outlet.worklogs.index') }}" class="text-sm text-action hover:text-action-hover">&larr; Kembali ke daftar Work Log</a>
             </div>
         </div>
     </div>

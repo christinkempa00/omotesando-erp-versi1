@@ -6,7 +6,7 @@
             </h2>
             <div class="flex gap-2">
                 <a href="{{ route('ga.assets.create') }}"
-                   class="inline-flex items-center btn-gold">
+                   class="inline-flex items-center btn-primary">
                     Buat Aset
                 </a>
             </div>
@@ -27,8 +27,8 @@
                 <div class="flex-1 min-w-0">
                     <x-filter-bar :action="route('ga.assets.index')" :search-value="$search" search-placeholder="Nama/kode/serial number..." :reset-url="route('ga.assets.index')">
                         <div>
-                            <label class="block text-xs font-medium text-gray-500 mb-1">Outlet</label>
-                            <select name="branch_id" class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                            <label class="block text-xs font-medium text-ink-muted mb-1">Outlet</label>
+                            <select name="branch_id" class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
                                 <option value="">Semua Outlet</option>
                                 @foreach ($branches as $branch)
                                     <option value="{{ $branch->id }}" @selected($selectedBranch == $branch->id)>{{ $branch->name }}</option>
@@ -39,18 +39,18 @@
                         <x-filter-pills name="status" label="Status" :options="$statusLabels" :selected="$selectedStatus" all-label="Semua Status" />
 
                         <div>
-                            <p class="text-xs font-medium text-gray-500 uppercase tracking-wide mb-2">Tanggal Beli</p>
+                            <p class="text-xs font-medium text-ink-muted uppercase tracking-wide mb-2">Tanggal Beli</p>
                             <div class="grid grid-cols-2 gap-2">
                                 <input type="date" name="date_from" value="{{ $dateFrom }}" placeholder="Dari"
-                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                                       class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
                                 <input type="date" name="date_to" value="{{ $dateTo }}" placeholder="Sampai"
-                                       class="w-full rounded-md border-gray-300 text-sm shadow-sm focus:border-gold-500 focus:ring-gold-500">
+                                       class="w-full rounded-md border-hairline text-sm shadow-sm focus:border-action focus:ring-action">
                             </div>
                         </div>
                     </x-filter-bar>
                 </div>
 
-                <button type="button" id="qr-select-toggle" class="shrink-0 inline-flex items-center px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
+                <button type="button" id="qr-select-toggle" class="shrink-0 btn-secondary">
                     Pilih Aset
                 </button>
             </div>
@@ -58,69 +58,69 @@
             {{-- Catatan: sengaja BUKAN <form>, supaya tidak nested dengan <form> hapus
                  per-baris di dalam tabel (nested <form> invalid di HTML dan akan merusak
                  submit). Checkbox terpilih dikumpulkan lalu di-navigate via JS. --}}
-            <div class="glass-panel overflow-hidden">
-                <div id="qr-select-bar" style="display:none" class="items-center justify-between px-4 py-2.5 border-b border-gray-200 bg-gray-50">
-                    <span id="qr-select-count" class="text-xs text-gray-500">Belum ada aset dipilih</span>
+            <div class="card-flat overflow-hidden">
+                <div id="qr-select-bar" style="display:none" class="items-center justify-between px-4 py-2.5 border-b border-hairline bg-surface">
+                    <span id="qr-select-count" class="text-xs text-ink-muted">Belum ada aset dipilih</span>
                     <button type="button" id="qr-select-submit" disabled
-                            class="btn-gold-sm disabled:opacity-40 disabled:cursor-not-allowed">
+                            class="btn-secondary disabled:opacity-40 disabled:cursor-not-allowed">
                         Unduh QR Terpilih
                     </button>
                 </div>
                 <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="min-w-full divide-y divide-hairline">
+                    <thead class="border-b border-hairline">
                         <tr>
-                            <th class="qr-select-col px-4 py-3" style="display:none">
-                                <input type="checkbox" id="qr-select-all" class="rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                            <th class="qr-select-col px-4 py-3 text-center" style="display:none">
+                                <input type="checkbox" id="qr-select-all" class="rounded border-hairline text-action focus:ring-action">
                             </th>
-                            <th class="px-4 py-3"></th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID Aset</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nama Aset &amp; Merk</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Outlet &amp; Lokasi</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tanggal Beli</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                            <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Penanggung Jawab</th>
-                            <th class="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Aksi</th>
+                            <th class="px-4 py-3 text-center"></th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">ID Aset</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Nama Aset &amp; Merk</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Outlet &amp; Lokasi</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Tanggal Beli</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Penanggung Jawab</th>
+                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="bg-white divide-y divide-hairline">
                         @forelse ($assets as $asset)
-                            <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('ga.assets.show', $asset) }}'">
+                            <tr class="hover:bg-[#FDFBF4] cursor-pointer" onclick="window.location='{{ route('ga.assets.show', $asset) }}'">
                                 <td class="qr-select-col px-4 py-3" style="display:none" onclick="event.stopPropagation()">
-                                    <input type="checkbox" value="{{ $asset->id }}" class="qr-select-row rounded border-gray-300 text-gold-600 focus:ring-gold-500">
+                                    <input type="checkbox" value="{{ $asset->id }}" class="qr-select-row rounded border-hairline text-action focus:ring-action">
                                 </td>
                                 <td class="px-4 py-3">
                                     @if ($asset->image_path)
                                         <img src="{{ Storage::url($asset->image_path) }}" class="w-10 h-10 rounded object-cover">
                                     @else
-                                        <div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-gray-400 text-xs">N/A</div>
+                                        <div class="w-10 h-10 rounded bg-gray-100 flex items-center justify-center text-ink-muted text-xs">N/A</div>
                                     @endif
                                 </td>
-                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $asset->asset_code }}</td>
+                                <td class="px-4 py-3 text-sm font-medium text-ink">{{ $asset->asset_code }}</td>
                                 <td class="px-4 py-3 text-sm">
-                                    <div class="text-gray-900">{{ $asset->name }}</div>
-                                    <div class="text-xs text-gray-500">{{ $asset->brand ?: '-' }}</div>
+                                    <div class="text-ink">{{ $asset->name }}</div>
+                                    <div class="text-xs text-ink-muted">{{ $asset->brand ?: '-' }}</div>
                                 </td>
                                 <td class="px-4 py-3 text-sm">
-                                    <div class="text-gray-900">{{ $asset->outletLabel() }}</div>
-                                    <div class="text-xs text-gray-500">{{ $asset->location ?: '-' }}</div>
+                                    <div class="text-ink">{{ $asset->outletLabel() }}</div>
+                                    <div class="text-xs text-ink-muted">{{ $asset->location ?: '-' }}</div>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ optional($asset->purchase_date)->format('d/m/y') ?: '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ optional($asset->purchase_date)->format('d/m/y') ?: '-' }}</td>
                                 <td class="px-4 py-3">
                                     <span class="inline-flex px-2 py-1 text-xs font-semibold rounded-full {{ \App\Models\GA\Asset::statusBadgeColor($asset->status) }}">
                                         {{ $statusLabels[$asset->status] }}
                                     </span>
                                 </td>
-                                <td class="px-4 py-3 text-sm text-gray-600">{{ $asset->custodian_name ?: '-' }}</td>
+                                <td class="px-4 py-3 text-sm text-ink-muted">{{ $asset->custodian_name ?: '-' }}</td>
                                 <td class="px-4 py-3 text-right text-sm" onclick="event.stopPropagation()">
                                     <div class="flex items-center justify-end gap-3">
-                                        <a href="{{ route('ga.assets.qr', $asset) }}" title="QR" class="text-gray-500 hover:text-gray-800">
+                                        <a href="{{ route('ga.assets.qr', $asset) }}" title="QR" class="text-ink-muted hover:text-ink">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                 <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
                                                 <rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM20 14v3M14 20h3M20 20h.01"/>
                                             </svg>
                                         </a>
-                                        <a href="{{ route('ga.assets.edit', $asset) }}" title="Edit" class="text-gold-600 hover:text-gold-700">
+                                        <a href="{{ route('ga.assets.edit', $asset) }}" title="Edit" class="text-action hover:text-action-hover">
                                             <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
                                                 <path d="M11 4H4a1 1 0 0 0-1 1v15a1 1 0 0 0 1 1h15a1 1 0 0 0 1-1v-7"/>
                                                 <path d="M18.5 2.5a1.71 1.71 0 0 1 2 2L12 13l-4 1 1-4Z"/>
@@ -143,7 +143,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="9" class="px-6 py-8 text-center text-sm text-gray-500">Belum ada aset.</td>
+                                <td colspan="9" class="px-6 py-8 text-center text-sm text-ink-muted">Belum ada aset.</td>
                             </tr>
                         @endforelse
                     </tbody>
@@ -152,16 +152,34 @@
             </div>
 
             <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                <div>{{ $assets->links() }}</div>
-                <div class="flex gap-2">
-                    <a href="{{ route('ga.assets.export.xlsx', request()->query()) }}"
-                       class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-                        Export .xlsx
-                    </a>
-                    <a href="{{ route('ga.assets.export.pdf', request()->query()) }}"
-                       class="px-4 py-2 bg-white border border-gray-300 text-gray-700 text-sm font-medium rounded-md hover:bg-gray-50">
-                        Export .pdf
-                    </a>
+                <div><x-table-footer :paginator="$assets" /></div>
+                <div class="relative" x-data="{ exportOpen: false }">
+                    <button type="button" @click="exportOpen = !exportOpen"
+                            class="btn-secondary inline-flex items-center gap-2">
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>
+                        </svg>
+                        Export
+                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                             stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m6 9 6 6 6-6"/>
+                        </svg>
+                    </button>
+                    <div x-show="exportOpen" @click.outside="exportOpen = false" x-cloak
+                         class="absolute right-0 mt-2 w-48 bg-white border border-hairline rounded-lg shadow-lg z-20 overflow-hidden"
+                         style="display:none;">
+                        <a href="{{ route('ga.assets.export.xlsx', request()->query()) }}"
+                           class="flex items-center gap-2 px-4 py-2.5 text-sm text-ink hover:bg-surface">
+                            <svg class="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="m9 12 6 6M15 12l-6 6"/></svg>
+                            Excel (.xlsx)
+                        </a>
+                        <a href="{{ route('ga.assets.export.pdf', request()->query()) }}"
+                           class="flex items-center gap-2 px-4 py-2.5 text-sm text-ink hover:bg-surface border-t border-hairline">
+                            <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                            PDF (.pdf)
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
