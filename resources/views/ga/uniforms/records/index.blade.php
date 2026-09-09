@@ -71,37 +71,38 @@
                 </div>
             </div>
 
-            <div class="flex flex-wrap items-center justify-between gap-3">
-                <div><x-table-footer :paginator="$records" /></div>
-                <div class="relative" x-data="{ exportOpen: false }">
-                    <button type="button" @click="exportOpen = !exportOpen"
-                            class="btn-secondary inline-flex items-center gap-2">
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                             stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>
-                        </svg>
-                        Export
-                        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                             stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-                            <path d="m6 9 6 6 6-6"/>
-                        </svg>
-                    </button>
-                    <div x-show="exportOpen" @click.outside="exportOpen = false" x-cloak
-                         class="absolute right-0 mt-2 w-48 bg-white border border-hairline rounded-lg shadow-lg z-20 overflow-hidden"
-                         style="display:none;">
-                        <a href="{{ route('ga.uniforms.records.export.xlsx', request()->query()) }}"
-                           class="flex items-center gap-2 px-4 py-2.5 text-sm text-ink hover:bg-surface">
-                            <svg class="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="m9 12 6 6M15 12l-6 6"/></svg>
-                            Excel (.xlsx)
-                        </a>
-                        <a href="{{ route('ga.uniforms.records.export.pdf', request()->query()) }}"
-                           class="flex items-center gap-2 px-4 py-2.5 text-sm text-ink hover:bg-surface border-t border-hairline">
-                            <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-                            PDF (.pdf)
-                        </a>
+            <x-table-footer :paginator="$records">
+                <x-slot name="export">
+                    <div class="relative" x-data="{ exportOpen: false }">
+                        <button type="button" @click="exportOpen = !exportOpen"
+                                class="btn-secondary inline-flex items-center gap-2">
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>
+                            </svg>
+                            Export
+                            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="m6 9 6 6 6-6"/>
+                            </svg>
+                        </button>
+                        <div x-show="exportOpen" @click.outside="exportOpen = false" x-cloak
+                             class="absolute right-0 mt-2 w-48 bg-white border border-hairline rounded-lg shadow-lg z-20 overflow-hidden"
+                             style="display:none;">
+                            <a href="{{ route('ga.uniforms.records.export.xlsx', request()->query()) }}"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm text-ink hover:bg-surface">
+                                <svg class="w-4 h-4 text-green-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V9"/><path d="m9 12 6 6M15 12l-6 6"/></svg>
+                                Excel (.xlsx)
+                            </a>
+                            <a href="{{ route('ga.uniforms.records.export.pdf', request()->query()) }}"
+                               class="flex items-center gap-2 px-4 py-2.5 text-sm text-ink hover:bg-surface border-t border-hairline">
+                                <svg class="w-4 h-4 text-red-600" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                                PDF (.pdf)
+                            </a>
+                        </div>
                     </div>
-                </div>
-            </div>
+                </x-slot>
+            </x-table-footer>
         </div>
     </div>
 </x-app-layout>

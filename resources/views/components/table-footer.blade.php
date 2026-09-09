@@ -26,6 +26,11 @@
             </select>
         </form>
     </div>
-    <div>{{ $paginator->onEachSide(2)->links('vendor.pagination.allez') }}</div>
+    <div class="flex items-center gap-3">
+        <div>{{ $paginator->onEachSide(2)->links('vendor.pagination.allez') }}</div>
+        @isset($export)
+            <div class="flex items-center">{{ $export }}</div>
+        @endisset
+    </div>
 </div>
 @endif
