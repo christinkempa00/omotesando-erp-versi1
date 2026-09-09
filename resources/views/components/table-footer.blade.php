@@ -25,7 +25,7 @@
                     @endforeach
                 </select>
             </form>
-            <div>{{ $paginator->onEachSide(2)->links('vendor.pagination.allez') }}</div>
+            <div>{{ $paginator->onEachSide(1)->links('vendor.pagination.allez') }}</div>
         </div>
     </div>
     @isset($export)
