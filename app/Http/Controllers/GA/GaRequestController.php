@@ -50,7 +50,7 @@ class GaRequestController extends Controller
         }
 
         $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
-            ? (int) $request->input('per_page') : 15;
+            ? (int) $request->input('per_page') : 10;
 
         $requests = $query->paginate($perPage)->withQueryString();
 

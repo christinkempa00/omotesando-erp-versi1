@@ -380,7 +380,7 @@ class UniformStockController extends Controller
         $stock->load(['branch', 'branchLocation']);
 
         $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
-            ? (int) $request->input('per_page') : 15;
+            ? (int) $request->input('per_page') : 10;
 
         $movements = $stock->movements()
             ->with('createdBy')

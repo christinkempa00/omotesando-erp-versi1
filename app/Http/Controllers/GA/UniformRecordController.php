@@ -34,7 +34,7 @@ class UniformRecordController extends Controller
         $search = $request->query('search');
 
         $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
-            ? (int) $request->input('per_page') : 15;
+            ? (int) $request->input('per_page') : 10;
 
         $records = $this->filteredQuery($request)->latest()->paginate($perPage)->withQueryString();
 

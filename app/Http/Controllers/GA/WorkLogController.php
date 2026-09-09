@@ -72,7 +72,7 @@ class WorkLogController extends Controller
         $totalJamMenit = $totalMinutes % 60;
 
         $perPage = in_array((int) $request->input('per_page'), [10, 25, 50, 100], true)
-            ? (int) $request->input('per_page') : 15;
+            ? (int) $request->input('per_page') : 10;
 
         $workLogs = $query->latest('work_date')->latest('start_time')->paginate($perPage)->withQueryString();
 
