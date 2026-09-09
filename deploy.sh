@@ -21,7 +21,7 @@ PROTECTED_PATHS=("public" ".env" "vendor" "storage" "node_modules" ".git" ".vsco
 
 if [ "$#" -eq 0 ]; then
     echo "Usage: ./deploy.sh path/to/file-or-folder [more paths...]"
-    exit 1
+    exit 1  
 fi
 
 needs_cache_reminder=false

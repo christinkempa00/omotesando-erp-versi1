@@ -1,7 +1,7 @@
 <x-guest-layout>
     <div class="mb-4">
-        <h2 class="text-lg font-semibold text-gray-900">Wajib Ganti Password</h2>
-        <p class="mt-1 text-sm text-gray-600">
+        <h2 class="text-lg font-semibold text-ink">Wajib Ganti Password</h2>
+        <p class="mt-1 text-sm text-ink-muted">
             Ini login pertama Anda (atau password baru saja di-reset IT), silakan buat
             password baru sebelum melanjutkan.
         </p>
@@ -32,7 +32,7 @@
 
     <form method="POST" action="{{ route('logout') }}" class="mt-4 text-center">
         @csrf
-        <button type="submit" class="text-sm text-gray-500 hover:text-gray-700 underline">
+        <button type="submit" class="text-sm text-ink-muted hover:text-ink underline">
             Log Out
         </button>
     </form>

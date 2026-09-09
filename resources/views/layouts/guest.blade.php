@@ -16,13 +16,17 @@
     </head>
     <body class="font-sans text-ink antialiased">
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-surface">
-            <div>
+            <div class="flex flex-col items-center gap-2">
                 <a href="/">
                     <img src="{{ asset('images/allez-logo.jpg') }}" alt="Allez Group" class="w-24 h-24 object-contain">
                 </a>
+                <div class="text-center">
+                    <p class="text-ink font-semibold">{{ config('app.name', 'Allez Group') }}</p>
+                    <p class="text-ink-muted text-sm">Enterprise Resource Planning</p>
+                </div>
             </div>
 
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white shadow-md overflow-hidden sm:rounded-lg">
+            <div class="w-full sm:max-w-md mt-6 px-6 py-6 bg-white border border-hairline rounded-[14px] shadow-sm overflow-hidden">
                 {{ $slot }}
             </div>
         </div>
