@@ -63,11 +63,11 @@
                     <table class="min-w-full divide-y divide-hairline text-sm">
                         <thead class="border-b border-hairline">
                             <tr>
-                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[40%]">Item</th>
-                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[12%]">Qty</th>
-                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[18%]">Harga Satuan</th>
-                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[15%]">Vendor</th>
-                                <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[15%]">Subtotal</th>
+                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[40%]">Item</th>
+                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[12%]">Qty</th>
+                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[18%]">Harga Satuan</th>
+                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[15%]">Vendor</th>
+                                <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase w-[15%]">Subtotal</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-hairline">

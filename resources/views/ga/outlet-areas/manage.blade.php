@@ -35,9 +35,9 @@
                     <thead class="border-b border-hairline">
                         <tr>
                             <th class="w-8 px-3 py-3 text-center"></th>
-                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Nama</th>
-                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
-                            <th class="px-4 py-3 text-center text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Nama</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Status</th>
+                            <th class="px-4 py-3 text-left text-[11px] font-semibold tracking-[0.08em] text-ink-muted uppercase">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-hairline" id="area-sortable-list">
