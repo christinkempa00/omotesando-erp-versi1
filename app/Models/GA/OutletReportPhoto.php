@@ -9,6 +9,7 @@ class OutletReportPhoto extends Model
 {
     protected $fillable = [
         'outlet_report_id',
+        'inspection_area_id',
         'photo_path',
         'latitude',
         'longitude',
@@ -24,5 +25,10 @@ class OutletReportPhoto extends Model
     public function outletReport(): BelongsTo
     {
         return $this->belongsTo(OutletReport::class);
+    }
+
+    public function inspectionArea(): BelongsTo
+    {
+        return $this->belongsTo(OutletInspectionArea::class);
     }
 }

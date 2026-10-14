@@ -17,6 +17,7 @@ use App\Http\Controllers\GA\UniformMovementController;
 use App\Http\Controllers\GA\UniformRecordController;
 use App\Http\Controllers\GA\WorkLogController;
 use App\Http\Controllers\GA\OutletInspectionAreaController;
+use App\Http\Controllers\GA\BranchLocationQuickCreateController;
 use App\Http\Controllers\Head\HeadController;
 use App\Http\Controllers\Head\HeadAssetController;
 use App\Http\Controllers\Head\HeadUniformController;
@@ -74,6 +75,13 @@ Route::middleware(['auth', 'role:GA'])
     ->prefix('ga')
     ->name('ga.')
     ->group(function () {
+        // Quick-create Cabang (branch_location) — dipanggil dari dropdown
+        // "Cabang" di form manapun (Aset, Pengajuan, dst, lihat
+        // <x-branch-location-select>). Sengaja TIDAK dibungkus module:<key>
+        // manapun — dipakai lintas modul, jadi tidak boleh ikut ke-403 kalau
+        // salah satu modul saja yang dinonaktifkan Head.
+        Route::post('branch-locations', [BranchLocationQuickCreateController::class, 'store'])->name('branch-locations.store');
+
         // Setiap sub-grup ditandai module:<key> supaya Head bisa
         // aktif/nonaktifkan & atur akses role per modul lewat halaman
         // Kontrol Modul (lihat HeadModuleController) tanpa perlu deploy ulang.
@@ -208,6 +216,10 @@ Route::middleware(['auth', 'role:Outlet', 'outlet.branch'])
     ->name('outlet.')
     ->group(function () {
         Route::get('dashboard', [OutletController::class, 'dashboard'])->name('dashboard');
+
+        // Sama seperti ga.branch-locations.store — dipakai form Outlet yang
+        // punya dropdown "Cabang" (lihat <x-branch-location-select>).
+        Route::post('branch-locations', [BranchLocationQuickCreateController::class, 'store'])->name('branch-locations.store');
 
         Route::middleware(['module:'.Module::REQUESTS, 'module.maintenance:'.SystemModule::GA_REQUESTS])->group(function () {
             Route::resource('requests', GaRequestController::class)

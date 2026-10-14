@@ -5,6 +5,7 @@ namespace App\Models\GA;
 use App\Models\Branch;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Area pemeriksaan per outlet (mis. Dapur, Toilet, Area Makan) — dikelola GA
@@ -29,19 +30,17 @@ class OutletInspectionArea extends Model
         return $this->belongsTo(Branch::class);
     }
 
+    public function reportPhotos(): HasMany
+    {
+        return $this->hasMany(OutletReportPhoto::class, 'inspection_area_id');
+    }
+
     /**
      * Guard hapus permanen — area cuma boleh dihapus kalau belum pernah
-     * dipakai di laporan mana pun. Kolom penghubung foto->area BELUM ada
-     * (itu Fase B-2), jadi untuk B-1 selalu false (aman dihapus).
-     *
-     * TODO (Fase B-2): begitu relasi foto laporan -> area ditambahkan
-     * (mis. outlet_report_photos.inspection_area_id), ganti body method
-     * ini jadi cek relasi tsb (mis. return $this->reportPhotos()->exists();)
-     * — controller sudah memanggil method ini, jadi tidak perlu ubah
-     * apa pun di sisi controller saat B-2 dikerjakan.
+     * dipakai di laporan mana pun (Fase B-2: cek relasi foto laporan).
      */
     public function hasBeenUsed(): bool
     {
-        return false;
+        return $this->reportPhotos()->exists();
     }
 }

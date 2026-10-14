@@ -5,7 +5,6 @@ namespace App\Http\Controllers\GA;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\GA\StoreAssetRequest;
 use App\Models\Branch;
-use App\Models\BranchLocation;
 use App\Models\GA\Asset;
 use App\Models\UserPagePermission;
 use Barryvdh\DomPDF\Facade\Pdf;
@@ -45,7 +44,6 @@ class AssetController extends Controller
         return view('ga.assets.create', [
             'statusLabels' => Asset::statusLabels(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS),
-            'branchLocations' => BranchLocation::groupedByBranch(),
         ]);
     }
 
@@ -98,7 +96,6 @@ class AssetController extends Controller
             'asset' => $asset,
             'statusLabels' => Asset::statusLabels(),
             'branches' => Branch::orderedOutlets(Branch::GA_OUTLETS, $asset->branch?->name),
-            'branchLocations' => BranchLocation::groupedByBranch(),
         ]);
     }
 

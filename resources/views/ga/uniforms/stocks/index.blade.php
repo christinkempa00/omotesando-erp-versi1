@@ -148,15 +148,42 @@
                                 </div>
                             </div>
 
-                            <div class="divide-y divide-hairline">
+                            <div class="divide-y divide-hairline" x-data="{ restockOpen: null }" onclick="event.stopPropagation()">
                                 @foreach ($group->items as $item)
-                                    <div class="flex items-center justify-between py-1.5">
-                                        <div class="flex items-baseline gap-1.5 min-w-0">
-                                            <span class="text-xs font-medium text-ink whitespace-nowrap">Ukuran {{ $item->size ?: '-' }}</span>
+                                    <div class="py-1.5">
+                                        <div class="flex items-center justify-between">
+                                            <div class="flex items-baseline gap-1.5 min-w-0">
+                                                <span class="text-xs font-medium text-ink whitespace-nowrap">Ukuran {{ $item->size ?: '-' }}</span>
+                                            </div>
+                                            <div class="flex items-center gap-1.5 shrink-0">
+                                                <span class="text-xs font-semibold {{ $item->isLowStock() ? 'text-orange-600' : 'text-ink' }}">
+                                                    {{ $item->available_stock }}
+                                                </span>
+                                                @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                                                    <button type="button"
+                                                            @click="restockOpen = (restockOpen === {{ $item->id }} ? null : {{ $item->id }})"
+                                                            title="Restock ukuran ini"
+                                                            class="w-5 h-5 flex items-center justify-center rounded-md border border-hairline text-ink-muted hover:bg-surface">
+                                                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M12 5v14M5 12h14" />
+                                                        </svg>
+                                                    </button>
+                                                @endif
+                                            </div>
                                         </div>
-                                        <span class="text-xs font-semibold shrink-0 {{ $item->isLowStock() ? 'text-orange-600' : 'text-ink' }}">
-                                            {{ $item->available_stock }}
-                                        </span>
+                                        @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
+                                            <form x-show="restockOpen === {{ $item->id }}" x-cloak
+                                                  method="POST" action="{{ route('ga.uniforms.stocks.restock', $item) }}"
+                                                  class="mt-1.5 flex items-center gap-1.5">
+                                                @csrf
+                                                <input type="number" name="quantity" min="1" required placeholder="Jumlah"
+                                                       class="w-full field-input text-xs h-8">
+                                                <button type="submit"
+                                                        class="shrink-0 px-2.5 h-8 text-xs font-medium rounded-lg bg-action text-white hover:bg-action-hover">
+                                                    Tambah
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div>
                                 @endforeach
                             </div>

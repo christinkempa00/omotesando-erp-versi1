@@ -38,4 +38,17 @@ class ReturnUniformRecordRequest extends FormRequest
             'return_notes' => ['nullable', 'string', 'max:1000'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'return_date.required' => 'Tanggal kembali wajib diisi.',
+            'returned_by_name.required' => 'Nama penyerah wajib diisi.',
+            'received_by_name.required' => 'Nama penerima wajib diisi.',
+            'qty_sesuai.required' => 'Pertanyaan "Jumlah barang sesuai" wajib dijawab (Ya/Tidak).',
+            'spesifikasi_sesuai.required' => 'Pertanyaan "Spesifikasi sesuai" wajib dijawab (Ya/Tidak).',
+            'kondisi_sesuai.required' => 'Pertanyaan "Kondisi sesuai" wajib dijawab (Ya/Tidak).',
+            'return_condition.required' => 'Kondisi fisik barang wajib dipilih.',
+        ];
+    }
 }

@@ -9,12 +9,11 @@
         purchasePrice: {{ (float) old('purchase_price', $asset->purchase_price ?? 0) }},
         depreciationValue: {{ (float) old('depreciation_value', $asset->depreciation_value ?? 0) }},
         branchId: '{{ old('branch_id', $asset->branch_id ?? '') }}',
-        branchLocationId: '{{ old('branch_location_id', $asset->branch_location_id ?? '') }}',
-        branchLocations: @js($branchLocations),
-        get availableBranchLocations() { return this.branchLocations[this.branchId] || []; },
+        cabangSummary: {{ Js::from($asset?->branchLocation?->name) }},
         formatThousands(n) { return (Number(n) || 0).toLocaleString('id-ID'); },
         parseThousands(str) { return Number(String(str).replace(/[^\d]/g, '')) || 0; }
-     }">
+     }"
+     x-on:branch-location-changed.window="cabangSummary = $event.detail.name">
     {{-- Kolom kiri: data aset --}}
     <div class="lg:col-span-2 card-flat p-6 space-y-5">
 
@@ -42,7 +41,8 @@
             <div>
                 <label class="block text-sm font-medium text-ink mb-1">Outlet *</label>
                 <select name="branch_id" id="branch_id" required
-                        x-model="branchId" @change="branchLocationId = ''"
+                        x-model="branchId"
+                        @change="window.dispatchEvent(new CustomEvent('outlet-changed', { detail: { branchId } }))"
                         onchange="document.getElementById('summary-outlet').textContent = this.options[this.selectedIndex].text || '-'"
                         class="w-full field-input">
                     <option value="">-- Pilih Outlet --</option>
@@ -52,16 +52,12 @@
                 </select>
             </div>
 
-            <div x-show="availableBranchLocations.length > 0" x-cloak>
-                <label class="block text-sm font-medium text-ink mb-1">Cabang</label>
-                <select name="branch_location_id" x-model="branchLocationId"
-                        class="w-full field-input">
-                    <option value="">-- Pilih Cabang --</option>
-                    <template x-for="loc in availableBranchLocations" :key="loc.id">
-                        <option :value="loc.id" x-text="loc.name"></option>
-                    </template>
-                </select>
-            </div>
+            <x-branch-location-select
+                :selected="old('branch_location_id', $asset->branch_location_id ?? null)"
+                :initial-branch-id="old('branch_id', $asset->branch_id ?? null)"
+                store-route="ga.branch-locations.store"
+                emit-event="branch-location-changed"
+                outlet-listen-event="outlet-changed" />
 
             <div>
                 <label class="block text-sm font-medium text-ink mb-1">Lokasi</label>
@@ -201,9 +197,9 @@
                     <dt class="text-ink-muted">Outlet</dt>
                     <dd id="summary-outlet" class="font-medium text-ink">{{ $asset->branch->name ?? '-' }}</dd>
                 </div>
-                <div class="flex items-center justify-between" x-show="availableBranchLocations.length > 0" x-cloak>
+                <div class="flex items-center justify-between">
                     <dt class="text-ink-muted">Cabang</dt>
-                    <dd class="font-medium text-ink" x-text="(availableBranchLocations.find(l => l.id == branchLocationId)?.name) || '-'"></dd>
+                    <dd class="font-medium text-ink" x-text="cabangSummary || '-'"></dd>
                 </div>
                 <div class="flex items-center justify-between">
                     <dt class="text-ink-muted">Lokasi</dt>

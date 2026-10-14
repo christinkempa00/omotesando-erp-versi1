@@ -36,6 +36,7 @@
                     <div><dt class="text-ink-muted">Seragam</dt>
                         <dd class="font-medium text-ink">{{ $record->summaryLabel() }}</dd>
                     </div>
+                    <div><dt class="text-ink-muted">Outlet</dt><dd class="font-medium text-ink">{{ $record->outletLabel() }}</dd></div>
                     <div><dt class="text-ink-muted">Nama Penyerah</dt><dd class="font-medium text-ink">{{ $record->issued_by_name ?: '—' }}</dd></div>
                     <div><dt class="text-ink-muted">Tanggal Serah</dt><dd class="font-medium text-ink">{{ $record->issue_date->format('d M Y') }}</dd></div>
                     @if (! $record->isItemized())

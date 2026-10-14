@@ -67,24 +67,6 @@
                 </div>
             </div>
 
-            @if (auth()->user()->canEdit(\App\Models\UserPagePermission::PAGE_UNIFORMS_STOCKS))
-                <div class="max-w-sm">
-                    <div class="card-flat p-5">
-                        <h3 class="text-sm font-semibold text-ink mb-3">Restock (+)</h3>
-                        <form method="POST" action="{{ route('ga.uniforms.stocks.restock', $stock) }}" class="space-y-2">
-                            @csrf
-                            <input type="number" name="quantity" min="1" required placeholder="Jumlah"
-                                   class="w-full field-input text-sm">
-                            <input type="text" name="notes" placeholder="Catatan (opsional)"
-                                   class="w-full field-input text-sm">
-                            <button type="submit" class="w-full btn-primary">
-                                Tambah Stok
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            @endif
-
             {{-- Riwayat movement --}}
             <div class="card-flat overflow-hidden">
                 <div class="px-6 py-4 border-b border-hairline">

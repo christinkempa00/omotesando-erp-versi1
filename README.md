@@ -62,7 +62,8 @@ kapan sesuatu berubah.
   `branch_id` sekarang otomatis dipaksa & disaring di controller GA yang
   dipakai bersama (awalnya dimaksudkan untuk Outlet, lihat perbaikan
   31/08 di atas).
-- **28/08/2026** — **Field "Cabang" (sub-lokasi outlet)** — tabel baru
+- **28/08/2026** — **Field "Cabang" (sub-lokasi outlet)**
+ — tabel baru
   `branch_locations` (sub-lokasi opsional di dalam satu outlet, mis.
   sebuah unit tambahan yang masih bagian outlet yang sama) + kolom
   `branch_location_id` (nullable) ditambahkan ke 7 tabel GA: Aset, Jadwal
