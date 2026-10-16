@@ -166,22 +166,80 @@
     <div class="lg:col-span-1 space-y-6">
         <div class="card-flat p-6">
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+                <div x-data="{ previewUrl: null, fileName: null }">
                     <h3 class="text-sm font-semibold text-ink mb-2">Foto Aset *</h3>
-                    @if (! empty($asset?->image_path))
-                        <img src="{{ Storage::url($asset->image_path) }}" class="w-24 h-24 rounded object-cover mb-2">
-                    @endif
-                    <input type="file" name="image" accept="image/*" @if (empty($asset?->image_path)) required @endif
-                           class="w-full text-sm text-ink-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
+
+                    <div class="relative w-24 h-24 mb-2">
+                        <img :src="previewUrl ?? '{{ ! empty($asset?->image_path) ? Storage::url($asset->image_path) : '' }}'"
+                             x-show="previewUrl || {{ ! empty($asset?->image_path) ? 'true' : 'false' }}"
+                             class="w-24 h-24 rounded object-cover border border-hairline">
+                        <div x-show="!previewUrl && {{ ! empty($asset?->image_path) ? 'false' : 'true' }}"
+                             class="w-24 h-24 rounded border border-dashed border-hairline flex items-center justify-center text-ink-muted text-xs">
+                            Belum ada
+                        </div>
+                        <span x-show="previewUrl" x-cloak
+                              class="absolute -top-1.5 -right-1.5 bg-action text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full shadow">Baru</span>
+                    </div>
+
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-action hover:text-action-hover">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" />
+                            <circle cx="12" cy="13" r="3.2" />
+                        </svg>
+                        <span x-text="fileName ? 'Ganti lagi' : '{{ ! empty($asset?->image_path) ? 'Ganti Foto' : 'Pilih Foto' }}'"></span>
+                        <input type="file" name="image" accept="image/*" @if (empty($asset?->image_path)) required @endif
+                               class="hidden"
+                               @change="
+                                   const file = $event.target.files[0];
+                                   if (file) {
+                                       fileName = file.name;
+                                       const reader = new FileReader();
+                                       reader.onload = (e) => previewUrl = e.target.result;
+                                       reader.readAsDataURL(file);
+                                   }
+                               ">
+                    </label>
+                    <p x-show="fileName" x-cloak class="text-[11px] text-ink-muted mt-1">
+                        Foto baru: <span x-text="fileName" class="font-medium text-ink"></span> — akan menggantikan foto lama setelah disimpan.
+                    </p>
                 </div>
 
-                <div>
+                <div x-data="{ previewUrl: null, fileName: null }">
                     <h3 class="text-sm font-semibold text-ink mb-2">Foto SN *</h3>
-                    @if (! empty($asset?->serial_number_photo_path))
-                        <img src="{{ Storage::url($asset->serial_number_photo_path) }}" class="w-24 h-24 rounded object-cover mb-2">
-                    @endif
-                    <input type="file" name="serial_number_photo" accept="image/*" @if (empty($asset?->serial_number_photo_path)) required @endif
-                           class="w-full text-sm text-ink-muted file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:bg-gold-50 file:text-gold-700 hover:file:bg-gold-100">
+
+                    <div class="relative w-24 h-24 mb-2">
+                        <img :src="previewUrl ?? '{{ ! empty($asset?->serial_number_photo_path) ? Storage::url($asset->serial_number_photo_path) : '' }}'"
+                             x-show="previewUrl || {{ ! empty($asset?->serial_number_photo_path) ? 'true' : 'false' }}"
+                             class="w-24 h-24 rounded object-cover border border-hairline">
+                        <div x-show="!previewUrl && {{ ! empty($asset?->serial_number_photo_path) ? 'false' : 'true' }}"
+                             class="w-24 h-24 rounded border border-dashed border-hairline flex items-center justify-center text-ink-muted text-xs">
+                            Belum ada
+                        </div>
+                        <span x-show="previewUrl" x-cloak
+                              class="absolute -top-1.5 -right-1.5 bg-action text-white text-[10px] font-medium px-1.5 py-0.5 rounded-full shadow">Baru</span>
+                    </div>
+
+                    <label class="inline-flex items-center gap-1.5 cursor-pointer text-xs font-semibold text-action hover:text-action-hover">
+                        <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" />
+                            <circle cx="12" cy="13" r="3.2" />
+                        </svg>
+                        <span x-text="fileName ? 'Ganti lagi' : '{{ ! empty($asset?->serial_number_photo_path) ? 'Ganti Foto' : 'Pilih Foto' }}'"></span>
+                        <input type="file" name="serial_number_photo" accept="image/*" @if (empty($asset?->serial_number_photo_path)) required @endif
+                               class="hidden"
+                               @change="
+                                   const file = $event.target.files[0];
+                                   if (file) {
+                                       fileName = file.name;
+                                       const reader = new FileReader();
+                                       reader.onload = (e) => previewUrl = e.target.result;
+                                       reader.readAsDataURL(file);
+                                   }
+                               ">
+                    </label>
+                    <p x-show="fileName" x-cloak class="text-[11px] text-ink-muted mt-1">
+                        Foto baru: <span x-text="fileName" class="font-medium text-ink"></span> — akan menggantikan foto lama setelah disimpan.
+                    </p>
                 </div>
             </div>
         </div>

@@ -105,8 +105,12 @@ class Asset extends Model
     public static function generateAssetCode(): string
     {
         return DB::transaction(function () {
-            $count = static::lockForUpdate()->count();
-            $next = $count + 1;
+            $existingCodes = static::lockForUpdate()->pluck('asset_code')->flip();
+            $next = static::count() + 1;
+
+            while ($existingCodes->has('AST-'.str_pad((string) $next, 4, '0', STR_PAD_LEFT))) {
+                $next++;
+            }
 
             return 'AST-'.str_pad((string) $next, 4, '0', STR_PAD_LEFT);
         });
